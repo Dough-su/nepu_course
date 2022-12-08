@@ -1,1 +1,4 @@
-#目前还没有上传，这里作为占位
+该项目backend目录为后端，负责登入webvpn和数据处理。其中python目录和loginnode文件夹分别需要python和nodejs部署，python目录需要手动修改webvpn目录下的login.py中29行和30行。
+
+Client目录为客户端，在使用pub egt命令以后，需要手动将extra目录下的lib压缩包解压并替换calendar_agenda的缓存目录的lib文件
+
