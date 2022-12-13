@@ -1,4 +1,4 @@
 该项目backend目录为后端，负责登入webvpn和数据处理。其中python目录和loginnode文件夹分别需要python和nodejs部署，python目录需要手动修改webvpn目录下的login.py中29行和30行。
 
-Client目录为客户端，在使用pub egt命令以后，需要手动将extra目录下的lib压缩包解压并替换calendar_agenda的缓存目录的lib文件
+Client目录为客户端，在使用pub egt命令以后，需要手动将extra目录下的flutter_login-4.1.0.zip解压到缓存目录，因为项目对flutter_login做了大量修改，所以务必要替换，否则项目无法运行
 
