@@ -4,11 +4,12 @@ import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'notificationUtils.dart';
+
 void main() {
   SharedPreferences.setMockInitialValues({});
   //去除debug标签
   debugPaintSizeEnabled = false;
-
   runApp(const MyApp());
 }
 

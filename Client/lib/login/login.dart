@@ -16,10 +16,29 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   ShowMToast toast = ShowMToast();
 
+  String savedPassword = '';
+  String savedUsername = '';
+  void getpwd() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/logininfo.txt');
+      if (file.existsSync()) {
+        //根据,分割
+        List<String> list = file.readAsStringSync().split(',');
+        savedUsername = list[0];
+        savedPassword = list[1];
+        print('用户名是' + savedUsername);
+        print('密码是' + savedPassword);
+        setState(() {});
+      }
+    });
+  }
+
   @override
   void initState() {
-    super.initState();
+    getpwd();
     isFirst();
+    //初始化shared_preferences后，获取保存在shared_preferences中的用户名和密码
+    super.initState();
   }
 
   String _username = '';
@@ -117,6 +136,20 @@ class _LoginPageState extends State<LoginPage> {
       sharedPreferences.setString('JSESSIONID', jessonid);
       sharedPreferences.setString('webvpn_key', webvpn_key);
       sharedPreferences.setString('webvpn_username', webvpn_username);
+      getApplicationDocumentsDirectory().then((value) {
+        File file = File(value.path + '/logininfo.txt');
+        //判断是否存在file
+        file.exists().then((value) {
+          if (value) {
+            //如果存在则删除
+            file.delete();
+          }
+          //创建file
+          file.create();
+          //写入username和password分别占一行
+          file.writeAsString('$username,$password');
+        });
+      });
     }
 
     saveString();
@@ -151,8 +184,9 @@ class _LoginPageState extends State<LoginPage> {
       // showDebugButtons: true,
       hideForgotPasswordButton: true,
       userType: LoginUserType.name,
+      savedEmail: savedUsername,
+      savedPassword: savedPassword,
       onSubmitAnimationCompleted: () {
-        print('onSubmitAnimationCompleted');
         return null;
       },
 

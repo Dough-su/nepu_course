@@ -38,7 +38,14 @@ dependencies:
   path_provider: ^2.0.0
   m_toast: ^0.1.8
   flutter_login: ^4.1.0
-    
+  json_annotation: ^4.7.0
+  json_serializable: ^6.5.4
+  build_runner: ^2.3.2
+  card_flip: ^0.0.5
+  folding_cell: ^1.0.2
+  flutter_local_notifications: ^9.6.0
+  flutter_colorpicker: ^1.0.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -68,6 +75,8 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
         - assets/
+        - images/
+      
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

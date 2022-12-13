@@ -4,7 +4,7 @@
          <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
          <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="muse_nepu_course"
+        android:label="东油课表"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
