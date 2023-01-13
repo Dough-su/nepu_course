@@ -24,8 +24,6 @@ Preview
 ![](https://img.tucang.cc/api/image/show/cfd2dee47a64d969c1ec73760f2a452f)
 ![](https://img.tucang.cc/api/image/show/aab8e3e6037877b12f220378c2aa8eb6)
 
-![(https://img.tucang.cc/api/image/show/793f6b2c6e76308053a9983caa7444b1)
-
 ![](https://img.tucang.cc/api/image/show/9d8c654b6cf7411f4c06ccdae1d8c523)
 
 ![](https://img.tucang.cc/api/image/show/56de9919174ef66d0e3056b6014dd597)
