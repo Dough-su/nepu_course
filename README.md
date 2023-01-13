@@ -1,5 +1,3 @@
-![](https://raw.github.com/meolu/walle-web/master/screenshot/logo.jpg)
-
 东油课表 1.0
 =========================
 功能强大，且免费开源的东油课表
