@@ -39,9 +39,7 @@ Discussing
 - [submit issue](https://github.com/Dough-su/nepu_course/issues/new)
 
 
-打赏作者杯咖啡
+点个star
 =========================
-你也不一定要赞赏，芸芸众生，相遇相识是一种缘份。不过可以给点个star
-
-<img src="https://img.tucang.cc/api/image/show/383ca31958bf18c8e4b3f879c5529727" width="220" height="220" alt="赞赏码" style="float: left;"/>
+芸芸众生，相遇相识是一种缘份。可以给点个star
 
