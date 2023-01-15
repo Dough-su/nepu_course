@@ -7,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:flutter_login/flutter_login.dart';
 import 'package:sqflite/sqflite.dart';
-import '../model/score.dart';
 
 class scoreLoginPage extends StatefulWidget {
   @override
@@ -118,7 +117,7 @@ class _scoreLoginPageState extends State<scoreLoginPage> {
     });
   }
 
-  //持久化存储登录信息
+  //存储获取到的新成绩信息
   Future saveString() async {
     var urlscore =
         'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
@@ -175,55 +174,7 @@ class _scoreLoginPageState extends State<scoreLoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FlutterLogin(
-      title: '成绩更新',
-      onLogin: (loginData) {
-        return _authUser(loginData);
-      },
-      // showDebugButtons: true,
-      hideForgotPasswordButton: true,
-      userType: LoginUserType.name,
-      savedEmail: Global.jwc_xuehao,
-      savedPassword: Global.jwc_password,
-      onSubmitAnimationCompleted: () {
-        Navigator.pop(context);
-      },
-
-      onRecoverPassword: (String) {
-        return Future.delayed(loginTime).then((_) {
-          return null;
-        });
-      },
-
-      children: [
-        //添加验证码图片
-        //修改验证码图片大小
-        Container(
-          //点击刷新
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                Global.getVerifyCode(_pureyzm);
-              });
-            },
-            child: Container(
-              child: FutureBuilder(
-                future: Global.getVerifyCode(_pureyzm),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return snapshot.data as Widget;
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
-              ),
-            ),
-          ),
-          width: 100,
-          height: 30,
-          margin: EdgeInsets.only(top: 220),
-        ),
-      ],
-    );
+    return Global()
+        .loginreq('更新成绩', _authUser, context, _pureyzm, setState, scorepage());
   }
 }

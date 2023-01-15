@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/chaoxing/chaoxing.dart';
+import 'package:muse_nepu_course/coursemenu/chaoxing.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rameez_animated_login_screen/login_data.dart';
-import 'package:muse_nepu_course/teddylogin.dart';
+import 'package:muse_nepu_course/login/teddylogin.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 
 class chaoxinglogin extends StatefulWidget {
@@ -17,9 +17,6 @@ class chaoxinglogin extends StatefulWidget {
 late BuildContext login;
 
 class _chaoxingloginState extends State<chaoxinglogin> {
-  //定义一个控制器
-  TextEditingController _unameController = new TextEditingController();
-  TextEditingController _pwdController = new TextEditingController();
   @override
   void initState() {
     super.initState();

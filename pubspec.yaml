@@ -51,6 +51,7 @@ dependencies:
   shrink_sidemenu: ^2.0.0+2-null-safety
   easy_app_installer: ^1.0.0
   achievement_view: ^1.0.0
+  lunar: ^1.2.24
 
   
 
@@ -85,6 +86,9 @@ flutter:
   assets:
         - assets/
         - images/
+        - assets/splash_screen/
+        - assets/splash_screen/jieqi/
+        - assets/pay/
       
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -43,7 +43,26 @@ class _aboutState extends State<about> {
                 title: Text('关于'),
                 subtitle: Text('身在井隅，心向璀璨。'),
               ),
-
+              //请开发者喝杯咖啡
+              ListTile(
+                leading: Icon(Icons.coffee),
+                title: Text('请开发者喝杯咖啡'),
+                subtitle: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('请开发者喝杯咖啡'),
+                          content: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
+                          actions: [
+                            //展示图片
+                            Image.asset('assets/pay/weixin.png'),
+                          ],
+                        );
+                      });
+                },
+              ),
               //选取图片
 
               ListTile(

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
+import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/scorelogin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
@@ -502,7 +503,9 @@ class _scoreState extends State<scorepage> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return HomePage();
+              }));
             },
           ),
           title: const Text('分数详情'),

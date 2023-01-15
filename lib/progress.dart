@@ -1,13 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:path_provider/path_provider.dart';
 import 'global.dart';
-import 'home.dart';
-import 'login/login.dart';
 
 ///Class to hold data for itembuilder in Withbuilder app.
 class ItemData {
@@ -43,32 +39,17 @@ class _WithBuilder extends State<WithBuilder> {
     ItemData(Colors.pink, "assets/jwc_login.jpg", "欢迎", "与我", "一起探索!"),
   ];
 
-  void getusername() async {
-    await getApplicationDocumentsDirectory().then((value) {
-      File file = File(value.path + '/logininfo.txt');
-      if (file.existsSync()) {
-        //根据,分割
-        List<String> list = file.readAsStringSync().split(',');
-        Global().jwc_xuehaosetter(list[0]);
-        Global().jwc_passwordsetter(list[1]);
-      }
-    });
-  }
-
   void initState() {
-    getusername();
+    liquidController = LiquidController();
     getApplicationDocumentsDirectory().then((value) {
       //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
       File file = new File(value.path + '/first.txt');
       file.exists().then((value) {
-        if (value) {
-          isFirst();
-        } else {
+        if (!value) {
           file.create();
         }
       });
     });
-    liquidController = LiquidController();
     super.initState();
   }
 
@@ -196,39 +177,14 @@ class _WithBuilder extends State<WithBuilder> {
     );
   }
 
-  void isFirst() {
-    //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
-    getApplicationDocumentsDirectory().then((value) {
-      File file = new File(value.path + '/calanderagenda.txt');
-      file.exists().then((value) {
-        if (value) {
-          //读取数据
-          file.readAsString().then((value) {
-            //读取数据第一行
-            List<String> list = value.split('\n');
-            Global.calendar_first_day = DateTime(
-                int.parse(list[1].toString().split('-')[0]),
-                int.parse(list[1].toString().split('-')[1]),
-                int.parse(list[1].toString().split('-')[2]));
-          });
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomePage()));
-        } else {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => LoginPage()));
-        }
-      });
-    });
-  }
-
-  pageChangeCallback(int lpage) {
+  pageChangeCallback(int lpage) async {
     setState(() {
       page = lpage;
     });
     print("第 $page");
     //如果最后一页，则调用isFirst()方法
     if (lpage == data.length - 1) {
-      isFirst();
+      Global().isFirst(context);
     }
   }
 }

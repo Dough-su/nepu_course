@@ -5,8 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/model/updateapp.dart';
-import 'package:muse_nepu_course/pingjiao/pingjiaologin.dart';
+import 'package:muse_nepu_course/login/pingjiaologin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:sqflite/sqflite.dart';
@@ -23,7 +22,6 @@ import 'package:lottie/lottie.dart';
 import 'package:easy_app_installer/easy_app_installer.dart';
 import 'package:achievement_view/achievement_view.dart';
 
-DateTime get _now => DateTime.now();
 List<Widget> dailycourse = [];
 GlobalKey scoredetailbtn = GlobalKey();
 List<TargetFocus> targets = [
@@ -148,11 +146,7 @@ Color pickerColor = Color.fromARGB(255, 73, 160, 230);
 Color currentColor = Color.fromARGB(255, 73, 160, 230);
 var date;
 var widthx;
-//判断是否已经从本地读取json
-bool isfirstread = true;
 
-//在内存中的courseinfo
-var courseInfox;
 ImageProvider logopic = AssetImage('images/logo.png');
 ImageProvider calendarlogo = AssetImage('images/logo.png');
 
@@ -368,7 +362,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  int _counter = 0;
   bool isOpened = false;
   bool isdownload = true;
   bool isDarkModeEnabled = false;
@@ -558,11 +551,12 @@ class _HomePageState extends State<HomePage> {
           //没有则下载
           downApkFunction();
         } else {
+          hItems(DateTime.now());
+
           //有则读取
           updateappx();
           xinshouyindao();
           shownotice();
-          hItems(DateTime.now());
         }
       });
     });
@@ -683,15 +677,11 @@ class _HomePageState extends State<HomePage> {
         print('下载失败');
         return;
       } else if (response.statusCode == 200) {
-        //下载成功
-        //获取路径
         Directory directory = await getApplicationDocumentsDirectory();
         String path = directory.path + '/course.json';
         //写入文件
         File file = new File(path);
         file.writeAsString(response.data);
-
-        hItems(DateTime.now());
         setState(() {
           title = '下载成绩中';
         });
@@ -711,6 +701,7 @@ class _HomePageState extends State<HomePage> {
             //下载完成
             isdownload = true;
             _insert_database();
+            hItems(DateTime.now());
             xinshouyindao();
           });
         });
@@ -730,14 +721,15 @@ class _HomePageState extends State<HomePage> {
     }
     var cacheindex = 0;
     var pos = 0;
-    for (var i = 0; i < courseInfox.length; i++) {
+    for (var i = 0; i < Global.courseInfox.length; i++) {
       //判断是否是今天的课程
-      if (courseInfox[i]['jsrq'] == date.toString().substring(0, 10)) {
+      if (Global.courseInfox[i]['jsrq'] == date.toString().substring(0, 10)) {
         cacheindex++;
-        eventcahe.add(courseInfox[i]);
+        eventcahe.add(Global.courseInfox[i]);
       }
       //如果读取之后的时间在今天之前则跳过
-      if (courseInfox[i]['jsrq'].compareTo(date.toString().substring(0, 10)) <
+      if (Global.courseInfox[i]['jsrq']
+              .compareTo(date.toString().substring(0, 10)) <
           0) {
         pos = i;
         break;
@@ -747,11 +739,11 @@ class _HomePageState extends State<HomePage> {
     //判断是否有课程
     if (cacheindex == 0) {
       print('pos是' + pos.toString());
-      print(courseInfox[pos]['zc']);
-      print(courseInfox[pos]['jsrq']);
+      print(Global.courseInfox[pos]['zc']);
+      print(Global.courseInfox[pos]['jsrq']);
       print(date.toString().substring(0, 10));
       //判断jsrq和date的日期差
-      var date1 = DateTime.parse(courseInfox[pos]['jsrq']);
+      var date1 = DateTime.parse(Global.courseInfox[pos]['jsrq']);
       //获取date1的周日
       var date2 = date1.add(Duration(days: 7 - date1.weekday));
       var date3 = DateTime.parse(date2.toString().substring(0, 10));
@@ -763,9 +755,9 @@ class _HomePageState extends State<HomePage> {
       print(difference);
       if (difference == 0) difference = 1;
 
-      int zc = courseInfox[pos]['zc'];
+      int zc = Global.courseInfox[pos]['zc'];
       if (difference > 0)
-        zc = courseInfox[pos]['zc'] + //向上取整
+        zc = Global.courseInfox[pos]['zc'] + //向上取整
             ((difference / 7).ceil());
       if (difference < 28)
         title = '第' + zc.toString() + '周' + '当天没课哦';
@@ -1589,86 +1581,10 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  loadItems(DateTime date) async {
-    //打印调用次数
-    print('loadItems');
-    if (isfirstread)
-      getCourseInfo().then((value) async {
-        if (value
-            .contains('\u83b7\u53d6\u8bfe\u7a0b\u4fe1\u606f\u5931\u8d25')) {
-          setState(() {
-            title = '登录错误';
-          });
-          AchievementView(context,
-              title: "出错啦!",
-              subTitle: '请退出app重新登录',
-              //onTab: _onTabAchievement,
-              icon: Icon(
-                Icons.error,
-                color: Colors.white,
-              ),
-              //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
-              //borderRadius: 5.0,
-              color: Colors.red,
-              //textStyleTitle: TextStyle(),
-              //textStyleSubTitle: TextStyle(),
-              //alignment: Alignment.topCenter,
-              duration: Duration(seconds: 3),
-              isCircle: true, listener: (status) {
-            print(status);
-          })
-            ..show();
-          deleteFile();
-        }
-        courseInfox = json.decode(value);
-        isfirstread = false;
-      }).then((value) {
-        try {
-          courseInfox[0]['jsrq'];
-          //写入jsrq到文件
-          getApplicationDocumentsDirectory().then((value) {
-            File file = File(value.path + '/calanderagenda.txt');
-            //判断文件是否存在
-            if (file.existsSync()) {
-              //存在则写入第一条数据和最后一条数据，并换行
-              file.writeAsStringSync(courseInfox[0]['jsrq'] +
-                  '\n' +
-                  courseInfox[courseInfox.length - 1]['jsrq']);
-            } else {
-              //不存在则创建文件并写入
-              file.createSync();
-              file.writeAsStringSync(courseInfox[0]['jsrq'] +
-                  '\n' +
-                  courseInfox[courseInfox.length - 1]['jsrq']);
-            }
-          });
-        } catch (e) {
-          dailycourse = [
-            Text(
-              '当你看到这段话，证明出错了，当然可能服务器出错了(概率很小),出错在哪里了呢，可能在于学校，学校是不是现在正在有选课的问题，有这个问题的话，可能会导致超时，因为教务处压力太大，导致没办法加载，下次建议不要在抢课时登陆课表，现在你可以点开三个横那里，里面有个清除课程和成绩缓存，按下它，退出app，等到学校不在抢课时重新登陆吧，good luck',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.red,
-              ),
-            )
-          ];
-          //刷新
-          setState(() {
-            title = '出错啦';
-          });
-          return;
-        }
-        loadwidget(date);
-      });
-    else
-      loadwidget(date);
-  }
-
 //刷新items
   hItems(DateTime date) async {
-    if (loadItems(date) == "success") {
-      print('loadItems刷新成功');
-    }
+    await Global().loadItems(date);
+    loadwidget(date);
   }
 
   Widget build(BuildContext context) {
