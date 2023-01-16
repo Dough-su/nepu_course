@@ -1,16 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:achievement_view/achievement_view.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
+import 'package:muse_nepu_course/diffcult_flutter_refresh/easy_refresh.dart';
+import 'package:muse_nepu_course/diffcult_flutter_refresh/src/styles/space/easy_refresh_space.dart';
+import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
-import 'package:muse_nepu_course/login/scorelogin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:card_flip/card_flip.dart';
 
-Color pickerColor = Color.fromARGB(255, 73, 160, 230);
-Color currentColor = Color.fromARGB(255, 73, 160, 230);
 ImageProvider cardpic = AssetImage('images/image.png');
 ImageProvider avaterpic = AssetImage('images/avatar.png');
 
@@ -33,7 +36,7 @@ Widget component1(fenshu, paiming, shijian, coursename, leixing, jidian) {
             //距离上下边距
             margin: const EdgeInsets.only(bottom: 20.0),
             width: 88,
-            color: currentColor,
+            color: Global.score_currentcolor,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -213,7 +216,7 @@ class _scoreState extends State<scorepage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     height: 44,
-                    color: currentColor,
+                    color: Global.score_currentcolor,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -226,6 +229,7 @@ class _scoreState extends State<scorepage> {
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
+                            backgroundColor: Global.score_currentcolor,
                           ),
                         ),
                         Text(
@@ -409,7 +413,7 @@ class _scoreState extends State<scorepage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 0,
-                          primary: currentColor,
+                          primary: Global.score_currentcolor,
                         ),
                         onPressed: () {
                           FlipLayout.of(context).toggle();
@@ -464,147 +468,295 @@ class _scoreState extends State<scorepage> {
     return list;
   }
 
-  @override
-  Future<void> getcolor() async {
-    getApplicationDocumentsDirectory().then((value) {
-      File file = File(value.path + '/color1.txt');
-      if (file.existsSync()) {
-        file.readAsString().then((value) {
-          setState(() {
-            currentColor = Color(int.parse(value));
-            pickerColor = Color(int.parse(value));
-          });
-        });
-      }
-    });
-    setState(() {});
+  String chengjidaima = '';
+
+  int _count = 10;
+  //从数据库读取最后一行数据
+  Future<Map<String, dynamic>> _queryFirst() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/nepu.db';
+    Database database = await openDatabase(
+      path,
+      version: 1,
+    );
+    //获取所有数据的第一行的cjdm
+    List<Map<String, dynamic>> maps =
+        await database.query('score', columns: ['cjdm']);
+    chengjidaima = maps.last['cjdm'];
+    return maps.last;
   }
 
+  //读取下载的json
+  Future<String> getxscoreInfo() async {
+    //获取路径
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/score1.json';
+    //读取文件
+    File file = new File(path);
+    if (await file.exists()) {
+      String scoreInfo = await file.readAsString();
+
+      return scoreInfo;
+    } else {
+      return 'wrong';
+    }
+  }
+
+  //将json写入数据库
+  _insertx_database() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/nepu.db';
+    Database database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS Score(xsxm text, zcjfs text, xnxqmc text, cjjd text, kcmc text, cjdm text, zcj text, wzc text, kkbmmc text, xf text, zxs text, xdfsmc text,jxbmc text, fenshu60 text, fenshu70 text, fenshu80 text, fenshu90 text, fenshu100 text, zongrenshu text, paiming text,pscj text,sycj text,qzcj text,qmcj text ,sjcj text)');
+    });
+    getxscoreInfo().then((value) async {
+      var scoreInfo;
+      try {
+        scoreInfo = json.decode(value);
+      } catch (e) {
+        return;
+      }
+
+      for (int i = 0; i < scoreInfo.length; i++) {
+        database.insert('score', {
+          'xsxm': scoreInfo[i]['xsxm'],
+          'zcjfs': scoreInfo[i]['zcjfs'],
+          'xnxqmc': scoreInfo[i]['xnxqmc'],
+          'cjjd': scoreInfo[i]['cjjd'],
+          'kcmc': scoreInfo[i]['kcmc'],
+          'cjdm': scoreInfo[i]['cjdm'],
+          'zcj': scoreInfo[i]['zcj'],
+          'wzc': scoreInfo[i]['wzc'],
+          'kkbmmc': scoreInfo[i]['kkbmmc'],
+          'xf': scoreInfo[i]['xf'],
+          'zxs': scoreInfo[i]['zxs'],
+          'xdfsmc': scoreInfo[i]['xdfsmc'],
+          'jxbmc': scoreInfo[i]['jxbmc'],
+          'fenshu60': scoreInfo[i]['fenshu60'],
+          'fenshu70': scoreInfo[i]['fenshu70'],
+          'fenshu80': scoreInfo[i]['fenshu80'],
+          'fenshu90': scoreInfo[i]['fenshu90'],
+          'fenshu100': scoreInfo[i]['fenshu100'],
+          'zongrenshu': scoreInfo[i]['zongrenshu'],
+          'paiming': scoreInfo[i]['paiming'],
+          'pscj': scoreInfo[i]['pscj'],
+          'sycj': scoreInfo[i]['sycj'],
+          'qzcj': scoreInfo[i]['qzcj'],
+          'qmcj': scoreInfo[i]['qmcj'],
+          'sjcj': scoreInfo[i]['sjcj'],
+        });
+      }
+      Directory directory = await getApplicationDocumentsDirectory();
+      String path = directory.path + '/score1.json';
+      //删除文件
+      File file = new File(path);
+      if (await file.exists()) {
+        file.delete();
+        AchievementView(context,
+            title: "hi!",
+            subTitle: '课程已更新，请重新进入该页面',
+            color: Global.home_currentcolor,
+            duration: Duration(seconds: 3),
+            isCircle: true,
+            listener: (status) {})
+          ..show();
+      }
+    });
+  }
+
+  //存储获取到的新成绩信息
+  Future saveString() async {
+    Dio dio = Dio();
+
+    var urlscore =
+        'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
+            await Global().getLoginInfo() +
+            '&index=' +
+            chengjidaima;
+    getApplicationDocumentsDirectory().then((value) async {
+      //判断响应
+      Response response = await dio.get(urlscore);
+      if (response.statusCode == 200) {
+        //获取路径
+        Directory directory = await getApplicationDocumentsDirectory();
+        String path = directory.path + '/score1.json';
+        //写入文件
+        File file = new File(path);
+        file.writeAsString(response.data);
+        await _insertx_database();
+      } else {
+        AchievementView(context,
+            title: "hi!",
+            subTitle: '课程已经都是最新了哦',
+            color: Global.home_currentcolor,
+            duration: Duration(seconds: 3),
+            isCircle: true,
+            listener: (status) {})
+          ..show();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   void changeColor(Color color) {
-    setState(() => pickerColor = color);
+    setState(() => Global.score_pickcolor = color);
   }
 
   void initState() {
-    getcolor();
+    _controller = EasyRefreshController(
+      controlFinishRefresh: true,
+      controlFinishLoad: true,
+    );
+    Global.pureyzmset(false);
     getcardpngx();
     getavaterpngx();
     super.initState();
   }
 
+  late EasyRefreshController _controller;
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(),
-
-      //设置主题
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        appBar: AppBar(
-          //加入返回按钮
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return HomePage();
-              }));
-            },
-          ),
-          title: const Text('分数详情'),
-          backgroundColor: currentColor,
-          actions: <Widget>[
-            TextButton(
-              child: const Text(
-                '绩点计算',
-                style: TextStyle(color: Colors.white),
+        theme: ThemeData.light(),
+        darkTheme: ThemeData.dark(),
+        home: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Global.score_currentcolor,
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
               ),
-              onPressed: () {
-                Dialogs.bottomMaterialDialog(
-                  color: Colors.white,
-                  msg: detailmsg,
-                  title: '成绩详细信息',
-                  lottieBuilder: Lottie.asset(
-                    'assets/score_detail.json',
-                    fit: BoxFit.contain,
-                  ),
-                  context: context,
-                );
-              },
-            ),
-            //加入textbutton
-            TextButton(
-              child: const Text(
-                '检查成绩更新',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () {
-                //跳转到登录
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => scoreLoginPage()),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.color_lens),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('选择当前页面主题颜色'),
-                      content: SingleChildScrollView(
-                        child: ColorPicker(
-                          pickerColor: pickerColor,
-                          onColorChanged: changeColor,
-                          showLabel: true,
-                          pickerAreaHeightPercent: 0.8,
-                        ),
-                      ),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('确定'),
-                          onPressed: () {
-                            setState(() => currentColor = pickerColor);
-                            getApplicationDocumentsDirectory().then((value) {
-                              File file = File(value.path + '/color1.txt');
-                              //判断文件是否存在
-                              if (file.existsSync()) {
-                                //存在则写入
-                                file.writeAsString(
-                                    currentColor.value.toString());
-                              } else {
-                                //不存在则创建文件并写入
-                                file.createSync();
-                                file.writeAsString(
-                                    currentColor.value.toString());
-                              }
-                            });
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
+              title: const Text('下拉获取新成绩'),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.color_lens),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('选择当前页面主题颜色'),
+                          content: SingleChildScrollView(
+                            child: ColorPicker(
+                              pickerColor: Global.score_pickcolor,
+                              onColorChanged: changeColor,
+                              showLabel: true,
+                              pickerAreaHeightPercent: 0.8,
+                            ),
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('确定'),
+                              onPressed: () {
+                                setState(() => Global.score_currentcolor =
+                                    Global.score_pickcolor);
+                                getApplicationDocumentsDirectory()
+                                    .then((value) {
+                                  File file = File(value.path + '/color1.txt');
+                                  //判断文件是否存在
+                                  if (file.existsSync()) {
+                                    //存在则写入
+                                    file.writeAsString(Global
+                                        .score_currentcolor.value
+                                        .toString());
+                                  } else {
+                                    //不存在则创建文件并写入
+                                    file.createSync();
+                                    file.writeAsString(Global
+                                        .score_currentcolor.value
+                                        .toString());
+                                  }
+                                });
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
-                );
-              },
+                ),
+              ],
             ),
-          ],
-        ),
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: Column(children: getlist()),
+            body: EasyRefresh(
+              controller: _controller,
+              header: const SpaceHeader(),
+              onRefresh: () async {
+                print('onfresh被调用了');
+
+                Global().No_perception_login().then((value) async {
+                  _queryFirst().then((value) {
+                    print(Global().getLoginInfo());
+                    saveString();
+                    setState(() {
+                      getlist();
+                    });
+                    _controller.finishRefresh();
+                  });
+                });
+                await Future.delayed(Duration(seconds: 100));
+
+                if (!mounted) {
+                  return;
+                }
+                _count = 10;
+
+                _controller.resetFooter();
+              },
+              onLoad: () async {
+                print('onload被调用了');
+
+                await Future.delayed(const Duration(seconds: 4));
+                if (!mounted) {
+                  return;
+                }
+
+                _count += 5;
+
+                _controller.finishLoad(
+                    1 >= 20 ? IndicatorResult.noMore : IndicatorResult.success);
+              },
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Column(
+                      children: getlist(),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+            )));
   }
 }
+
+//   Widget build(BuildContext context) {
+//     return
+
+//         Scaffold(
+//       appBar: AppBar(
+//         title: const Text('EasyRefresh'),
+//       ),
+//       // appBar: AppBar(
+//       //   //加入返回按钮
+//       //   leading: IconButton(
+//       //     icon: const Icon(Icons.arrow_back),
+//       //     onPressed: () {
+//       //       Navigator.push(context, MaterialPageRoute(builder: (context) {
+//       //         return HomePage();
+//       //       }));
+//       //     },
+//       //   ),
 
 /// 三行文字
 Widget multipleLineText(String line1, String line2) {

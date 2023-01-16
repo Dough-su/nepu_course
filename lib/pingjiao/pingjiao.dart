@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
-import 'package:muse_nepu_course/pingjiao/pingjiaologin.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:card_loading/card_loading.dart';
 
 class pingjiao extends StatefulWidget {
   @override
@@ -22,9 +22,31 @@ int isfirst = 1;
 double pingjiaohighmark = 95;
 double pingjiaolowmark = 20;
 List<Widget> pingjiaowidget = [
-  Container(
-    child: Text('达成成就，发生了报错，嘻嘻'),
-  )
+  CardLoading(
+    height: 40,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+    margin: EdgeInsets.only(bottom: 10),
+  ),
+  CardLoading(
+    height: 40,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+    margin: EdgeInsets.only(bottom: 10),
+  ),
+  CardLoading(
+    height: 40,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+    margin: EdgeInsets.only(bottom: 10),
+  ),
+  CardLoading(
+    height: 40,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+    margin: EdgeInsets.only(bottom: 10),
+  ),
+  CardLoading(
+    height: 40,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+    margin: EdgeInsets.only(bottom: 10),
+  ),
 ];
 
 class _pingjiaoState extends State<pingjiao> {
@@ -55,17 +77,15 @@ class _pingjiaoState extends State<pingjiao> {
   }
 
   void downApkFunction() async {
-    //下载课程
+    //下载评教
     getApplicationDocumentsDirectory().then((value) async {
       var urlpingjiao =
           'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getpingjiao' +
               await Global().getLoginInfo();
       print(urlpingjiao);
       getApplicationDocumentsDirectory().then((value) {
-        //获取下载进度并将进度设置为标题
         dio.download(urlpingjiao, value.path + '/pingjiao.json',
             onReceiveProgress: (int count, int total) {
-          // controller.value += 0.2;
           setState(() {});
         }).then((value) async {
           loadpingjiao();
@@ -75,12 +95,10 @@ class _pingjiaoState extends State<pingjiao> {
   }
 
   void initState() {
-    pingjiaowidget = pingjiaowidget;
-    downApkFunction();
-    if (isfirst == 1) {
-      isfirst++;
-      initState();
-    }
+    Global.pureyzmset(false);
+    Global().No_perception_login().then((value) async {
+      downApkFunction();
+    });
   }
 
   void loadpingjiao() async {
@@ -358,8 +376,11 @@ class _pingjiaoState extends State<pingjiao> {
             leading: IconButton(
               icon: Icon(Icons.home),
               onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomePage()));
+                Global().deletepj();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
               },
             ),
             title: Text('评教,右滑高分，左滑低分'),

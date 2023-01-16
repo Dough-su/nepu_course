@@ -1,17 +1,50 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
+import 'package:muse_nepu_course/flutterlogin/flutter_login.dart';
 import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:muse_nepu_course/coursemenu/pingjiao.dart';
-import 'package:muse_nepu_course/coursemenu/scoredetail.dart';
+import 'package:quiver/core.dart';
+
+class LoginData {
+  final String name;
+  final String password;
+  late String verifyCode;
+
+  void verifycodeset(String verifyCode) {
+    this.verifyCode = verifyCode;
+  }
+
+  LoginData(
+      {required this.name, required this.password, required this.verifyCode});
+
+  @override
+  String toString() {
+    return 'LoginData($name, $password, $verifyCode)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is LoginData) {
+      return name == other.name &&
+          password == other.password &&
+          verifyCode == other.verifyCode;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => hash2(name, password);
+}
 
 class Global {
+  static TextEditingController jwc_verifycodeController =
+      TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "106";
+  static String version = "107";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -24,15 +57,34 @@ class Global {
   static String jwc_webvpn_key = '';
   //教务处webvpn_username
   static String jwc_webvpn_username = '';
+  //主页的currentcolor
+  static Color home_currentcolor = Colors.blue;
+  //主页的pickcolor
+  static Color home_pickcolor = Colors.blue;
+  //成绩页面的currentcolor
+  static Color score_currentcolor = Colors.blue;
+  //成绩页面的pickcolor
+  static Color score_pickcolor = Colors.blue;
   //课表日历第一天
   static DateTime calendar_first_day =
       DateTime.now().subtract(Duration(days: 1400));
+  //透明验证码
+  static bool _pureyzm = false;
+  //评教进入模式是否为无感知登录(默认用无感知登录)
+  static bool pingjiao_login_mode = true;
   //判断是否已经从本地读取json
   bool isfirstread = true;
   //课表日历最后一天
   static DateTime calendar_last_day = DateTime.now().add(Duration(days: 180));
   //在内存中的courseinfo
   static var courseInfox;
+  //本次启动是否已经刷新课程
+  static bool isrefreshcourse = false;
+  //透明验证码setter
+  static void pureyzmset(bool pureyzm) {
+    _pureyzm = pureyzm;
+  }
+
   //教务处学号setter
   jwc_xuehaosetter(jwc_xuehao) {
     Global.jwc_xuehao = jwc_xuehao;
@@ -56,6 +108,7 @@ class Global {
     });
   }
 
+  //存储用户名和密码
   void storelogininfo(username, password) {
     Global.jwc_xuehao = username;
     Global.jwc_password = password;
@@ -76,11 +129,14 @@ class Global {
   }
 
   //使用Dio插件获取验证码图片并返回图片
-  static Future<Widget> getVerifyCode(_pureyzm) async {
+  static Future<Widget> getVerifyCode(context, setState) async {
+    print(_pureyzm.toString());
     if (!_pureyzm) {
       Dio dio = Dio();
+      print('下载了');
+
       Response response = await dio.get(
-          "https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/jwc_login",
+          "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
           options: Options(responseType: ResponseType.bytes));
       print(response.headers.value('Set-Cookie').toString());
       //如果分割后的字符串长度为32则为jessonid
@@ -92,7 +148,7 @@ class Global {
           .replaceAll("'", '')
           .replaceAll(' ', '')
           .split(',')) {
-        if (item.length < 50) {
+        if (item.length < 50 && item.length > 10) {
           jwc_jsessionid = item;
         }
         if (item.length > 100) {
@@ -101,6 +157,30 @@ class Global {
         if (item.length > 50 && item.length < 100) {
           jwc_webvpn_username = item;
         }
+        if (item.length == 4) {
+          jwc_verifycode = item;
+          jwc_verifycodeController.text = item;
+        }
+        if (item.length == 5) {
+          setState(() {});
+        }
+      }
+
+      try {
+        await AchievementView(context,
+            title: "你可以无需验证码登录啦，验证码是",
+            subTitle: Global.jwc_verifycode,
+            icon: Icon(
+              Icons.error,
+              color: Colors.white,
+            ),
+            color: Colors.green,
+            duration: Duration(seconds: 3),
+            isCircle: true,
+            listener: (status) {})
+          ..show();
+      } catch (e) {
+        print(e);
       }
       return Image.memory(response.data);
     } else {
@@ -164,53 +244,52 @@ class Global {
   }
 
   //登录页面
-  Widget loginreq(String login_title, _authUser, context, bool _pureyzm,
-      setState, contextbuilder) {
-    return FlutterLogin(
-      title: login_title,
-      onLogin: (loginData) {
-        return _authUser(loginData);
-      },
-      hideForgotPasswordButton: true,
-      userType: LoginUserType.name,
-      savedEmail: Global.jwc_xuehao,
-      savedPassword: Global.jwc_password,
-      onSubmitAnimationCompleted: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => contextbuilder));
-      },
-      onRecoverPassword: (name) {
-        return null;
-      },
-      children: [
-        //添加验证码图片
-        //修改验证码图片大小
-        Container(
-          //点击刷新
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                Global.getVerifyCode(_pureyzm);
-              });
-            },
-            child: Container(
-              child: FutureBuilder(
-                future: Global.getVerifyCode(_pureyzm),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return snapshot.data as Widget;
-                  } else {
-                    return CircularProgressIndicator();
-                  }
-                },
+  Widget loginreq(
+      String login_title, _authUser, context, setState, contextbuilder) {
+    return Center(
+      child: FlutterLogin(
+        title: login_title,
+        onLogin: (loginData) {
+          return _authUser(loginData);
+        },
+        hideForgotPasswordButton: true,
+        userType: LoginUserType.name,
+        savedEmail: jwc_xuehao,
+        savedPassword: jwc_password,
+        yazhengma: Container(),
+        verifyCode: '',
+        onSubmitAnimationCompleted: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => contextbuilder));
+        },
+        onRecoverPassword: (name) {
+          return null;
+        },
+        children: [
+          //添加验证码图片
+          //修改验证码图片大小
+          Container(
+            //点击刷新
+            child: GestureDetector(
+              child: Container(
+                child: FutureBuilder(
+                  future: Global.getVerifyCode(context, setState),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return snapshot.data as Widget;
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  },
+                ),
               ),
             ),
+            width: 100,
+            height: 30,
+            margin: EdgeInsets.only(top: 220),
           ),
-          width: 100,
-          height: 30,
-          margin: EdgeInsets.only(top: 220),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -223,6 +302,107 @@ class Global {
     File file = new File(path);
     String courseInfo = await file.readAsString();
     return courseInfo;
+  }
+
+  //无感知登录
+  Future<void> No_perception_login() async {
+    Dio dio = Dio();
+    Response response = await dio
+        .get(
+            "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
+            options: Options(responseType: ResponseType.bytes))
+        .then((value) async {
+      //如果分割后的字符串长度为32则为jessonid
+      for (var item in value.headers
+          .value('Set-Cookie')
+          .toString()
+          .replaceAll('{', '')
+          .replaceAll('}', '')
+          .replaceAll("'", '')
+          .replaceAll(' ', '')
+          .split(',')) {
+        if (item.length < 50 && item.length > 10) {
+          jwc_jsessionid = item;
+        }
+        if (item.length > 100) {
+          jwc_webvpn_key = item;
+        }
+        if (item.length > 50 && item.length < 100) {
+          jwc_webvpn_username = item;
+        }
+        if (item.length == 4) {
+          jwc_verifycode = item;
+        }
+        if (item.length == 5) {
+          No_perception_login();
+        }
+      }
+      Response response1 = await dio.get(
+          //设置超时时间
+
+          "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
+          options: Options(),
+          queryParameters: {
+            'account': Global.jwc_xuehao,
+            'password': Global.jwc_password,
+            'verifycode': Global.jwc_verifycode,
+            'JSESSIONID': Global.jwc_jsessionid,
+            '_webvpn_key': Global.jwc_webvpn_key,
+            'webvpn_username': Global.jwc_webvpn_username
+          }).then((value1) async {
+        if (value1.data['message'].toString() == '登录成功') {
+          print('无感登陆成功');
+          print(await Global().getLoginInfo());
+        }
+        //FutureOr<Response<dynamic>>
+        return value1;
+      });
+
+      return value;
+    });
+  }
+
+  //登录校验
+  //使用Dio插件获取登录信息并返回登录信息
+  Future<String> getLoginstatus(
+    String username,
+    String password,
+    String verifyCode,
+    setState,
+    context,
+  ) async {
+    Dio dio = Dio();
+    Response response = await dio.get(
+        //设置超时时间
+
+        "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
+        options: Options(),
+        queryParameters: {
+          'account': username,
+          'password': password,
+          'verifycode': verifyCode,
+          'JSESSIONID': Global.jwc_jsessionid,
+          '_webvpn_key': Global.jwc_webvpn_key,
+          'webvpn_username': Global.jwc_webvpn_username
+        });
+    //持久化存储登录信息
+    saveString() {
+      Global().storelogininfo(username, password);
+    }
+
+    //切换到HomePage页面
+    print(response.data.toString());
+    if (response.data['message'].toString() == '登录成功') {
+      saveString();
+      _pureyzm = true;
+      Global.getVerifyCode(context, setState);
+      setState(() {});
+      return '';
+    } else {
+      setState(() {});
+    }
+
+    return response.data['message'].toString() + ',请等待新的验证码刷新或手动点击更新';
   }
 
   //加载课程到内存
@@ -254,7 +434,7 @@ class Global {
         } catch (e) {
           dailycourse = [
             Text(
-              '当你看到这段话，证明出错了，当然可能服务器出错了(概率很小),出错在哪里了呢，可能在于学校，学校是不是现在正在有选课的问题，有这个问题的话，可能会导致超时，因为教务处压力太大，导致没办法加载，下次建议不要在抢课时登陆课表，现在你可以点开三个横那里，里面有个清除课程和成绩缓存，按下它，退出app，等到学校不在抢课时重新登陆吧，good luck',
+              '当你看到这段话，证明出错了，当然可能服务器出错了(概率很小),出错在哪里了呢，可能在于学校，学校是不是现在正在有选课的问题，有这个问题的话，可能会导致超时，因为教务处压力太大，导致没办法加载，下次建议不要在抢课时登陆课表，现在你可以点开三个横那里，里面有个重新登入，按下它，退出app，等到学校不在抢课时重新登陆吧，good luck',
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.red,
@@ -265,5 +445,41 @@ class Global {
           return;
         }
       });
+  }
+
+  //获取成绩页面的颜色信息
+  Future<void> score_getcolor() async {
+    getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/color1.txt');
+      if (file.existsSync()) {
+        file.readAsString().then((value) {
+          score_currentcolor = Color(int.parse(value));
+          score_pickcolor = Color(int.parse(value));
+        });
+      }
+    });
+  }
+
+  //获取主页的颜色信息
+  Future<void> home_getcolor() async {
+    getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/color.txt');
+      if (file.existsSync()) {
+        file.readAsString().then((value) {
+          home_currentcolor = Color(int.parse(value));
+          home_pickcolor = Color(int.parse(value));
+        });
+      }
+    });
+  }
+
+  //删除评教缓存
+  Future<void> deletepj() async {
+    getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/pingjiao.json');
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
+    });
   }
 }
