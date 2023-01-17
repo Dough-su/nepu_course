@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/login/pingjiaologin.dart';
+import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:sqflite/sqflite.dart';
@@ -142,8 +143,7 @@ List<TargetFocus> targets = [
 GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
 GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
 String title = '今日课程';
-Color pickerColor = Color.fromARGB(255, 73, 160, 230);
-Color currentColor = Color.fromARGB(255, 73, 160, 230);
+
 var date;
 var widthx;
 
@@ -385,7 +385,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void changeColor(Color color) {
-    setState(() => pickerColor = color);
+    setState(() => Global.home_pickcolor = color);
   }
 
   void shownotice() {
@@ -410,7 +410,7 @@ class _HomePageState extends State<HomePage> {
                     //icon: Icon(Icons.insert_emoticon, color: Colors.white,),
                     //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
                     //borderRadius: 5.0,
-                    color: currentColor,
+                    color: Global.home_currentcolor,
                     //textStyleTitle: TextStyle(),
                     //textStyleSubTitle: TextStyle(),
                     //alignment: Alignment.topCenter,
@@ -436,7 +436,7 @@ class _HomePageState extends State<HomePage> {
                 //icon: Icon(Icons.insert_emoticon, color: Colors.white,),
                 //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
                 //borderRadius: 5.0,
-                color: currentColor,
+                color: Global.home_currentcolor,
                 //textStyleTitle: TextStyle(),
                 //textStyleSubTitle: TextStyle(),
                 //alignment: Alignment.topCenter,
@@ -521,8 +521,8 @@ class _HomePageState extends State<HomePage> {
       if (file.existsSync()) {
         file.readAsString().then((value) {
           setState(() {
-            currentColor = Color(int.parse(value));
-            pickerColor = Color(int.parse(value));
+            Global.home_currentcolor = Color(int.parse(value));
+            Global.home_pickcolor = Color(int.parse(value));
           });
         });
       }
@@ -542,6 +542,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initState() {
+    Global.pureyzmset(false);
+
     getcolor();
     //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
     getApplicationDocumentsDirectory().then((value) {
@@ -552,6 +554,77 @@ class _HomePageState extends State<HomePage> {
           downApkFunction();
         } else {
           hItems(DateTime.now());
+          if (!Global.isrefreshcourse)
+            Global().No_perception_login().then((value) async {
+              Global.isrefreshcourse = true;
+              print("获取完成");
+              Dio dio = new Dio();
+              var url =
+                  'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                      await Global().getLoginInfo();
+              getApplicationDocumentsDirectory().then((value) async {
+                //判断响应状态
+                Response response = await dio.get(url);
+                if (response.statusCode == 500) {
+                  print('下载失败');
+                  return;
+                } else if (response.statusCode == 200) {
+                  Directory directory =
+                      await getApplicationDocumentsDirectory();
+                  String path = directory.path + '/course1.json';
+                  File file = new File(path);
+                  file.writeAsString(response.data);
+                  String courseInfo = await file.readAsString();
+                  //如果courseInfo包含\u83b7\u53d6\u8bfe\u7a0b\u4fe1\u606f\u5931\u8d25，则退出
+                  if (courseInfo.toString().contains('fail')) {
+                    print('课程错误');
+
+                    file.delete();
+                    AchievementView(context,
+                        title: "与教务同步课程失败!",
+                        subTitle: '请检查你的密码或者教务系统是否正常',
+                        icon: Icon(
+                          Icons.error,
+                          color: Colors.white,
+                        ),
+                        color: Colors.red,
+                        duration: Duration(seconds: 3),
+                        isCircle: true,
+                        listener: (status) {})
+                      ..show();
+                    return;
+                  } else {
+                    print('下载成功');
+                    //删除course.json，并将course1.json重命名为course.json
+                    Directory directory1 =
+                        await getApplicationDocumentsDirectory();
+                    String path1 = directory1.path + '/course.json';
+                    File file1 = new File(path1);
+                    if (file1.existsSync()) {
+                      file1.delete();
+                      Directory directory2 =
+                          await getApplicationDocumentsDirectory();
+                      String path2 = directory2.path + '/course1.json';
+                      File file2 = new File(path2);
+                      file2.rename(path1);
+                      Global().isfirstread = true;
+                      AchievementView(context,
+                          title: "课程获取成功啦!",
+                          subTitle: '你的课程已经同步至最新',
+                          icon: Icon(
+                            Icons.error,
+                            color: Colors.white,
+                          ),
+                          color: Global.home_currentcolor,
+                          duration: Duration(seconds: 3),
+                          isCircle: true,
+                          listener: (status) {})
+                        ..show();
+                    }
+                  }
+                }
+              });
+            });
 
           //有则读取
           updateappx();
@@ -783,7 +856,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: currentColor),
+                  color: Global.home_currentcolor),
             ),
           ],
         ),
@@ -819,10 +892,10 @@ class _HomePageState extends State<HomePage> {
           ),
           node: TimelineNode(
             indicator: DotIndicator(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
             endConnector: SolidLineConnector(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
           ),
         ),
@@ -858,10 +931,10 @@ class _HomePageState extends State<HomePage> {
           ),
           node: TimelineNode(
             indicator: DotIndicator(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
             startConnector: SolidLineConnector(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
           ),
         ),
@@ -875,7 +948,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: currentColor),
+                  color: Global.home_currentcolor),
             ),
           ],
         ),
@@ -911,10 +984,10 @@ class _HomePageState extends State<HomePage> {
           ),
           node: TimelineNode(
             indicator: DotIndicator(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
             endConnector: SolidLineConnector(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
           ),
         ),
@@ -950,10 +1023,10 @@ class _HomePageState extends State<HomePage> {
           ),
           node: TimelineNode(
             indicator: DotIndicator(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
             startConnector: SolidLineConnector(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
           ),
         ),
@@ -967,7 +1040,7 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: currentColor),
+                  color: Global.home_currentcolor),
             ),
           ],
         ),
@@ -1003,10 +1076,10 @@ class _HomePageState extends State<HomePage> {
           ),
           node: TimelineNode(
             indicator: DotIndicator(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
             endConnector: SolidLineConnector(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
           ),
         ),
@@ -1042,10 +1115,10 @@ class _HomePageState extends State<HomePage> {
           ),
           node: TimelineNode(
             indicator: DotIndicator(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
             startConnector: SolidLineConnector(
-              color: currentColor,
+              color: Global.home_currentcolor,
             ),
           ),
         ),
@@ -1114,7 +1187,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1127,10 +1200,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               endConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1177,7 +1250,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1190,10 +1263,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               startConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1240,7 +1313,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1253,10 +1326,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               startConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1303,7 +1376,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1316,10 +1389,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               endConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1366,7 +1439,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1379,10 +1452,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               startConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1429,7 +1502,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1442,10 +1515,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               startConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1492,7 +1565,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1505,10 +1578,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               endConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1555,7 +1628,7 @@ class _HomePageState extends State<HomePage> {
                     context: context,
                   )),
               child: Card(
-                color: currentColor,
+                color: Global.home_currentcolor,
                 child: Container(
                   width: widthx,
                   padding: EdgeInsets.all(8.0),
@@ -1568,10 +1641,10 @@ class _HomePageState extends State<HomePage> {
             ),
             node: TimelineNode(
               indicator: DotIndicator(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
               startConnector: SolidLineConnector(
-                color: currentColor,
+                color: Global.home_currentcolor,
               ),
             ),
           ),
@@ -1602,7 +1675,7 @@ class _HomePageState extends State<HomePage> {
               calendarLogo: getcalanderlogopngx(),
               selectedDayLogo:
                   getlogopngx(), //使用ImageProvider<Object>加载IMage类型的logopic
-              backgroundColor: currentColor,
+              backgroundColor: Global.home_currentcolor,
               firstDate: Global.calendar_first_day,
               lastDate: Global.calendar_last_day,
               locale: 'zh_CN',
@@ -1610,7 +1683,7 @@ class _HomePageState extends State<HomePage> {
               fullCalendarScroll: FullCalendarScroll.vertical,
               fullCalendarDay: WeekDay.long,
               dateColor: Colors.white,
-              calendarEventColor: currentColor,
+              calendarEventColor: Global.home_currentcolor,
               events: [DateTime.now().subtract(Duration(days: 0))],
               onDateSelected: (date) {
                 print(date);
@@ -1618,7 +1691,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             body: SideMenu(
-              background: currentColor,
+              background: Global.home_currentcolor,
               key: _sideMenuKey,
               menu: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(vertical: 50.0),
@@ -1669,10 +1742,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       onTap: () {
                         Navigator.of(context).pop(); //关闭侧边栏
+                        Global().No_perception_login().then((value) => null);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => pingjiaoLoginPage()));
+                                builder: (context) => pingjiao()));
                       },
                     ),
                     ListTile(
@@ -1696,7 +1770,7 @@ class _HomePageState extends State<HomePage> {
                                     title: Text('选择当前页颜色'),
                                     content: SingleChildScrollView(
                                       child: ColorPicker(
-                                        pickerColor: currentColor,
+                                        pickerColor: Global.home_currentcolor,
                                         onColorChanged: changeColor,
                                         colorPickerWidth: 300.0,
                                         pickerAreaHeightPercent: 0.7,
@@ -1715,8 +1789,9 @@ class _HomePageState extends State<HomePage> {
                                       TextButton(
                                         child: const Text('确定'),
                                         onPressed: () async {
-                                          setState(
-                                              () => currentColor = pickerColor);
+                                          setState(() =>
+                                              Global.home_currentcolor =
+                                                  Global.home_pickcolor);
                                           getApplicationDocumentsDirectory()
                                               .then((value) {
                                             File file =
@@ -1724,14 +1799,14 @@ class _HomePageState extends State<HomePage> {
                                             //判断文件是否存在
                                             if (file.existsSync()) {
                                               //存在则写入
-                                              file.writeAsString(currentColor
-                                                  .value
+                                              file.writeAsString(Global
+                                                  .home_currentcolor.value
                                                   .toString());
                                             } else {
                                               //不存在则创建文件并写入
                                               file.createSync();
-                                              file.writeAsString(currentColor
-                                                  .value
+                                              file.writeAsString(Global
+                                                  .home_currentcolor.value
                                                   .toString());
                                             }
                                           });
@@ -1765,7 +1840,7 @@ class _HomePageState extends State<HomePage> {
                       leading: const Icon(Icons.cached,
                           size: 20.0, color: Colors.white),
                       title: Text(
-                        '清除课程和成绩缓存',
+                        '重新登入',
                         style: TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -1822,7 +1897,7 @@ class _HomePageState extends State<HomePage> {
                 ignoring: isOpened,
                 child: Scaffold(
                   appBar: AppBar(
-                      backgroundColor: currentColor,
+                      backgroundColor: Global.home_currentcolor,
                       title: Text(title),
                       centerTitle: true,
                       leading: IconButton(
@@ -1884,7 +1959,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                           fontSize: 13,
                         )),
-                    backgroundColor: currentColor,
+                    backgroundColor: Global.home_currentcolor,
                   ),
                 ),
               ),

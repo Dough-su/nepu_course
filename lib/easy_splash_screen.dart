@@ -6,9 +6,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/home.dart';
-import 'package:muse_nepu_course/login/login.dart';
-import 'package:muse_nepu_course/coursemenu/pingjiao.dart';
 import 'package:muse_nepu_course/progress.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -113,14 +110,27 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
   void initState() {
     super.initState();
     _countdownTimer();
+    //获取主页和成绩页面的成绩信息
+    Global().score_getcolor();
+    Global().home_getcolor();
+    Global().deletepj();
+    bool progressorhome = false;
+    getApplicationDocumentsDirectory().then((value) {
+      //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
+      File file = new File(value.path + '/first.txt');
+      file.exists().then((value) async {
+        if (value) {
+          progressorhome = true;
+        }
+      });
+    });
     if (widget.futureNavigator == null) {
       Timer(Duration(seconds: widget.durationInSeconds), () {
         getApplicationDocumentsDirectory().then((value) {
           //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
           File file = new File(value.path + '/first.txt');
           file.exists().then((value) async {
-            if (!value) {
-              print('第一次启动');
+            if (!progressorhome) {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => WithBuilder()));
             } else {
