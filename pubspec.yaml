@@ -46,7 +46,6 @@ dependencies:
   image_picker: ^0.8.6
   flutter_slidable: ^2.0.0
   liquid_swipe: ^3.0.0
-  sqflite: ^2.2.2
   shrink_sidemenu: ^2.0.0+2-null-safety
   easy_app_installer: ^1.0.0
   achievement_view: ^1.0.0
@@ -61,8 +60,24 @@ dependencies:
   card_loading: ^0.2.2
   path_drawing: ^1.0.1
   rive: ^0.10.1
-  
-
+  jpush_flutter: 2.4.0  
+  showcaseview: ^1.1.1
+  rflutter_alert: ^2.0.4
+  cupertino_icons: ^1.0.3
+  delayed_display: ^2.0.0
+  audioplayers: ^0.20.0 
+  hive: ^2.0.4
+  hive_flutter: ^1.1.0
+  uuid: ^3.0.5
+  intl: ^0.17.0
+  flutter_datetime_picker: ^1.5.1
+  animate_do: ^2.1.0
+  flutter_beautiful_popup: ^1.7.0
+  panara_dialogs: ^0.1.2
+  ftoast: ^2.0.0
+  flutter_slider_drawer: ^2.1.1
+  bottom_sheet_bar: ^2.3.8
+  salomon_bottom_bar: ^3.3.1
   
 
 
@@ -99,7 +114,13 @@ flutter:
         - assets/splash_screen/
         - assets/splash_screen/jieqi/
         - assets/pay/
-      
+  fonts:
+    - family: Paytone
+      fonts:
+        - asset: fonts/PaytoneOne-Regular.ttf
+    - family: Carter
+      fonts:
+        - asset: fonts/CarterOne-Regular.ttf      
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

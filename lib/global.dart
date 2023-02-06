@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
+import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
+import 'package:card_flip/card_flip.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:muse_nepu_course/coursemenu/scoredetail.dart';
 import 'package:muse_nepu_course/flutterlogin/flutter_login.dart';
 import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
@@ -44,7 +47,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "108";
+  static String version = "112";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -80,6 +83,21 @@ class Global {
   static var courseInfox;
   //本次启动是否已经刷新课程
   static bool isrefreshcourse = false;
+  //自动更新课程
+  static bool auto_update_course = true;
+  //上滑锁定
+  static bool locked = false;
+  //一卡通余额
+  static String yikatong_balance = '';
+  //上滑控制器
+  static BottomSheetBarController bottomSheetBarController =
+      BottomSheetBarController();
+  //成绩组件列表
+  static List<Widget> scorelist = [];
+  //成绩信息
+  static var scoreinfos = [];
+  //底栏高度
+  static double bottombarheight = 60;
   //透明验证码setter
   static void pureyzmset(bool pureyzm) {
     _pureyzm = pureyzm;
@@ -104,6 +122,16 @@ class Global {
         List<String> list = file.readAsStringSync().split(',');
         Global().jwc_xuehaosetter(list[0]);
         Global().jwc_passwordsetter(list[1]);
+      }
+    });
+  }
+
+  void getxuehao() async {
+    await getApplicationDocumentsDirectory().then((value) async {
+      File file = File(value.path + '/logininfo.txt');
+      if (file.existsSync()) {
+        //根据,分割
+        getbalance(file.readAsStringSync().split(',')[0].toString());
       }
     });
   }
@@ -347,7 +375,7 @@ class Global {
             'webvpn_username': Global.jwc_webvpn_username
           }).then((value1) async {
         if (value1.data['message'].toString() == '登录成功') {
-          print('无感登陆成功');
+          print('无感登陆成功了');
           print(await Global().getLoginInfo());
         }
         //FutureOr<Response<dynamic>>
@@ -476,6 +504,296 @@ class Global {
       if (file.existsSync()) {
         file.deleteSync();
       }
+    });
+  }
+
+  void getlist() {
+    scoreinfos.clear();
+    scorelist.clear();
+    //从数据库中读取数据
+    getscoreInfo().then((value) {
+      //转为json
+      scoreinfos = json.decode(value);
+      //反向读取
+      for (int i = scoreinfos.length - 1; i >= 0; i--) {
+        avgmark.add(scoreinfos[i]['zcj']);
+        avgjidian.add(scoreinfos[i]['cjjd']);
+        //打印分数zcj
+        //组件1
+
+        Global.scorelist.add(FlipLayout(
+          duration: 500,
+          foldState: true,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    height: 44,
+                    color: Global.score_currentcolor,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          scoreinfos[i]['kcmc'],
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            backgroundColor: Global.score_currentcolor,
+                          ),
+                        ),
+                        Text(
+                          scoreinfos[i]['zcj'] + '分',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Stack(
+                    children: [
+                      Image(
+                        image: cardpic,
+                        width: double.infinity,
+                        height: 121,
+                        fit: BoxFit.cover,
+                      ),
+                      Positioned.fill(
+                        bottom: 12,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            explainText('绩点', scoreinfos[i]['cjjd'],
+                                subtitleColor: Colors.white),
+                            explainText(
+                                '排名',
+                                scoreinfos[i]['paiming'] +
+                                    '/' +
+                                    scoreinfos[i]['zongrenshu'],
+                                subtitleColor: Colors.white),
+                            explainText('类型', scoreinfos[i]['xdfsmc'],
+                                subtitleColor: Colors.white),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8.0),
+              ),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        '姓名',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image(
+                            image: avaterpic,
+                            width: 48,
+                            height: 48,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              scoreinfos[i]['xsxm'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Row(
+                              children: const [
+                                SizedBox(
+                                  width: 4,
+                                ),
+                                Text(
+                                  '加油哦',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
+                    Divider(
+                      color: Colors.grey[300],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: multipleLineText(
+                        '小于60分有', scoreinfos[i]['fenshu60'] + '人'),
+                  ),
+                  Expanded(
+                    child: multipleLineText(
+                        '60-70分有', scoreinfos[i]['fenshu70'] + '人'),
+                  ),
+                  Expanded(
+                    child: multipleLineText(
+                        '70-80分有', scoreinfos[i]['fenshu80'] + '人'),
+                  ),
+                  Expanded(
+                      child: multipleLineText(
+                          '80-90分有', scoreinfos[i]['fenshu90'] + '人')),
+                  Expanded(
+                    child: multipleLineText(
+                        '90-100分有', scoreinfos[i]['fenshu100'] + '人'),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: multipleLineText('平时成绩', scoreinfos[i]['pscj'])),
+                  Expanded(
+                    child: multipleLineText('实验成绩', scoreinfos[i]['sycj']),
+                  ),
+                  Expanded(
+                    child: multipleLineText('期中成绩', scoreinfos[i]['qzcj']),
+                  ),
+                  Expanded(
+                    child: multipleLineText('期末成绩', scoreinfos[i]['qmcj']),
+                  ),
+                  Expanded(
+                    child: multipleLineText('实践成绩', scoreinfos[i]['sjcj']),
+                  ),
+                ],
+              ),
+            ),
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(8)),
+              child: Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Builder(builder: (context) {
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                          primary: Global.score_currentcolor,
+                        ),
+                        onPressed: () {
+                          FlipLayout.of(context).toggle();
+                        },
+                        child: const Text(
+                          '收起',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    const Text(' ',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ))
+                  ],
+                ),
+              ),
+            ),
+          ],
+          foldChild: FoldCard(
+              scoreinfos[i]['zcjfs'],
+              scoreinfos[i]['paiming'] + '/' + scoreinfos[i]['zongrenshu'] + '',
+              scoreinfos[i]['xnxqmc'],
+              scoreinfos[i]['kcmc'],
+              scoreinfos[i]['xdfsmc'],
+              scoreinfos[i]['cjjd']),
+        ));
+      }
+    });
+  }
+
+  //读取json
+  Future<String> getscoreInfo() async {
+    //获取路径
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/score.json';
+    //读取文件
+    File file = new File(path);
+    String scoreInfo = await file.readAsString();
+    return scoreInfo;
+  }
+
+  //获取一卡通余额
+  void getbalance(xuehao) async {
+    print(xuehao);
+    Dio dio = new Dio();
+    dio.post('https://wxy.hrbxyz.cn/api/Apixyk/getcardinfo', queryParameters: {
+      'account': xuehao,
+      'schoolname': '东北石油大学'
+    }).then((value) {
+      //获取余额
+      yikatong_balance =
+          (value.data['data']['obj']['cardbalance'] / 100).toString();
     });
   }
 }

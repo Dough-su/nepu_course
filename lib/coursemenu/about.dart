@@ -3,12 +3,17 @@ import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
 import 'package:easy_app_installer/easy_app_installer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
+import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
+import 'package:muse_nepu_course/global.dart';
+import 'package:muse_nepu_course/jpushs.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class about extends StatefulWidget {
   @override
@@ -43,27 +48,120 @@ class _aboutState extends State<about> {
                 title: Text('关于'),
                 subtitle: Text('身在井隅，心向璀璨。'),
               ),
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('内部版本号'),
+                subtitle: Text(Global.version),
+              ),
+              //切换课程自动更新开关
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('课程自动更新'),
+                subtitle: Text('开启后，每次打开软件都会自动更新课程表。'),
+                trailing: Switch(
+                  onChanged: (value) {
+                    // setState(() {
+                    //   Global.auto_update_course = value;
+                    // });
+                  },
+                  value: Global.auto_update_course,
+                ),
+              ),
               //请开发者喝杯咖啡
               ListTile(
                 leading: Icon(Icons.coffee),
                 title: Text('请开发者喝杯咖啡'),
                 subtitle: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
                 onTap: () {
+                  if (!Platform.isIOS)
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('请开发者喝杯咖啡'),
+                            content: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
+                            actions: [
+                              //判断是否ios设备
+
+                              //展示图片
+                              Image.asset('assets/pay/weixin.png'),
+                            ],
+                          );
+                        });
+                  else
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('苹果就不喝咖啡了'),
+                            content: Text('自己用喝个屁'),
+                            actions: [],
+                          );
+                        });
+                },
+              ),
+              ListTile(
+                  //你的推送id是
+                  leading: Icon(Icons.info),
+                  title: Text('你的推送id是(点击复制)'),
+                  subtitle: Text(jpushs.rid),
+                  onTap: () {
+                    //复制到剪切板
+                    Clipboard.setData(ClipboardData(text: jpushs.rid));
+                  }),
+              //彩蛋
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('彩蛋'),
+                subtitle: Text(''),
+                onTap: () {
                   showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('请开发者喝杯咖啡'),
-                          content: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
+                          title: Text('彩蛋'),
+                          content: Text('你发现了彩蛋'),
                           actions: [
-                            //展示图片
-                            Image.asset('assets/pay/weixin.png'),
+                            //跳转到彩蛋页面
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              WelcomeScreen()));
+                                },
+                                child: Text('去看看'))
                           ],
                         );
                       });
                 },
               ),
-              //选取图片
+              //
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('ios也想用课程推送，点我复制网址'),
+                subtitle: Text(''),
+                onTap: () {
+                  //http://course.musecloud.tech/
+                  Clipboard.setData(
+                      ClipboardData(text: 'http://course.musecloud.tech/'));
+                  AchievementView(context,
+                      title: "复制成功",
+                      subTitle: '可以给你ios设备的朋友了',
+                      //onTab: _onTabAchievement,
+                      icon: Icon(
+                        Icons.insert_emoticon,
+                        color: Colors.white,
+                      ),
+                      color: Colors.green,
+                      duration: Duration(seconds: 3),
+                      isCircle: true, listener: (status) {
+                    print(status);
+                  })
+                    ..show();
+                },
+              ),
 
               ListTile(
                   leading: Icon(Icons.image),
@@ -278,10 +376,27 @@ class _aboutState extends State<about> {
 
                     // MyDialog.snack('替换成功');
                   }),
+              //捐赠人员
+              ListTile(
+                leading: Icon(Icons.favorite),
+                title: Text('捐赠人员'),
+                subtitle: Text(''),
+              ),
+              //显示头像
+              ListTile(
+                leading: CircleAvatar(
+                  //网络图片
+                  backgroundImage: NetworkImage(
+                    'https://q1.qlogo.cn/g?b=qq&nk=1617352787&s=100',
+                  ),
+                ),
+                title: Text('k'),
+                subtitle: Text('捐赠5元'),
+              ),
               //项目离不开以下人员的支持
               ListTile(
                 leading: Icon(Icons.groups),
-                title: Text('项目离不开以下人员的支持(以下排名不分先后)'),
+                title: Text('项目离不开以下人员的支持(排名不分先后)'),
                 subtitle: Text(''),
               ),
               //显示头像
@@ -323,6 +438,16 @@ class _aboutState extends State<about> {
                   ),
                 ),
                 title: Text('24号'),
+                subtitle: Text('Tester'),
+              ),
+              ListTile(
+                leading: CircleAvatar(
+                  //网络图片
+                  backgroundImage: NetworkImage(
+                    'https://q1.qlogo.cn/g?b=qq&nk=1617352787&s=100',
+                  ),
+                ),
+                title: Text('k'),
                 subtitle: Text('Tester'),
               ),
               ListTile(

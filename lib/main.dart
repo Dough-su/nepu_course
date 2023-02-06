@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/home.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/progress.dart';
 import 'package:muse_nepu_course/easy_splash_screen.dart';
 import 'package:lunar/lunar.dart';
+import 'Todo/models/task.dart';
 import 'global.dart';
+import 'package:jpush_flutter/jpush_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  /// Initial Hive DB
+  await Hive.initFlutter();
+
+  /// Register Hive Adapter
+  Hive.registerAdapter<Task>(TaskAdapter());
+
+  /// Open box
+  var box = await Hive.openBox<Task>("tasksBox");
+
+  /// Delete data from previous day
+  // ignore: avoid_function_literals_in_foreach_calls
+  box.values.forEach((task) {
+    if (task.createdAtTime.day != DateTime.now().day) {
+      task.delete();
+    } else {}
+  });
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   runApp(SplashPage());
 }
@@ -44,8 +64,10 @@ class _SplashPageState extends State<SplashPage> {
 
   void initState() {
     super.initState();
+
     Global().getusername();
     Global().loadItems(DateTime.now());
+    jpushs().addlistenerandinit(); //推送通知
   }
 
   @override

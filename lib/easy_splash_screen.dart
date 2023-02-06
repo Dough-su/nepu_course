@@ -77,7 +77,7 @@ class EasySplashScreen extends StatefulWidget {
 
 class _EasySplashScreenState extends State<EasySplashScreen> {
   //倒计时5s
-  int _countdownTime = 3;
+  int _countdownTime = 2;
   String timetext() {
     if (_countdownTime <= 0) {
       setState(() {});
@@ -111,9 +111,11 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
     super.initState();
     _countdownTimer();
     //获取主页和成绩页面的成绩信息
+    Global().getxuehao();
     Global().score_getcolor();
     Global().home_getcolor();
     Global().deletepj();
+    Global().getlist();
     bool progressorhome = false;
     getApplicationDocumentsDirectory().then((value) {
       //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
