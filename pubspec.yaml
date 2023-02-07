@@ -78,6 +78,9 @@ dependencies:
   flutter_slider_drawer: ^2.1.1
   bottom_sheet_bar: ^2.3.8
   salomon_bottom_bar: ^3.3.1
+  flutter_echarts: ^2.4.0
+  fl_chart: ^0.60.0
+
   
 
 
