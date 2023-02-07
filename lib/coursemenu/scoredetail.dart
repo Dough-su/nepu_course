@@ -303,6 +303,16 @@ class _scoreState extends State<scorepage> {
               title: const Text('下拉获取新成绩'),
               actions: [
                 IconButton(
+                  icon: const Icon(Icons.chat_sharp),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Global().createChart(context);
+                        });
+                  },
+                ),
+                IconButton(
                   icon: const Icon(Icons.color_lens),
                   onPressed: () {
                     showDialog(
