@@ -527,7 +527,7 @@ class _HomePageState extends State<HomePage> {
         return '晚上好，今天过得怎么样';
       }
     } else
-      return '你的一卡通余额：' + Global.yikatong_balance;
+      return '你的一卡通总余额：' + Global.yikatong_balance + '元(点击查看近期流水)';
   }
 
   DateTime _selectedIndex = DateTime.now();
@@ -1731,9 +1731,13 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Lottie.asset('assets/score_detail.json'),
                                 SizedBox(height: 16.0),
-                                Text(
-                                  shijian(),
-                                  style: TextStyle(color: Colors.white),
+                                TextButton(
+                                  onPressed: () =>
+                                      Global().getrecently(context),
+                                  child: Text(
+                                    shijian(),
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                                 ),
                                 SizedBox(height: 20.0),
                               ],

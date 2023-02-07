@@ -47,7 +47,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "112";
+  static String version = "113";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -98,6 +98,8 @@ class Global {
   static var scoreinfos = [];
   //底栏高度
   static double bottombarheight = 60;
+  //一卡通近期流水
+  static List yikatong_recent = [];
   //透明验证码setter
   static void pureyzmset(bool pureyzm) {
     _pureyzm = pureyzm;
@@ -130,6 +132,7 @@ class Global {
     await getApplicationDocumentsDirectory().then((value) async {
       File file = File(value.path + '/logininfo.txt');
       if (file.existsSync()) {
+        jwc_xuehao = file.readAsStringSync().split(',')[0].toString();
         //根据,分割
         getbalance(file.readAsStringSync().split(',')[0].toString());
       }
@@ -792,8 +795,82 @@ class Global {
       'schoolname': '东北石油大学'
     }).then((value) {
       //获取余额
-      yikatong_balance =
-          (value.data['data']['obj']['cardbalance'] / 100).toString();
+      yikatong_balance = (value.data['data']['obj']['cardbalance'] / 100 +
+              value.data['data']['obj']['tmpbalance'] / 100)
+          .toString();
+    });
+  }
+
+  //获取一卡通近期流水
+  void getrecently(context) async {
+    yikatong_recent.clear();
+    Dio dio = new Dio();
+    dio.post('http://wxy.hrbxyz.cn/api/Apixyk/getcurrenttrjn',
+        queryParameters: {
+          'account': jwc_xuehao,
+          'schoolname': '东北石油大学'
+        }).then((value) {
+      //获取近期流水
+      for (int i = 0; i < value.data['data']['obj'].length; i++) {
+        yikatong_recent.add({
+          'Effective_time': value.data['data']['obj'][i]['effectdate'],
+          'Trading_time': value.data['data']['obj'][i]['JnDateTime'],
+          'Transaction_amount':
+              (value.data['data']['obj'][i]['TranAmt'] / 100).toString(),
+          'TranName': value.data['data']['obj'][i]['TranName'],
+        });
+      }
+      //创建流水表格
+      Widget yikatong_recently = DataTable(
+        columns: const <DataColumn>[
+          DataColumn(
+            label: Text(
+              '交易时间',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          DataColumn(
+            label: Text(
+              '交易类型',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+          DataColumn(
+            label: Text(
+              '交易金额',
+              style: TextStyle(fontStyle: FontStyle.italic),
+            ),
+          ),
+        ],
+        rows: yikatong_recent
+            .map(
+              (recent) => DataRow(
+                cells: <DataCell>[
+                  DataCell(Text(recent['Trading_time'])),
+                  DataCell(Text(recent['TranName'])),
+                  DataCell(Text(recent['Transaction_amount'])),
+                ],
+              ),
+            )
+            .toList(),
+      );
+      //弹出流水窗口
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('一卡通近30天流水'),
+              content: yikatong_recently,
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('关闭'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
     });
   }
 }
