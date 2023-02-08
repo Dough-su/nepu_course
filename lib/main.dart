@@ -6,6 +6,7 @@ import 'package:muse_nepu_course/progress.dart';
 import 'package:muse_nepu_course/easy_splash_screen.dart';
 import 'package:lunar/lunar.dart';
 import 'Todo/models/task.dart';
+import 'chess/bloc/app_blocs.dart';
 import 'global.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
 
@@ -64,7 +65,7 @@ class _SplashPageState extends State<SplashPage> {
 
   void initState() {
     super.initState();
-
+    createAppBlocs();
     Global().getusername();
     Global().loadItems(DateTime.now());
     jpushs().addlistenerandinit(); //推送通知

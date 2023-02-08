@@ -6,14 +6,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
+import 'package:muse_nepu_course/black_jack/screens/black_jack_screen.dart';
+import 'package:muse_nepu_course/chess/bloc/app_blocs.dart';
+import 'package:muse_nepu_course/chess/screens/game_screen.dart';
 import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/jpushs.dart';
+import 'package:muse_nepu_course/wuziqi/wuziqi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class about extends StatefulWidget {
   @override
@@ -24,7 +31,17 @@ var logourl = '';
 final ImagePicker _picker = ImagePicker();
 
 class _aboutState extends State<about> {
+  //两个输入框
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
   @override
+  void initState() {
+    super.initState();
+
+    _usernameController.text = Global.jwc_xuehao;
+    _passwordController.text = Global.jwc_password;
+  }
+
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.light(),
@@ -118,20 +135,101 @@ class _aboutState extends State<about> {
                   showDialog(
                       context: context,
                       builder: (context) {
+                        //两个彩蛋可以选择
                         return AlertDialog(
                           title: Text('彩蛋'),
-                          content: Text('你发现了彩蛋'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              //跳转到彩蛋页面
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                WelcomeScreen()));
+                                  },
+                                  child: Text('井字棋')),
+                              //跳转到彩蛋页面
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                GameScreen()));
+                                  },
+                                  child: Text('国际象棋')),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                BlackJackScreen()));
+                                  },
+                                  child: Text('黑杰克')),
+                              ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => wuziqi()));
+                                  },
+                                  child: Text('五子棋')),
+                            ],
+                          ),
+                          actions: [],
+                        );
+                      });
+                },
+              ),
+              //修改学号密码
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('修改学号密码'),
+                subtitle: Text(''),
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('修改学号密码'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              TextField(
+                                controller: _usernameController,
+                                decoration: InputDecoration(
+                                    labelText: "学号",
+                                    hintText: "请输入学号",
+                                    prefixIcon: Icon(Icons.person)),
+                              ),
+                              TextField(
+                                controller: _passwordController,
+                                decoration: InputDecoration(
+                                    labelText: "密码",
+                                    hintText: "请输入密码",
+                                    prefixIcon: Icon(Icons.lock)),
+                              ),
+                            ],
+                          ),
                           actions: [
                             //跳转到彩蛋页面
                             ElevatedButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              WelcomeScreen()));
+                                  //修改学号密码
+                                  Global.jwc_xuehao = _usernameController.text;
+                                  Global.jwc_password =
+                                      _passwordController.text;
+                                  Global().storelogininfo(
+                                      _usernameController.text,
+                                      _passwordController.text);
+                                  //保存到本地
+                                  Navigator.pop(context);
                                 },
-                                child: Text('去看看'))
+                                child: Text('修改'))
                           ],
                         );
                       });

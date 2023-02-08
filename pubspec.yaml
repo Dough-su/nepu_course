@@ -78,9 +78,12 @@ dependencies:
   flutter_slider_drawer: ^2.1.1
   bottom_sheet_bar: ^2.3.8
   salomon_bottom_bar: ^3.3.1
-  flutter_echarts: ^2.4.0
-  fl_chart: ^0.60.0
-
+  get_it: ^7.2.0
+  flutter_bloc: ^8.1.2
+  freezed_annotation: ^2.2.0
+  webview_flutter: ^4.0.2
+  webview_flutter_android: ^3.2.4
+  webview_flutter_wkwebview: ^3.0.5
   
 
 
@@ -117,6 +120,14 @@ flutter:
         - assets/splash_screen/
         - assets/splash_screen/jieqi/
         - assets/pay/
+        - assets/images/
+        - assets/images/figures/black/
+        - assets/images/figures/white/
+        - cards/
+        - assets/dist/
+        - assets/dist/build/
+        - assets/dist/js/
+        - assets/dist/lib/
   fonts:
     - family: Paytone
       fonts:

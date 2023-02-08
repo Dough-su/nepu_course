@@ -11,8 +11,6 @@ import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
-import 'package:flutter_echarts/flutter_echarts.dart';
-import 'package:fl_chart/fl_chart.dart';
 
 class LoginData {
   final String name;
@@ -135,6 +133,7 @@ class Global {
       File file = File(value.path + '/logininfo.txt');
       if (file.existsSync()) {
         jwc_xuehao = file.readAsStringSync().split(',')[0].toString();
+        jwc_password = file.readAsStringSync().split(',')[1].toString();
         //根据,分割
         getbalance(file.readAsStringSync().split(',')[0].toString());
       }
@@ -502,7 +501,7 @@ class Global {
     });
   }
 
-  //删除评教缓存
+  //删除评教缓存文件
   Future<void> deletepj() async {
     getApplicationDocumentsDirectory().then((value) {
       File file = File(value.path + '/pingjiao.json');
@@ -515,7 +514,7 @@ class Global {
   void getlist() {
     scoreinfos.clear();
     scorelist.clear();
-    //从数据库中读取数据
+    //从json读取
     getscoreInfo().then((value) {
       //转为json
       scoreinfos = json.decode(value);
@@ -777,113 +776,6 @@ class Global {
     });
   }
 
-  //创建图表
-  Widget createChart(context) {
-    //获取屏幕宽度
-    double width = MediaQuery.of(context).size.width;
-
-    //将scoreinfos根据分数分为60分以下，60-70，70-80，80-90,90-100,共五类只显示范围转换为List<PieChartSectionData>
-    List<PieChartSectionData> sections = [];
-    int fenshu60 = 0;
-    int fenshu70 = 0;
-    int fenshu80 = 0;
-    int fenshu90 = 0;
-    int fenshu100 = 0;
-
-    for (int i = 0; i < scoreinfos.length; i++) {
-      if (double.parse(scoreinfos[i]['zcjfs']) < 60) {
-        fenshu60++;
-      } else if (double.parse(scoreinfos[i]['zcjfs']) < 70) {
-        fenshu70++;
-      } else if (double.parse(scoreinfos[i]['zcjfs']) < 80) {
-        fenshu80++;
-      } else if (double.parse(scoreinfos[i]['zcjfs']) < 90) {
-        fenshu90++;
-      } else {
-        fenshu100++;
-      }
-    }
-    sections.add(PieChartSectionData(
-      color: Colors.red,
-      value: fenshu60.toDouble(),
-      title: "小于60的门数" + fenshu60.toString(),
-      radius: width / 4,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ));
-    sections.add(PieChartSectionData(
-      color: Colors.orange,
-      value: fenshu70.toDouble(),
-      title: "60-70的门数" + fenshu70.toString(),
-      radius: width / 4,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ));
-    sections.add(PieChartSectionData(
-      color: Colors.yellow,
-      value: fenshu80.toDouble(),
-      title: "70-80的门数" + fenshu80.toString(),
-      radius: width / 4,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ));
-    sections.add(PieChartSectionData(
-      color: Colors.green,
-      value: fenshu90.toDouble(),
-      title: "80-90的门数" + fenshu90.toString(),
-      radius: width / 4,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ));
-    sections.add(PieChartSectionData(
-      color: Colors.blue,
-      value: fenshu100.toDouble(),
-      title: "90-100的门数" + fenshu100.toString(),
-      radius: width / 4,
-      titleStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ));
-    //计算每科的平均分并显示在折线图上
-    List<FlSpot> spots = [];
-    for (int i = 0; i < scoreinfos.length; i++) {
-      spots.add(FlSpot(i.toDouble(), double.parse(scoreinfos[i]['zcjfs'])));
-    }
-
-    //使用LineChart根据顺序读取spots中的数据并显示
-
-    return Container(
-        height: 200,
-        child: ListView(
-          children: [
-            Container(
-              height: 400,
-              child: PieChart(
-                PieChartData(
-                  sections: sections,
-                ),
-                swapAnimationDuration: Duration(milliseconds: 150), // Optional
-                swapAnimationCurve: Curves.linear, // Optional
-              ),
-            ),
-          ],
-        ));
-  }
-
   //读取json
   Future<String> getscoreInfo() async {
     //获取路径
@@ -914,11 +806,26 @@ class Global {
   void getrecently(context) async {
     yikatong_recent.clear();
     Dio dio = new Dio();
-    dio.post('http://wxy.hrbxyz.cn/api/Apixyk/getcurrenttrjn',
-        queryParameters: {
-          'account': jwc_xuehao,
-          'schoolname': '东北石油大学'
-        }).then((value) {
+    print(jwc_xuehao);
+    String starttime = await DateTime.now()
+        .add(Duration(days: -30))
+        .toString()
+        .substring(0, 10)
+        .replaceAll('-', '')
+        .toString();
+    String endtime = await DateTime.now()
+        .toString()
+        .substring(0, 10)
+        .replaceAll('-', '')
+        .toString();
+    dio
+        .post('http://wxy.hrbxyz.cn/api/Apixyk/gethistorytrjn?account=' +
+            jwc_xuehao.toString() +
+            '&schoolname=%E4%B8%9C%E5%8C%97%E7%9F%B3%E6%B2%B9%E5%A4%A7%E5%AD%A6&starttime=' +
+            starttime.toString() +
+            '&endtime=' +
+            endtime.toString())
+        .then((value) {
       //获取近期流水
       for (int i = 0; i < value.data['data']['obj'].length; i++) {
         yikatong_recent.add({
@@ -930,38 +837,50 @@ class Global {
         });
       }
       //创建流水表格
-      Widget yikatong_recently = Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          child: DataTable(
-            columns: const <DataColumn>[
-              DataColumn(
-                label: Text(
-                  '交易时间',
-                ),
+      Widget yikatong_recently = DataTable(
+        columns: <DataColumn>[
+          DataColumn(
+            label: Container(
+              //屏幕适配
+              width: MediaQuery.of(context).size.width * 0.1,
+
+              child: Text(
+                '时间',
+                style: TextStyle(fontStyle: FontStyle.italic),
               ),
-              DataColumn(
-                label: Text(
-                  '交易类型',
-                ),
+            ),
+          ),
+          DataColumn(
+            label: Container(
+              width: MediaQuery.of(context).size.width * 0.1,
+              child: Text(
+                '类型',
+                style: TextStyle(fontStyle: FontStyle.italic),
               ),
-              DataColumn(
-                label: Text(
-                  '交易金额',
-                ),
+            ),
+          ),
+          DataColumn(
+            label: Container(
+              width: MediaQuery.of(context).size.width * 0.1,
+              child: Text(
+                '金额',
+                style: TextStyle(fontStyle: FontStyle.italic),
               ),
-            ],
-            rows: yikatong_recent
-                .map(
-                  (recent) => DataRow(
-                    cells: <DataCell>[
-                      DataCell(Text(recent['Trading_time'])),
-                      DataCell(Text(recent['TranName'])),
-                      DataCell(Text(recent['Transaction_amount'])),
-                    ],
-                  ),
-                )
-                .toList(),
-          ));
+            ),
+          )
+        ],
+        rows: yikatong_recent
+            .map(
+              (recent) => DataRow(
+                cells: <DataCell>[
+                  DataCell(Text(recent['Trading_time'])),
+                  DataCell(Text(recent['TranName'])),
+                  DataCell(Text(recent['Transaction_amount'])),
+                ],
+              ),
+            )
+            .toList(),
+      );
       //弹出流水窗口
       showDialog(
           context: context,
