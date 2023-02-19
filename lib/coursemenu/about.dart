@@ -98,7 +98,7 @@ class _aboutState extends State<about> {
                           'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
                   AchievementView(context,
                       title: "复制成功",
-                      subTitle: '可以给你ios设备的朋友了',
+                      subTitle: '可以去浏览器粘贴网址了',
                       //onTab: _onTabAchievement,
                       icon: Icon(
                         Icons.insert_emoticon,

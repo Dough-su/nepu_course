@@ -345,7 +345,6 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
         break;
       }
     }
-    print('pos是' + pos.toString());
 
     //判断是否有课程
     if (cacheindex == 0) {
@@ -393,8 +392,8 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
     } else {
       setState(() {
         title = '第' + eventcahe[0]['zc'].toString() + '周' + title;
+        print('title是' + title);
       });
-      return dailycourse;
     }
     //对eventcahe进行排序
     eventcahe.sort((a, b) {
@@ -1213,9 +1212,12 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
   hItems(DateTime date) async {
     await Global().loadItems(date);
     loadwidget(date);
+    print('刷新items');
   }
 
   void initState() {
+    hItems(DateTime.now());
+
     super.initState();
     windowManager
         .setPosition(Offset(Global.desktopx, Global.desktopy)); //设置窗口位置
@@ -1233,8 +1235,6 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
       await windowManager.focus();
       await windowManager.setAlwaysOnBottom(true);
     });
-    loadwidget(DateTime.now());
-    setState(() {});
   }
 
   @override
