@@ -65,6 +65,46 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
+  bitsdojo_window:
+    dependency: "direct main"
+    description:
+      name: bitsdojo_window
+      sha256: "1118bc1cd16e6f358431ca4473af57cc1b287d2ceab46dfab6d59a9463160622"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
+  bitsdojo_window_linux:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_linux
+      sha256: d3804a30315fcbb43b28acc86d1180ce0be22c0c738ad2da9e5ade4d8dbd9655
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
+  bitsdojo_window_macos:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_macos
+      sha256: d2a9886c74516c5b84c1dd65ab8ee5d1c52055b265ebf0e7d664dee28366b521
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
+  bitsdojo_window_platform_interface:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_platform_interface
+      sha256: "65daa015a0c6dba749bdd35a0f092e7a8ba8b0766aa0480eb3ef808086f6e27c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
+  bitsdojo_window_windows:
+    dependency: transitive
+    description:
+      name: bitsdojo_window_windows
+      sha256: "8766a40aac84a6d7bdcaa716b24997e028fc9a9a1800495fc031721fd5a22ed0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   bloc:
     dependency: transitive
     description:
@@ -464,6 +504,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.0"
+  launch_at_startup:
+    dependency: "direct main"
+    description:
+      name: launch_at_startup
+      sha256: "3868ca0b0e6de6b63328f5dd196d34829ff83e394111b28608e7bafdbf3ad292"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
   lints:
     dependency: transitive
     description:
@@ -544,6 +592,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  package_info_plus:
+    dependency: "direct main"
+    description:
+      name: package_info_plus
+      sha256: "8df5ab0a481d7dc20c0e63809e90a588e496d276ba53358afc4c4443d0a00697"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.3"
+  package_info_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: package_info_plus_platform_interface
+      sha256: "9bc8ba46813a4cc42c66ab781470711781940780fd8beddd0c3da62506d3a6c6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   panara_dialogs:
     dependency: "direct main"
     description:
@@ -720,6 +784,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
+  screen_retriever:
+    dependency: transitive
+    description:
+      name: screen_retriever
+      sha256: "4931f226ca158123ccd765325e9fbf360bfed0af9b460a10f960f9bb13d58323"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
   scrollable_positioned_list:
     dependency: transitive
     description:
@@ -1013,6 +1085,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
+  win32_registry:
+    dependency: transitive
+    description:
+      name: win32_registry
+      sha256: "66e78552f17501aced68fe77425b13156998f1bd3d58f1cd8cd0af2dbe4520e3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
+  window_manager:
+    dependency: "direct main"
+    description:
+      name: window_manager
+      sha256: "5bdd29dc5f1f3185fc90696373a571d77968e03e5e820fb1ecdbdade3f5d8fff"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   xdg_directories:
     dependency: transitive
     description:

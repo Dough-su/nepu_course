@@ -1,3 +1,5 @@
+#include <bitsdojo_window_windows/bitsdojo_window_plugin.h>
+auto bdw = bitsdojo_window_configure(BDW_CUSTOM_FRAME | BDW_HIDE_ON_STARTUP);
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
 #include <windows.h>
@@ -27,7 +29,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(500, 800);
-  if (!window.CreateAndShow(L"nepucourse", origin, size)) {
+  if (!window.CreateAndShow(L"东油课表", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

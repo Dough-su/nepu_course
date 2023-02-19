@@ -77,12 +77,40 @@ class _aboutState extends State<about> {
                 subtitle: Text('开启后，每次打开软件都会自动更新课程表。'),
                 trailing: Switch(
                   onChanged: (value) {
-                    // setState(() {
-                    //   Global.auto_update_course = value;
-                    // });
+                    setState(() {
+                      Global.auto_update_course = value;
+                      Global.saveauto_update_course();
+                    });
                   },
                   value: Global.auto_update_course,
                 ),
+              ),
+              //多版本下载网址，可以复制到剪切板
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('多版本下载网址,点击复制，密码是4huv'),
+                subtitle:
+                    Text('https://wwai.lanzouy.com/b02pwpe5e?password=4huv'),
+                onTap: () {
+                  //http://course.musecloud.tech/
+                  Clipboard.setData(ClipboardData(
+                      text:
+                          'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                  AchievementView(context,
+                      title: "复制成功",
+                      subTitle: '可以给你ios设备的朋友了',
+                      //onTab: _onTabAchievement,
+                      icon: Icon(
+                        Icons.insert_emoticon,
+                        color: Colors.white,
+                      ),
+                      color: Colors.green,
+                      duration: Duration(seconds: 3),
+                      isCircle: true, listener: (status) {
+                    print(status);
+                  })
+                    ..show();
+                },
               ),
               //请开发者喝杯咖啡
               ListTile(

@@ -1,16 +1,52 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/progress.dart';
 import 'package:muse_nepu_course/easy_splash_screen.dart';
 import 'package:lunar/lunar.dart';
+import 'package:window_manager/window_manager.dart';
 import 'Todo/models/task.dart';
 import 'chess/bloc/app_blocs.dart';
 import 'global.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:bitsdojo_window/bitsdojo_window.dart';
 
 Future<void> main() async {
+  //判断是否是windows系统，如果是则启用windowmanager
+  if (Platform.isWindows) {
+    //windowmanager初始化
+    WidgetsFlutterBinding.ensureInitialized();
+    // 必须加上这一行。
+    await windowManager.ensureInitialized();
+    WindowOptions windowOptions = WindowOptions(
+      backgroundColor: Colors.transparent, //背景色
+      skipTaskbar: true, //是否在任务栏显示
+      titleBarStyle: TitleBarStyle.hidden,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+    //初始化开机自启
+    WidgetsFlutterBinding.ensureInitialized();
+
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+    launchAtStartup.setup(
+      appName: packageInfo.appName,
+      appPath: Platform.resolvedExecutable,
+    );
+    await launchAtStartup.enable();
+    Global.getdesktopinfo();
+  }
+
   /// Initial Hive DB
   await Hive.initFlutter();
 
@@ -20,15 +56,16 @@ Future<void> main() async {
   /// Open box
   var box = await Hive.openBox<Task>("tasksBox");
 
-  /// Delete data from previous day
-  // ignore: avoid_function_literals_in_foreach_calls
-  box.values.forEach((task) {
-    if (task.createdAtTime.day != DateTime.now().day) {
-      task.delete();
-    } else {}
-  });
+  Global.getauto_update_course();
+
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   runApp(SplashPage());
+  doWhenWindowReady(() {
+    const initialSize = Size(600, 700);
+    appWindow.size = initialSize;
+    appWindow.alignment = Alignment.center;
+    appWindow.show();
+  });
 }
 
 class SplashPage extends StatefulWidget {

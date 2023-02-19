@@ -11,6 +11,7 @@ import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
+import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
 class LoginData {
   final String name;
@@ -47,7 +48,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "114";
+  static String version = "115";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -85,6 +86,29 @@ class Global {
   static bool isrefreshcourse = false;
   //自动更新课程
   static bool auto_update_course = true;
+  //保存自动更新课程状态到文件
+  static void saveauto_update_course() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/auto_update_course.txt');
+      file.writeAsStringSync(auto_update_course.toString(),
+          mode: FileMode.write);
+    });
+  }
+
+  //从文件中读取自动更新课程状态
+  static void getauto_update_course() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/auto_update_course.txt');
+      if (file.existsSync()) {
+        if (file.readAsStringSync() == 'true') {
+          auto_update_course = true;
+        } else {
+          auto_update_course = false;
+        }
+      }
+    });
+  }
+
   //上滑锁定
   static bool locked = false;
   //一卡通余额
@@ -100,6 +124,44 @@ class Global {
   static double bottombarheight = 60;
   //一卡通近期流水
   static List yikatong_recent = [];
+  //桌面平台的高度
+  static double desktopheight = 400;
+  //桌面平台的宽度
+  static double desktopwidth = 600;
+  //桌面平台的x坐标
+  static double desktopx = 0;
+  //桌面平台的y坐标
+  static double desktopy = 0;
+  //保存桌面的高度，宽度，x坐标，y坐标到文件
+  static void savedesktopinfo() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/desktopinfo.txt');
+      file.writeAsStringSync(
+          desktopheight.toString() +
+              ',' +
+              desktopwidth.toString() +
+              ',' +
+              desktopx.toString() +
+              ',' +
+              desktopy.toString(),
+          mode: FileMode.write);
+    });
+  }
+
+  //从文件中读取桌面的高度，宽度，x坐标，y坐标
+  static void getdesktopinfo() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/desktopinfo.txt');
+      if (file.existsSync()) {
+        List<String> list = file.readAsStringSync().split(',');
+        desktopheight = double.parse(list[0]);
+        desktopwidth = double.parse(list[1]);
+        desktopx = double.parse(list[2]);
+        desktopy = double.parse(list[3]);
+      }
+    });
+  }
+
   //透明验证码setter
   static void pureyzmset(bool pureyzm) {
     _pureyzm = pureyzm;
