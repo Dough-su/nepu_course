@@ -118,7 +118,7 @@ class _aboutState extends State<about> {
                 title: Text('请开发者喝杯咖啡'),
                 subtitle: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
                 onTap: () {
-                  if (!Platform.isIOS)
+                  if (Platform.isAndroid)
                     showDialog(
                         context: context,
                         builder: (context) {

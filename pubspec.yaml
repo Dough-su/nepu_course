@@ -59,8 +59,8 @@ dependencies:
   another_transformer_page_view: ^2.0.1
   card_loading: ^0.2.2
   path_drawing: ^1.0.1
-  rive: ^0.10.1
-  jpush_flutter: 2.4.0  
+  rive: ^0.10.3
+  jpush_flutter: ^2.4.0  
   showcaseview: ^1.1.1
   rflutter_alert: ^2.0.4
   cupertino_icons: ^1.0.3
@@ -88,7 +88,7 @@ dependencies:
   package_info_plus: ^3.0.3
   bitsdojo_window: ^0.1.5
   window_manager: ^0.3.0
-
+  chatview: ^0.0.3
   
 
 

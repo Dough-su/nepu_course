@@ -6,6 +6,7 @@ import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:muse_nepu_course/chat/chatgpt.dart';
 import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
@@ -1773,6 +1774,24 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               ),
+                              ListTile(
+                                  leading: const Icon(Icons.score_outlined,
+                                      size: 20.0, color: Colors.white),
+                                  title: Text(
+                                    'chatgpt(可连续对话)',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  onTap: () {
+                                    Navigator.of(context).pop(); //关闭侧边栏
+
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => chatgpt()));
+                                  }),
                               ListTile(
                                 leading: const Icon(Icons.book_online,
                                     size: 20.0, color: Colors.white),

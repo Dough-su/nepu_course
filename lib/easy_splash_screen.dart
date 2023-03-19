@@ -77,7 +77,7 @@ class EasySplashScreen extends StatefulWidget {
 
 class _EasySplashScreenState extends State<EasySplashScreen> {
   //倒计时5s
-  int _countdownTime = 2;
+  int _countdownTime = 1;
   String timetext() {
     if (_countdownTime <= 0) {
       setState(() {});

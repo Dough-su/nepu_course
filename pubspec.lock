@@ -33,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  any_link_preview:
+    dependency: transitive
+    description:
+      name: any_link_preview
+      sha256: "362f681d0e54fcf3212741f68230eab499bd0cfc4531b9f450561f6ced9be52e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.9"
   archive:
     dependency: transitive
     description:
@@ -161,6 +169,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
+  chatview:
+    dependency: "direct main"
+    description:
+      name: chatview
+      sha256: ea8b2613d773a31140d87e698f8e93222a690d4203c11122a9dc718b2f4b9c8d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   clock:
     dependency: transitive
     description:
@@ -201,6 +217,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      sha256: b36c7f7e24c0bdf1bf9a3da461c837d1de64b9f8beb190c9011d8c72a3dfd745
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.17.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -233,6 +257,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  emoji_picker_flutter:
+    dependency: transitive
+    description:
+      name: emoji_picker_flutter
+      sha256: feb141b3ab9188e33c2ec35212136ecb3f79215d881aa5af3d3e0df28f84b725
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.2"
   fake_async:
     dependency: transitive
     description:
@@ -302,6 +334,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
+  flutter_linkify:
+    dependency: transitive
+    description:
+      name: flutter_linkify
+      sha256: c89fe74de985ec22f23d3538d2249add085a4f37ac1c29fd79e1a207efb81d63
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -392,6 +432,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  grouped_list:
+    dependency: transitive
+    description:
+      name: grouped_list
+      sha256: fef106470186081c32636aa055492eee7fc7fe8bf0921a48d31ded24821af19f
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.2"
   hive:
     dependency: "direct main"
     description:
@@ -408,6 +456,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.0"
+  html:
+    dependency: transitive
+    description:
+      name: html
+      sha256: "79d498e6d6761925a34ee5ea8fa6dfef38607781d2fa91e37523474282af55cb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.2"
   http:
     dependency: transitive
     description:
@@ -512,6 +568,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
+  linkify:
+    dependency: transitive
+    description:
+      name: linkify
+      sha256: bdfbdafec6cdc9cd0ebb333a868cafc046714ad508e48be8095208c54691d959
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   lints:
     dependency: transitive
     description:
@@ -728,6 +792,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
+  progress_indicators:
+    dependency: transitive
+    description:
+      name: progress_indicators
+      sha256: "28cba16c2c1f37b14f3551c406e0d9b156fb2f3205d7b4e4153823b3abc9d56c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   provider:
     dependency: "direct main"
     description:
@@ -764,10 +836,10 @@ packages:
     dependency: "direct main"
     description:
       name: rive
-      sha256: c4293ea52f9bf45edeebad3b1eb0bddc284bd11f14ede54780bf5efa1c491b4a
+      sha256: "763b4915b5245428f1188d38c2ff8c26da83ca194d345daa319ca32d69ed670f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.10.1"
+    version: "0.10.3"
   rive_common:
     dependency: transitive
     description:
@@ -925,6 +997,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  string_validator:
+    dependency: transitive
+    description:
+      name: string_validator
+      sha256: "50dd8ecf91db6a732f4a851eeae81ee12406eedc62d0da72f2d91a04a2d10dd8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   term_glyph:
     dependency: transitive
     description:
