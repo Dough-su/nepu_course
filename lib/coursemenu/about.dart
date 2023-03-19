@@ -583,7 +583,7 @@ class _aboutState extends State<about> {
                     'https://q1.qlogo.cn/g?b=qq&nk=1601071777&s=100',
                   ),
                 ),
-                title: Text('冰美式不加糖'),
+                title: Text('果然多cc果卷'),
                 subtitle: Text('Developer'),
               ),
               ListTile(

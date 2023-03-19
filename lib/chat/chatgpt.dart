@@ -41,8 +41,8 @@ class _chatgptState extends State<chatgpt> {
 
   void sendtoserver() async {
     Dio dio = Dio();
-    dio.options.connectTimeout = 20000; // 设置连接超时时间为20秒
-    dio.options.receiveTimeout = 20000; // 设置接收超时时间为20秒
+    dio.options.connectTimeout = 60000; // 设置连接超时时间为60秒
+    dio.options.receiveTimeout = 60000; // 设置接收超时时间为60秒
 
     try {
       final response = await dio.get(
@@ -68,7 +68,7 @@ class _chatgptState extends State<chatgpt> {
         // 处理超时事件
         Global.messageList.add(Message(
           id: '1',
-          message: '服务有些繁忙哦，请再试一次吧',
+          message: '服务有些繁忙哦，请再试一次哦',
           createdAt: DateTime.now(),
           sendBy: '2',
         ));
