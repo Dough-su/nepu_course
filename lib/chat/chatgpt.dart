@@ -1,6 +1,8 @@
+import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:chatview/chatview.dart';
+import 'package:flutter/services.dart';
 import 'package:muse_nepu_course/chat/theme.dart';
 import 'package:muse_nepu_course/home.dart';
 
@@ -114,7 +116,7 @@ class _chatgptState extends State<chatgpt> {
           },
           backGroundColor: theme.appBarColor,
           backArrowColor: theme.backArrowColor,
-          title: "chatgpt",
+          title: "chatgpt,双击对话复制对话",
           titleTextStyle: TextStyle(
             color: theme.appBarTitleTextStyle,
             fontWeight: FontWeight.bold,
@@ -163,6 +165,24 @@ class _chatgptState extends State<chatgpt> {
           ),
         ),
         chatBubbleConfig: ChatBubbleConfiguration(
+          onDoubleTap: (Message message) {
+            Clipboard.setData(
+                ClipboardData(text: message.message)); //复制到剪切板，可以在浏览器中粘贴
+            AchievementView(context,
+                title: "复制成功",
+                subTitle: '已复制到剪切板',
+                //onTab: _onTabAchievement,
+                icon: Icon(
+                  Icons.insert_emoticon,
+                  color: Colors.white,
+                ),
+                color: Colors.green,
+                duration: Duration(seconds: 3),
+                isCircle: true, listener: (status) {
+              print(status);
+            })
+              ..show();
+          },
           outgoingChatBubbleConfig: ChatBubble(
             linkPreviewConfig: LinkPreviewConfiguration(
               backgroundColor: theme.linkPreviewOutgoingChatColor,
