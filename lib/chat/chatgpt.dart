@@ -219,7 +219,6 @@ class _chatgptState extends State<chatgpt> {
       ),
     );
   }
-  //我想给chatview配置一个等待动画
 
   void onSendTap(String message, ReplyMessage replyMessage) {
     //replyMessage是回复的消息
