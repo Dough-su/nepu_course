@@ -1,7 +1,7 @@
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:chatview/chatview.dart';
+import 'package:muse_nepu_course/chatview/chatview.dart';
 import 'package:flutter/services.dart';
 import 'package:muse_nepu_course/chat/theme.dart';
 import 'package:muse_nepu_course/home.dart';

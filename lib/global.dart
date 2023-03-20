@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:card_flip/card_flip.dart';
-import 'package:chatview/chatview.dart';
+import 'package:muse_nepu_course/chatview/chatview.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/chat/chatgpt.dart';
@@ -14,6 +14,7 @@ import 'package:muse_nepu_course/login/login.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class LoginData {
   final String name;

@@ -34,13 +34,13 @@ packages:
     source: hosted
     version: "2.0.1"
   any_link_preview:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: any_link_preview
-      sha256: "362f681d0e54fcf3212741f68230eab499bd0cfc4531b9f450561f6ced9be52e"
+      sha256: e76bf06063a2d86a3f014d4d12a2782d139408eb6a9a2a8ccbe8f53b5dfea8e5
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.9"
+    version: "3.0.0"
   archive:
     dependency: transitive
     description:
@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.6"
+  args:
+    dependency: transitive
+    description:
+      name: args
+      sha256: "4cab82a83ffef80b262ddedf47a0a8e56ee6fbf7fe21e6e768b02792034dd440"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
   async:
     dependency: transitive
     description:
@@ -169,14 +177,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
-  chatview:
-    dependency: "direct main"
-    description:
-      name: chatview
-      sha256: ea8b2613d773a31140d87e698f8e93222a690d4203c11122a9dc718b2f4b9c8d
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.3"
   clock:
     dependency: transitive
     description:
@@ -258,7 +258,7 @@ packages:
     source: hosted
     version: "1.0.0"
   emoji_picker_flutter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: emoji_picker_flutter
       sha256: feb141b3ab9188e33c2ec35212136ecb3f79215d881aa5af3d3e0df28f84b725
@@ -334,14 +334,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
-  flutter_linkify:
-    dependency: transitive
-    description:
-      name: flutter_linkify
-      sha256: c89fe74de985ec22f23d3538d2249add085a4f37ac1c29fd79e1a207efb81d63
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -350,6 +342,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  flutter_markdown:
+    dependency: "direct main"
+    description:
+      name: flutter_markdown
+      sha256: "7b25c10de1fea883f3c4f9b8389506b54053cd00807beab69fd65c8653a2711f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.14"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -433,7 +433,7 @@ packages:
     source: hosted
     version: "2.2.0"
   grouped_list:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: grouped_list
       sha256: fef106470186081c32636aa055492eee7fc7fe8bf0921a48d31ded24821af19f
@@ -568,14 +568,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
-  linkify:
-    dependency: transitive
-    description:
-      name: linkify
-      sha256: bdfbdafec6cdc9cd0ebb333a868cafc046714ad508e48be8095208c54691d959
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.1.0"
   lints:
     dependency: transitive
     description:
@@ -608,6 +600,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.24"
+  markdown:
+    dependency: transitive
+    description:
+      name: markdown
+      sha256: b3c60dee8c2af50ad0e6e90cceba98e47718a6ee0a7a6772c77846a0cc21f78b
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.1"
   matcher:
     dependency: transitive
     description:
@@ -792,14 +792,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.4"
-  progress_indicators:
-    dependency: transitive
-    description:
-      name: progress_indicators
-      sha256: "28cba16c2c1f37b14f3551c406e0d9b156fb2f3205d7b4e4153823b3abc9d56c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   provider:
     dependency: "direct main"
     description:
