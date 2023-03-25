@@ -6,7 +6,7 @@ import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/chat/chatgpt.dart';
+import 'package:muse_nepu_course/chatforgpt/chat_gpt.dart';
 import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
@@ -1790,7 +1790,7 @@ class _HomePageState extends State<HomePage> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => chatgpt()));
+                                            builder: (context) => chat_gpt()));
                                   }),
                               ListTile(
                                 leading: const Icon(Icons.book_online,

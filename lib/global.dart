@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:card_flip/card_flip.dart';
-import 'package:muse_nepu_course/chatview/chatview.dart';
+import 'package:flutter/foundation.dart';
+import 'package:muse_nepu_course/chatforgpt/chat_gpt.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/chat/chatgpt.dart';
 import 'package:muse_nepu_course/coursemenu/scoredetail.dart';
 import 'package:muse_nepu_course/flutterlogin/flutter_login.dart';
 import 'package:muse_nepu_course/home.dart';
@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class LoginData {
   final String name;
@@ -51,7 +52,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "119";
+  static String version = "120";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -90,15 +91,11 @@ class Global {
   //自动更新课程
   static bool auto_update_course = true;
   //消息列表
-  static List<Message> messageList = [
-    Message(
-      id: '1',
-      message:
-          "你好，我是chatgpt，使用chatgpt 3.5 turbo api，如果觉得好用的话可以给作者捐助哦(毕竟调用api也是一笔不小的开销呢)，同时，希望能够理性看待，它仅能作为一个工具，而不是逃避现实的载体。",
-      createdAt: DateTime.now(),
-      sendBy: '2',
-    ),
-  ];
+  static List<types.Message> messages = [];
+  //String类型的消息列表
+  static String messages_pure = '';
+  //注入消息
+  static String pre_message = '';
 
   //保存自动更新课程状态到文件
   static void saveauto_update_course() async {
@@ -211,7 +208,9 @@ class Global {
         jwc_xuehao = file.readAsStringSync().split(',')[0].toString();
         jwc_password = file.readAsStringSync().split(',')[1].toString();
         //根据,分割
-        getbalance(file.readAsStringSync().split(',')[0].toString());
+        //如果是在调试
+        if (!kDebugMode)
+          getbalance(file.readAsStringSync().split(',')[0].toString());
       }
     });
   }
