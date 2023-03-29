@@ -525,17 +525,7 @@ class _aboutState extends State<about> {
                 title: Text('项目离不开以下人员的支持(排名不分先后)'),
                 subtitle: Text(''),
               ),
-              //显示头像
-              ListTile(
-                leading: CircleAvatar(
-                  //网络图片
-                  backgroundImage: NetworkImage(
-                    'https://q1.qlogo.cn/g?b=qq&nk=1051456414&s=100',
-                  ),
-                ),
-                title: Text('种太阳'),
-                subtitle: Text('Tester'),
-              ),
+
               ListTile(
                 leading: CircleAvatar(
                   //网络图片
@@ -543,7 +533,7 @@ class _aboutState extends State<about> {
                     'https://q1.qlogo.cn/g?b=qq&nk=2190588538&s=100',
                   ),
                 ),
-                title: Text(' 生'),
+                title: Text('生'),
                 subtitle: Text('Tester'),
               ),
               ListTile(
