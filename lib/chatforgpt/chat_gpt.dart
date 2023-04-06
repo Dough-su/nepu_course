@@ -1,7 +1,6 @@
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:muse_nepu_course/chat/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:file_picker/file_picker.dart';
@@ -9,7 +8,6 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
-import 'package:muse_nepu_course/model/promgpt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mime/mime.dart';
@@ -18,7 +16,6 @@ import 'package:flutter/services.dart'
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:search_page/search_page.dart';
 
 class chat_gpt extends StatefulWidget {
   @override
