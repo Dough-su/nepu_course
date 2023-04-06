@@ -1,3 +1,4 @@
+import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -12,7 +13,8 @@ import 'package:muse_nepu_course/model/promgpt.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mime/mime.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart'
+    show Clipboard, ClipboardData, rootBundle;
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -61,7 +63,7 @@ class _chat_gptState extends State<chat_gpt> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat with GPT'),
+        title: Text('Chat with GPT(双击复制)'),
         //加入返回按鈕
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -142,7 +144,7 @@ class _chat_gptState extends State<chat_gpt> {
         onMessageTap: _handleMessageTap,
         onPreviewDataFetched: _handlePreviewDataFetched,
         onSendPressed: _handleSendPressed,
-
+        onMessageDoubleTap: _handleMessageDoubleTap,
         showUserAvatars: true,
         l10n: ChatL10nZhCN(),
         //Widget Function(CustomMessage, {required int messageWidth})? customMessageBuilder,
@@ -156,7 +158,6 @@ class _chat_gptState extends State<chat_gpt> {
             ),
           );
         },
-        theme: DarkChatTheme(),
         showUserNames: true,
         user: _user,
       ),
@@ -187,9 +188,9 @@ class _chat_gptState extends State<chat_gpt> {
       }
     }).reduce((a, b) => a + b);
 
-    if (tokenCount > 5000) {
-      print("超过了5000个token" + tokenCount.toString());
-      while (tokenCount > 5000) {
+    if (tokenCount > 7000) {
+      print("超过了7000个token" + tokenCount.toString());
+      while (tokenCount > 7000) {
         Global.messages_pure = Global.messages_pure
             .substring(Global.messages_pure.indexOf(";") + 1);
         tokenCount = Global.messages_pure.split(" ").map((word) {
@@ -202,7 +203,7 @@ class _chat_gptState extends State<chat_gpt> {
       }
       print("截取后的token" + tokenCount.toString());
     } else {
-      print("未超过4000个token" + tokenCount.toString());
+      print("未超过7000个token" + tokenCount.toString());
     }
     try {
       final response = await dio.get(
@@ -407,6 +408,27 @@ class _chat_gptState extends State<chat_gpt> {
     _addMessage(textMessage);
     print(message.text);
     sendtoserver(message.text);
+  }
+
+  //(BuildContext context, types.Message)
+  void _handleMessageDoubleTap(BuildContext context, types.Message message) {
+    var msgjson = message.toJson();
+    //复制到剪贴板
+    Clipboard.setData(ClipboardData(text: msgjson['text']));
+    AchievementView(context,
+        title: "复制成功",
+        subTitle: '已复制到剪贴板',
+        //onTab: _onTabAchievement,
+        icon: Icon(
+          Icons.insert_emoticon,
+          color: Colors.white,
+        ),
+        color: Colors.green,
+        duration: Duration(seconds: 3),
+        isCircle: true, listener: (status) {
+      print(status);
+    })
+      ..show();
   }
 
   void _loadMessages() async {
