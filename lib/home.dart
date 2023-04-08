@@ -566,18 +566,6 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     Global.pureyzmset(false);
-    // Global().getxuehao();
-    Global.bottomSheetBarController.addListener(() {
-      if (Global.bottomSheetBarController.isExpanded == true) {
-        setState(() {
-          Global.locked = true;
-        });
-      } else {
-        setState(() {
-          Global.locked = false;
-        });
-      }
-    });
     homecontext = context;
 
     getcolor();
@@ -1638,403 +1626,362 @@ class _HomePageState extends State<HomePage> {
           children: [
             getwindow(context),
             Expanded(
-                child: Scaffold(
-              bottomNavigationBar: Container(
-                //圆角
-                width: MediaQuery.of(context).size.width / 2,
-                child: BottomSheetBar(
-                  controller: Global.bottomSheetBarController,
-                  color: //透明
-                      Colors.white,
-                  isDismissable: false,
-                  locked: Global.locked,
-                  height: Global.bottombarheight,
-                  expandedBuilder: (scrollController) {
-                    return MaterialApp(
-                      debugShowCheckedModeBanner: false,
-                      home: chat_gpt(),
-                    );
+              child: Scaffold(
+                appBar: CalendarAgenda(
+                  controller: _calendarAgendaControllerAppBar,
+                  initialDate: DateTime.now(),
+                  appbar: true,
+                  calendarLogo: getcalanderlogopngx(),
+                  selectedDayLogo:
+                      getlogopngx(), //使用ImageProvider<Object>加载IMage类型的logopic
+                  backgroundColor: Global.home_currentcolor,
+                  firstDate: Global.calendar_first_day,
+                  lastDate: Global.calendar_last_day,
+                  locale: 'zh_CN',
+                  selectedDateColor: Colors.green.shade900,
+                  fullCalendarScroll: FullCalendarScroll.vertical,
+                  fullCalendarDay: WeekDay.long,
+                  dateColor: Colors.white,
+                  calendarEventColor: Global.home_currentcolor,
+                  events: [DateTime.now().subtract(Duration(days: 0))],
+                  onDateSelected: (date) {
+                    hItems(date);
                   },
-                  collapsed: SalomonBottomBar(
-                    currentIndex: 0,
-                    onTap: (i) {
-                      // setState(() => _currentIndex = i);
-                    },
-                    items: [
-                      /// Home
-                      SalomonBottomBarItem(
-                        icon: Icon(Icons.home),
-                        title: Text("此处上滑和chatgpt聊天"),
-                        selectedColor: Global.home_currentcolor,
-                      ),
-                    ],
-                  ),
-                  body: Scaffold(
-                    appBar: CalendarAgenda(
-                      controller: _calendarAgendaControllerAppBar,
-                      initialDate: DateTime.now(),
-                      appbar: true,
-                      calendarLogo: getcalanderlogopngx(),
-                      selectedDayLogo:
-                          getlogopngx(), //使用ImageProvider<Object>加载IMage类型的logopic
-                      backgroundColor: Global.home_currentcolor,
-                      firstDate: Global.calendar_first_day,
-                      lastDate: Global.calendar_last_day,
-                      locale: 'zh_CN',
-                      selectedDateColor: Colors.green.shade900,
-                      fullCalendarScroll: FullCalendarScroll.vertical,
-                      fullCalendarDay: WeekDay.long,
-                      dateColor: Colors.white,
-                      calendarEventColor: Global.home_currentcolor,
-                      events: [DateTime.now().subtract(Duration(days: 0))],
-                      onDateSelected: (date) {
-                        hItems(date);
-                      },
-                    ),
-                    body: SideMenu(
-                        background: Global.home_currentcolor,
-                        key: _sideMenuKey,
-                        menu: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(vertical: 50.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(left: 16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Lottie.asset('assets/score_detail.json'),
-                                    SizedBox(height: 16.0),
-                                    TextButton(
-                                      onPressed: () =>
-                                          Global().getrecently(context),
-                                      child: Text(
-                                        shijian(),
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(height: 20.0),
-                                  ],
-                                ),
-                              ),
-                              ListTile(
-                                leading: const Icon(Icons.cached,
-                                    size: 20.0, color: Colors.white),
-                                title: Text(
-                                  '查看成绩',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) => scorepage(),
+                ),
+                body: SideMenu(
+                    background: Global.home_currentcolor,
+                    key: _sideMenuKey,
+                    menu: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(vertical: 50.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Lottie.asset('assets/score_detail.json'),
+                                SizedBox(height: 16.0),
+                                TextButton(
+                                  onPressed: () =>
+                                      Global().getrecently(context),
+                                  child: Text(
+                                    shijian(),
+                                    style: TextStyle(color: Colors.white),
                                   ),
                                 ),
+                                SizedBox(height: 20.0),
+                              ],
+                            ),
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.cached,
+                                size: 20.0, color: Colors.white),
+                            title: Text(
+                              '查看成绩',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => scorepage(),
                               ),
-                              ListTile(
-                                  leading: const Icon(Icons.score_outlined,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    'chatgpt(可连续对话)',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).pop(); //关闭侧边栏
+                            ),
+                          ),
+                          ListTile(
+                              leading: const Icon(Icons.score_outlined,
+                                  size: 20.0, color: Colors.white),
+                              title: Text(
+                                'chatgpt(可连续对话)',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop(); //关闭侧边栏
 
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => chat_gpt()));
-                                  }),
-                              ListTile(
-                                leading: const Icon(Icons.book_online,
-                                    size: 20.0, color: Colors.white),
-                                title: Text(
-                                  '一键评教',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).pop(); //关闭侧边栏
-                                  Global()
-                                      .No_perception_login()
-                                      .then((value) => null);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => pingjiao()));
-                                },
-                              ),
-                              ListTile(
-                                leading: const Icon(Icons.book_online,
-                                    size: 20.0, color: Colors.white),
-                                title: Text(
-                                  '请假历史',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).pop(); //关闭侧边栏
-                                  Global()
-                                      .No_perception_login()
-                                      .then((value) => null);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => qingjia()));
-                                },
-                              ),
-                              ListTile(
-                                leading: const Icon(Icons.colorize,
-                                    size: 20.0, color: Colors.white),
-                                title: Text(
-                                  '调个色',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onTap: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return MaterialApp(
-                                            theme: ThemeData.light(),
-                                            darkTheme: ThemeData.dark(),
-                                            home: AlertDialog(
-                                              title: Text('选择当前页颜色'),
-                                              content: SingleChildScrollView(
-                                                child: ColorPicker(
-                                                  pickerColor:
-                                                      Global.home_currentcolor,
-                                                  onColorChanged: changeColor,
-                                                  colorPickerWidth: 300.0,
-                                                  pickerAreaHeightPercent: 0.7,
-                                                  enableAlpha: false,
-                                                  displayThumbColor: true,
-                                                  showLabel: true,
-                                                  paletteType: PaletteType.hsv,
-                                                  pickerAreaBorderRadius:
-                                                      const BorderRadius.only(
-                                                    topLeft:
-                                                        const Radius.circular(
-                                                            2.0),
-                                                    topRight:
-                                                        const Radius.circular(
-                                                            2.0),
-                                                  ),
-                                                ),
-                                              ),
-                                              actions: <Widget>[
-                                                TextButton(
-                                                  child: const Text('确定'),
-                                                  onPressed: () async {
-                                                    setState(() => Global
-                                                            .home_currentcolor =
-                                                        Global.home_pickcolor);
-                                                    getApplicationDocumentsDirectory()
-                                                        .then((value) {
-                                                      File file = File(
-                                                          value.path +
-                                                              '/color.txt');
-                                                      //判断文件是否存在
-                                                      if (file.existsSync()) {
-                                                        //存在则写入
-                                                        file.writeAsString(Global
-                                                            .home_currentcolor
-                                                            .value
-                                                            .toString());
-                                                      } else {
-                                                        //不存在则创建文件并写入
-                                                        file.createSync();
-                                                        file.writeAsString(Global
-                                                            .home_currentcolor
-                                                            .value
-                                                            .toString());
-                                                      }
-                                                    });
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ),
-                                              ],
-                                            ));
-                                      });
-                                },
-                              ),
-                              ListTile(
-                                  leading: const Icon(Icons.score_outlined,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    '查看学习通已批完的考试但未发布的成绩',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).pop(); //关闭侧边栏
-
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                chaoxinglogin()));
-                                  }),
-                              ListTile(
-                                leading: const Icon(Icons.cached,
-                                    size: 20.0, color: Colors.white),
-                                title: Text(
-                                  '重新登入',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onTap: () {
-                                  deleteFile();
-                                  AchievementView(context,
-                                      title: "成功!",
-                                      subTitle: "已清除课程和成绩缓存，请退出app重新登录",
-                                      //onTab: _onTabAchievement,
-                                      icon: Icon(
-                                        Icons.insert_emoticon,
-                                        color: Colors.white,
-                                      ),
-                                      //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
-                                      //borderRadius: 5.0,
-                                      color: Colors.green,
-                                      //textStyleTitle: TextStyle(),
-                                      //textStyleSubTitle: TextStyle(),
-                                      //alignment: Alignment.topCenter,
-                                      duration: Duration(seconds: 3),
-                                      isCircle: true, listener: (status) {
-                                    print(status);
-                                  })
-                                    ..show();
-                                },
-                              ),
-                              ListTile(
-                                leading: const Icon(Icons.settings,
-                                    size: 20.0, color: Colors.white),
-                                title: Text(
-                                  '关于&设置',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                onTap: () {
-                                  Navigator.push(
+                                Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => about()),
-                                  );
+                                        builder: (context) => chat_gpt()));
+                              }),
+                          ListTile(
+                            leading: const Icon(Icons.book_online,
+                                size: 20.0, color: Colors.white),
+                            title: Text(
+                              '一键评教',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop(); //关闭侧边栏
+                              Global()
+                                  .No_perception_login()
+                                  .then((value) => null);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => pingjiao()));
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.book_online,
+                                size: 20.0, color: Colors.white),
+                            title: Text(
+                              '请假历史',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () {
+                              Navigator.of(context).pop(); //关闭侧边栏
+                              Global()
+                                  .No_perception_login()
+                                  .then((value) => null);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => qingjia()));
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.colorize,
+                                size: 20.0, color: Colors.white),
+                            title: Text(
+                              '调个色',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return MaterialApp(
+                                        theme: ThemeData.light(),
+                                        darkTheme: ThemeData.dark(),
+                                        home: AlertDialog(
+                                          title: Text('选择当前页颜色'),
+                                          content: SingleChildScrollView(
+                                            child: ColorPicker(
+                                              pickerColor:
+                                                  Global.home_currentcolor,
+                                              onColorChanged: changeColor,
+                                              colorPickerWidth: 300.0,
+                                              pickerAreaHeightPercent: 0.7,
+                                              enableAlpha: false,
+                                              displayThumbColor: true,
+                                              showLabel: true,
+                                              paletteType: PaletteType.hsv,
+                                              pickerAreaBorderRadius:
+                                                  const BorderRadius.only(
+                                                topLeft:
+                                                    const Radius.circular(2.0),
+                                                topRight:
+                                                    const Radius.circular(2.0),
+                                              ),
+                                            ),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: const Text('确定'),
+                                              onPressed: () async {
+                                                setState(() =>
+                                                    Global.home_currentcolor =
+                                                        Global.home_pickcolor);
+                                                getApplicationDocumentsDirectory()
+                                                    .then((value) {
+                                                  File file = File(value.path +
+                                                      '/color.txt');
+                                                  //判断文件是否存在
+                                                  if (file.existsSync()) {
+                                                    //存在则写入
+                                                    file.writeAsString(Global
+                                                        .home_currentcolor.value
+                                                        .toString());
+                                                  } else {
+                                                    //不存在则创建文件并写入
+                                                    file.createSync();
+                                                    file.writeAsString(Global
+                                                        .home_currentcolor.value
+                                                        .toString());
+                                                  }
+                                                });
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        ));
+                                  });
+                            },
+                          ),
+                          ListTile(
+                              leading: const Icon(Icons.score_outlined,
+                                  size: 20.0, color: Colors.white),
+                              title: Text(
+                                '查看学习通已批完的考试但未发布的成绩',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop(); //关闭侧边栏
+
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => chaoxinglogin()));
+                              }),
+                          ListTile(
+                            leading: const Icon(Icons.cached,
+                                size: 20.0, color: Colors.white),
+                            title: Text(
+                              '重新登入',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () {
+                              deleteFile();
+                              AchievementView(context,
+                                  title: "成功!",
+                                  subTitle: "已清除课程和成绩缓存，请退出app重新登录",
+                                  //onTab: _onTabAchievement,
+                                  icon: Icon(
+                                    Icons.insert_emoticon,
+                                    color: Colors.white,
+                                  ),
+                                  //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
+                                  //borderRadius: 5.0,
+                                  color: Colors.green,
+                                  //textStyleTitle: TextStyle(),
+                                  //textStyleSubTitle: TextStyle(),
+                                  //alignment: Alignment.topCenter,
+                                  duration: Duration(seconds: 3),
+                                  isCircle: true, listener: (status) {
+                                print(status);
+                              })
+                                ..show();
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.settings,
+                                size: 20.0, color: Colors.white),
+                            title: Text(
+                              '关于&设置',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => about()),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    type: SideMenuType.slideNRotate,
+                    onChange: (_isOpened) {
+                      if (isOpened) {
+                        Global.bottombarheight = 60;
+                      } else {
+                        Global.bottombarheight = 0;
+                      }
+                      setState(() => isOpened = _isOpened);
+                    },
+                    child: IgnorePointer(
+                      ignoring: isOpened,
+                      child: Scaffold(
+                        appBar: AppBar(
+                            backgroundColor: Global.home_currentcolor,
+                            title: Text(title),
+                            centerTitle: true,
+                            leading: IconButton(
+                              icon: const Icon(Icons.menu),
+                              onPressed: () {
+                                toggleMenu();
+                              },
+                            ),
+                            actions: [
+                              IconButton(
+                                key: scoredetailbtn,
+                                icon: Icon(Icons.score),
+                                onPressed: () {
+                                  if (isdownload) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => scorepage()),
+                                    );
+                                  } else {
+                                    AchievementView(context,
+                                        title: "出错啦!",
+                                        subTitle: '请确认现在是否学校在抢课或其他原因导致成绩下载超时',
+                                        //onTab: _onTabAchievement,
+                                        icon: Icon(
+                                          Icons.error,
+                                          color: Colors.white,
+                                        ),
+                                        //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
+                                        //borderRadius: 5.0,
+                                        color: Colors.red,
+                                        //textStyleTitle: TextStyle(),
+                                        //textStyleSubTitle: TextStyle(),
+                                        //alignment: Alignment.topCenter,
+                                        duration: Duration(seconds: 3),
+                                        isCircle: true, listener: (status) {
+                                      print(status);
+                                    })
+                                      ..show();
+                                  }
                                 },
                               ),
-                            ],
+                            ]),
+                        body: Container(
+                          //padding靠左
+                          child: Scaffold(
+                            body: ListView(
+                              children: dailycourse,
+                            ),
                           ),
                         ),
-                        type: SideMenuType.slideNRotate,
-                        onChange: (_isOpened) {
-                          if (isOpened) {
-                            Global.bottombarheight = 60;
-                          } else {
-                            Global.bottombarheight = 0;
-                          }
-                          setState(() => isOpened = _isOpened);
-                        },
-                        child: IgnorePointer(
-                          ignoring: isOpened,
-                          child: Scaffold(
-                            appBar: AppBar(
-                                backgroundColor: Global.home_currentcolor,
-                                title: Text(title),
-                                centerTitle: true,
-                                leading: IconButton(
-                                  icon: const Icon(Icons.menu),
-                                  onPressed: () {
-                                    toggleMenu();
-                                  },
-                                ),
-                                actions: [
-                                  IconButton(
-                                    key: scoredetailbtn,
-                                    icon: Icon(Icons.score),
-                                    onPressed: () {
-                                      if (isdownload) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  scorepage()),
-                                        );
-                                      } else {
-                                        AchievementView(context,
-                                            title: "出错啦!",
-                                            subTitle:
-                                                '请确认现在是否学校在抢课或其他原因导致成绩下载超时',
-                                            //onTab: _onTabAchievement,
-                                            icon: Icon(
-                                              Icons.error,
-                                              color: Colors.white,
-                                            ),
-                                            //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
-                                            //borderRadius: 5.0,
-                                            color: Colors.red,
-                                            //textStyleTitle: TextStyle(),
-                                            //textStyleSubTitle: TextStyle(),
-                                            //alignment: Alignment.topCenter,
-                                            duration: Duration(seconds: 3),
-                                            isCircle: true, listener: (status) {
-                                          print(status);
-                                        })
-                                          ..show();
-                                      }
-                                    },
-                                  ),
-                                ]),
-                            body: Container(
-                              //padding靠左
-                              child: Scaffold(
-                                body: ListView(
-                                  children: dailycourse,
-                                ),
-                              ),
-                            ),
-                            floatingActionButton: FloatingActionButton(
-                              tooltip: '回到今天',
-                              onPressed: () {
-                                hItems(DateTime.now());
-                                setState(() {
-                                  print('回到今天');
-                                  _calendarAgendaControllerAppBar
-                                      .goToDay(DateTime.now());
-                                });
-                              },
-                              child: Text('回到\n今天',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                  )),
-                              backgroundColor: Global.home_currentcolor,
-                            ),
-                          ),
-                        )),
-                  ),
-                ),
+                        floatingActionButton: FloatingActionButton(
+                          tooltip: '回到今天',
+                          onPressed: () {
+                            hItems(DateTime.now());
+                            setState(() {
+                              print('回到今天');
+                              _calendarAgendaControllerAppBar
+                                  .goToDay(DateTime.now());
+                            });
+                          },
+                          child: Text('回到\n今天',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                              )),
+                          backgroundColor: Global.home_currentcolor,
+                        ),
+                      ),
+                    )),
               ),
-            )),
+            ),
           ],
         ),
       ),

@@ -124,9 +124,6 @@ class Global {
   static bool locked = false;
   //一卡通余额
   static String yikatong_balance = '';
-  //上滑控制器
-  static BottomSheetBarController bottomSheetBarController =
-      BottomSheetBarController();
   //成绩组件列表
   static List<Widget> scorelist = [];
   //成绩信息
