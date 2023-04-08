@@ -66,8 +66,6 @@ dependencies:
   cupertino_icons: ^1.0.3
   delayed_display: ^2.0.0
   audioplayers: ^0.20.0 
-  hive: ^2.0.4
-  hive_flutter: ^1.1.0
   uuid: ^3.0.5
   intl: ^0.17.0
   flutter_datetime_picker: ^1.5.1

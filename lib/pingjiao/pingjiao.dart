@@ -16,8 +16,6 @@ class pingjiao extends StatefulWidget {
   _pingjiaoState createState() => _pingjiaoState();
 }
 
-var dio = Dio();
-
 int isfirst = 1;
 double pingjiaohighmark = 95;
 double pingjiaolowmark = 20;
@@ -77,6 +75,8 @@ class _pingjiaoState extends State<pingjiao> {
   }
 
   void downApkFunction() async {
+    var dio = Dio();
+
     //下载评教
     getApplicationDocumentsDirectory().then((value) async {
       var urlpingjiao =
@@ -102,6 +102,8 @@ class _pingjiaoState extends State<pingjiao> {
   }
 
   void loadpingjiao() async {
+    var dio = Dio();
+
     var pingjiaoinfo;
     getpingjiaoInfo().then((value) {
       pingjiaoinfo = json.decode(value);

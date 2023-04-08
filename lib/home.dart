@@ -12,6 +12,7 @@ import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
+import 'package:muse_nepu_course/qingjia/qingjia.dart';
 import 'package:muse_nepu_course/windowsfloat.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
@@ -20,8 +21,6 @@ import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:timelines/timelines.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:window_manager/window_manager.dart';
-import 'Todo/main.dart';
-import 'Todo/view/home/home_view.dart';
 import 'coursemenu/about.dart';
 import 'coursemenu/scoredetail.dart';
 import 'dart:io';
@@ -584,6 +583,7 @@ class _HomePageState extends State<HomePage> {
     getcolor();
     //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
     getApplicationDocumentsDirectory().then((value) {
+      Dio dio = new Dio();
       File file = new File(value.path + '/course.json');
       file.exists().then((value) {
         if (!value) {
@@ -1651,48 +1651,9 @@ class _HomePageState extends State<HomePage> {
                   height: Global.bottombarheight,
                   expandedBuilder: (scrollController) {
                     return MaterialApp(
-                        debugShowCheckedModeBanner: false,
-                        theme: ThemeData(
-                          textTheme: const TextTheme(
-                            headline1: TextStyle(
-                              color: Colors.black,
-                              fontSize: 45,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            subtitle1: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w300,
-                            ),
-                            headline2: TextStyle(
-                              color: Colors.white,
-                              fontSize: 21,
-                            ),
-                            headline3: TextStyle(
-                              color: Color.fromARGB(255, 234, 234, 234),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            headline4: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 17,
-                            ),
-                            headline5: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                            subtitle2: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            headline6: TextStyle(
-                              fontSize: 40,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ),
-                        home: BaseWidget(child: HomeView()));
+                      debugShowCheckedModeBanner: false,
+                      home: chat_gpt(),
+                    );
                   },
                   collapsed: SalomonBottomBar(
                     currentIndex: 0,
@@ -1703,7 +1664,7 @@ class _HomePageState extends State<HomePage> {
                       /// Home
                       SalomonBottomBarItem(
                         icon: Icon(Icons.home),
-                        title: Text("此处上滑规划Todo"),
+                        title: Text("此处上滑和chatgpt聊天"),
                         selectedColor: Global.home_currentcolor,
                       ),
                     ],
@@ -1811,6 +1772,27 @@ class _HomePageState extends State<HomePage> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => pingjiao()));
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.book_online,
+                                    size: 20.0, color: Colors.white),
+                                title: Text(
+                                  '请假历史',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pop(); //关闭侧边栏
+                                  Global()
+                                      .No_perception_login()
+                                      .then((value) => null);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => qingjia()));
                                 },
                               ),
                               ListTile(

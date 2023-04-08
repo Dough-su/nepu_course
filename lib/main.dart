@@ -3,15 +3,12 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/progress.dart';
 import 'package:muse_nepu_course/easy_splash_screen.dart';
 import 'package:lunar/lunar.dart';
 import 'package:window_manager/window_manager.dart';
-import 'Todo/models/task.dart';
 import 'chess/bloc/app_blocs.dart';
 import 'global.dart';
 import 'package:jpush_flutter/jpush_flutter.dart';
@@ -46,16 +43,6 @@ Future<void> main() async {
     await launchAtStartup.enable();
     Global.getdesktopinfo();
   }
-
-  /// Initial Hive DB
-  await Hive.initFlutter();
-
-  /// Register Hive Adapter
-  Hive.registerAdapter<Task>(TaskAdapter());
-
-  /// Open box
-  var box = await Hive.openBox<Task>("tasksBox");
-
   Global.getauto_update_course();
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();

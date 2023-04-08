@@ -580,8 +580,12 @@ class Global {
   Future<void> deletepj() async {
     getApplicationDocumentsDirectory().then((value) {
       File file = File(value.path + '/pingjiao.json');
+      File file1 = File(value.path + '/qingjia.json');
       if (file.existsSync()) {
         file.deleteSync();
+      }
+      if (file1.existsSync()) {
+        file1.deleteSync();
       }
     });
   }
