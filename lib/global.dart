@@ -52,7 +52,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "123";
+  static String version = "124";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -96,6 +96,38 @@ class Global {
   static String messages_pure = '';
   //注入消息
   static String pre_message = '';
+  //账号
+  static String account = '';
+  //密码
+  static String password = '';
+  //qrocde
+  static String qrcode = '';
+  //qrocdegetter
+  static String qrcodegetter() {
+    return qrcode;
+  }
+
+  //qrcode刷新时间
+  static DateTime qrcode_time = DateTime.now();
+  //保存账号密码到文件
+  static void saveaccount() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/account.txt');
+      file.writeAsStringSync(account + ' ' + password, mode: FileMode.write);
+    });
+  }
+
+  //从文件中读取账号密码
+  void getaccount() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/account.txt');
+      if (file.existsSync()) {
+        account = file.readAsStringSync().split(' ')[0];
+        password = file.readAsStringSync().split(' ')[1];
+      }
+      getaccno();
+    });
+  }
 
   //保存自动更新课程状态到文件
   static void saveauto_update_course() async {
@@ -975,5 +1007,48 @@ class Global {
             );
           });
     });
+  }
+
+  //获取一卡通的accno
+  Future<String> getaccno() async {
+    if (Global.account == '') {
+      Response response = await Dio().post(
+          'http://wxy.hrbxyz.cn/api/Apixyk/getcardinfo?schoolname=东北石油大学&account=' +
+              Global.jwc_xuehao +
+              '&password=112233');
+      //转为json
+      var data = json.decode(response.toString());
+      account = data['data']['obj']['AccNo'];
+      print(account);
+      Response response2 = await Dio().post(
+          'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/pw?stuid=' +
+              Global.jwc_xuehao);
+      password = response2.data;
+      saveaccount();
+      return "ok";
+    }
+    return "ok";
+  }
+
+  //获取一卡通的二维码
+  Future<String> getqr() async {
+    getaccno().then((value) async {
+      Response response2 = await Dio().post(
+          'http://wxy.hrbxyz.cn/api/Apixyk/getval?schoolname=东北石油大学&account=' +
+              jwc_xuehao +
+              '&accno=' +
+              account +
+              '&password=' +
+              password.substring(password.length - 6, password.length));
+      //{code: 1, msg: 返回成功, time: 1681376353, data: XYWM:1659140069602523EBA02}
+      //转为json
+      var data = json.decode(response2.toString());
+      qrcode = data['data'];
+      print(qrcode);
+
+      return "ok";
+    });
+
+    return "ok";
   }
 }

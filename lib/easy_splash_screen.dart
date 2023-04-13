@@ -113,6 +113,9 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
     //获取主页和成绩页面的成绩信息
     Global().getxuehao();
     Global().score_getcolor();
+    //读取一卡通的账号
+    Global().getaccount();
+
     Global().home_getcolor();
     Global().deletepj();
     Global().getlist();
