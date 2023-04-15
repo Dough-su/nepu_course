@@ -573,10 +573,10 @@ class _HomePageState extends State<HomePage> {
     bottomSheetBarController.addListener(() {
       if (bottomSheetBarController.isExpanded == true) {
         //如果是展开状态
-        setState(() {
-          if (Global.locked == false) Global().getqr();
-          Global.locked = true;
-        });
+        // setState(() {
+        //   if (Global.locked == false) Global().getqr();
+        //   Global.locked = true;
+        // });
       } else {
         setState(() {
           Global.locked = false;

@@ -103,6 +103,7 @@ dependencies:
   flutter_link_previewer: ^3.2.0
   flutter_parsed_text: ^2.2.1
   pretty_qr_code: ^2.0.3
+  slide_countdown: ^0.5.0
 
   
 
