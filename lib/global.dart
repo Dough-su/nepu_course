@@ -1043,7 +1043,11 @@ class Global {
       //{code: 1, msg: 返回成功, time: 1681376353, data: XYWM:1659140069602523EBA02}
       //转为json
       var data = json.decode(response2.toString());
-      qrcode = data['data'];
+      try {
+        qrcode = data['data'];
+      } catch (e) {
+        qrcode = '一卡通系统错误';
+      }
       print(qrcode);
 
       return "ok";

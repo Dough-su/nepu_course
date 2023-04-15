@@ -12,43 +12,11 @@ class QRCode extends StatefulWidget {
 }
 
 class _QRCodeState extends State<QRCode> {
-  int _countdownTime = 50;
-
   final streamDuration = StreamDuration(Duration(seconds: 50));
 
   void initState() {
     super.initState();
     Global().getqr();
-    // _countdownTimer();
-  }
-
-  String endtime = '还有55s';
-  //定时器50s,每50s刷新一次二维码，每1s刷新一次endtime
-  // void _countdownTimer() {
-  //   const oneSec = const Duration(seconds: 1);
-  //   var callback = (timer) => {
-  //         setState(() {
-  //           if (_countdownTime < 1) {
-  //             //刷新二维码并重置endtime
-  //             Global().getqr();
-  //             _countdownTime = 50;
-  //             streamDuration.change(Duration(seconds: 51));
-
-  //             setState(() {});
-  //           } else {
-  //             print(_countdownTime);
-  //             _countdownTime = _countdownTime - 1;
-  //             endtime = '还有$_countdownTime s' + Global.qrcode + '\n点击立即刷新';
-  //             setState(() {});
-  //           }
-  //         })
-  //       };
-  //   Timer.periodic(oneSec, callback);
-  // }
-
-  //获取endtime
-  String getendtime() {
-    return endtime;
   }
 
   String passtemp = "";
@@ -109,10 +77,10 @@ class _QRCodeState extends State<QRCode> {
                   print("剩余" + remaining.inSeconds.toString()); //这里可以获取到剩余时间
                   //如果剩余时间等于1,恢复倒计时为50s
                   if (remaining.inSeconds <= 1) {
-                    streamDuration.change(Duration(seconds: 51));
-                    Global().getqr();
-                    _countdownTime = 50;
-                    setState(() {});
+                    Global().getqr().then((value) {
+                      streamDuration.change(Duration(seconds: 51));
+                      setState(() {});
+                    });
                   }
                 },
               ),
@@ -120,10 +88,11 @@ class _QRCodeState extends State<QRCode> {
             Expanded(
               child: GestureDetector(
                 onTap: () {
-                  Global().getqr();
-                  streamDuration.change(Duration(seconds: 51));
-                  _countdownTime = 50;
-                  setState(() {});
+                  print('被点击了');
+                  Global().getqr().then((value) {
+                    streamDuration.change(Duration(seconds: 51));
+                    setState(() {});
+                  });
                 },
                 child: PrettyQr(
                   typeNumber: 3,
