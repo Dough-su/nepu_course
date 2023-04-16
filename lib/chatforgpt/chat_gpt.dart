@@ -46,6 +46,8 @@ class _chat_gptState extends State<chat_gpt> {
   @override
   void initState() {
     super.initState();
+    Global.bottombarheight = 60;
+
     Dio dio = Dio();
     dio
         .get('https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/')

@@ -96,6 +96,8 @@ class _pingjiaoState extends State<pingjiao> {
 
   void initState() {
     Global.pureyzmset(false);
+    Global.bottombarheight = 60;
+
     Global().No_perception_login().then((value) async {
       downApkFunction();
     });

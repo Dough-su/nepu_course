@@ -20,6 +20,9 @@ class _QRCodeState extends State<QRCode> {
   }
 
   String passtemp = "";
+  void refresh() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +80,8 @@ class _QRCodeState extends State<QRCode> {
                   print("剩余" + remaining.inSeconds.toString()); //这里可以获取到剩余时间
                   //如果剩余时间等于1,恢复倒计时为50s
                   if (remaining.inSeconds <= 1) {
+                    streamDuration.change(Duration(seconds: 51));
                     Global().getqr().then((value) {
-                      streamDuration.change(Duration(seconds: 51));
                       setState(() {});
                     });
                   }

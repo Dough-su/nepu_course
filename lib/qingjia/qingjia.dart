@@ -97,6 +97,8 @@ class _qingjiaState extends State<qingjia> {
 
   void initState() {
     Global.pureyzmset(false);
+    Global.bottombarheight = 60;
+
     Global().No_perception_login().then((value) async {
       downApkFunction();
     });

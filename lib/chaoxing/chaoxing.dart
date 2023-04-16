@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
+import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:path_provider/path_provider.dart';
@@ -117,6 +118,8 @@ class _chaoxingState extends State<chaoxing> {
 
   void initState() {
     super.initState();
+    Global.bottombarheight = 60;
+
     //等待页面加载完成
     scorelist();
   }

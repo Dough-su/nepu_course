@@ -17,6 +17,8 @@ import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
+import 'qrcode/qrcode.dart';
+
 class LoginData {
   final String name;
   final String password;
@@ -52,7 +54,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "125";
+  static String version = "126";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -1032,7 +1034,7 @@ class Global {
 
   //获取一卡通的二维码
   Future<String> getqr() async {
-    getaccno().then((value) async {
+    await getaccno().then((value) async {
       Response response2 = await Dio().post(
           'http://wxy.hrbxyz.cn/api/Apixyk/getval?schoolname=东北石油大学&account=' +
               jwc_xuehao +
@@ -1049,8 +1051,6 @@ class Global {
         qrcode = '一卡通系统错误';
       }
       print(qrcode);
-
-      return "ok";
     });
 
     return "ok";
