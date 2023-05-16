@@ -4,6 +4,7 @@ import 'package:achievement_view/achievement_view.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:card_flip/card_flip.dart';
 import 'package:flutter/foundation.dart';
+import 'package:muse_nepu_course/chat_stream.dart';
 import 'package:muse_nepu_course/chatforgpt/chat_gpt.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';

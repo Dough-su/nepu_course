@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,7 @@ import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mime/mime.dart';
 import 'package:flutter/services.dart'
-    show Clipboard, ClipboardData, rootBundle;
+    show Clipboard, ClipboardData, Uint8List, rootBundle;
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -28,6 +30,8 @@ int _selectedIndex = -1;
 String? _selectedValue;
 
 class _chat_gptState extends State<chat_gpt> {
+  StreamController<List<types.Message>> _streamController = StreamController();
+  late String xdata = '';
   final _user = const types.User(
     id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
   );
@@ -56,6 +60,12 @@ class _chat_gptState extends State<chat_gpt> {
     });
     _loadMessages();
     loadprompts();
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
   }
 
   @override
@@ -149,12 +159,26 @@ class _chat_gptState extends State<chat_gpt> {
         //Widget Function(CustomMessage, {required int messageWidth})? customMessageBuilder,
         customMessageBuilder: (p0, {required messageWidth}) {
           //自定义消息
-          return Container(
-            width: messageWidth.toDouble(),
-            child: Markdown(
-              data: '111',
-              selectable: true,
-            ),
+          return StreamBuilder(
+            stream: _streamController.stream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Center(
+                  child: Text(snapshot.data.toString()),
+                );
+              } else {
+                return Center(
+                  child: Text('Waiting for data...'),
+                );
+              }
+            },
+
+            // return Container(
+            //   width: messageWidth.toDouble(),
+            //   child: Markdown(
+            //     data: '111',
+            //     selectable: true,
+            //   ),
           );
         },
         showUserNames: true,
@@ -175,9 +199,6 @@ class _chat_gptState extends State<chat_gpt> {
             text: '等待回复中...',
           ));
     });
-    Dio dio = Dio();
-    dio.options.connectTimeout = 60000; // 设置连接超时时间为60秒
-    dio.options.receiveTimeout = 60000; // 设置接收超时时间为60秒
     Global.messages_pure += "human: '" + message + "';";
     int tokenCount = Global.messages_pure.split(" ").map((word) {
       if (RegExp(r"[\u4e00-\u9fa5]").hasMatch(word)) {
@@ -204,34 +225,52 @@ class _chat_gptState extends State<chat_gpt> {
     } else {
       print("未超过7000个token" + tokenCount.toString());
     }
+    Dio dio = new Dio();
+
+    var headers = {'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)'};
+
+    FormData formData = FormData.fromMap({
+      'content': Global.messages_pure,
+    });
+
     try {
-      final response = await dio.get(
-          'https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/?content=' +
-              Global.messages_pure);
-      if (response.data.toString() == '') {
-        response.data = '服务有些繁忙哦，请再试一次吧';
-      }
-      print(response.data.toString());
-      setState(() {
-        Global.messages
-            //删除最后一条消息
-            .removeAt(0);
-      });
-      final textMessage = types.TextMessage(
-        author: types.User(id: '131231-322-4a89-ae75-a22bf8d6f3ac'),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        id: //随机生成id
-            const Uuid().v4(),
-        text: response.data.toString(),
+      Response response = await Dio().post(
+        'https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/test',
+        data: formData,
+        options: Options(
+          headers: headers,
+          responseType: ResponseType.stream,
+        ),
       );
-      Global.messages_pure += " AI: '" + response.data.toString() + "';";
-      _addMessage(textMessage);
-    } on DioError catch (e) {
-      if (e.type == DioErrorType.connectTimeout ||
-          e.type == DioErrorType.receiveTimeout) {
-      } else {
-        print(e);
-      }
+
+      Timer timer;
+      bool isTimeout = false;
+      //500毫秒执行一次
+      timer = Timer.periodic(Duration(milliseconds: 500), (timer) {
+        if (isTimeout) {
+          timer.cancel();
+          print('取消定时器');
+          Global.messages_pure += " AI: '" + xdata.toString() + "';";
+          setState(() {});
+          xdata = ' ';
+          return;
+        }
+        setState(() {}); //每次执行完函数更新状态
+      });
+      response.data.stream.listen((value) {
+        xdata += utf8.decode(value);
+        Global.messages[0] = types.TextMessage(
+          author: types.User(id: '131231-322-4a89-ae75-a22bf8d6f3ac'),
+          createdAt: DateTime.now().millisecondsSinceEpoch,
+          id: const Uuid().v4(),
+          text: xdata,
+        );
+      }, onDone: () {
+        print('数据接收完毕');
+        isTimeout = true;
+      });
+    } catch (e) {
+      print(e);
     }
   }
 
