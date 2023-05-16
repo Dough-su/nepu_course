@@ -177,7 +177,6 @@ class TimelineDots {
       height: 12,
       width: 12,
       decoration: BoxDecoration(
-        color: Theme.of(context).accentColor,
         image: null,
         shape: BoxShape.circle,
       ),
