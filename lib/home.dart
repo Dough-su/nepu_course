@@ -197,7 +197,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   RiveAnimationController _controller = SimpleAnimation('行走');
-
+  late RiveAnimationController _controller2;
+  bool _isPlaying = false;
+  bool _isStanding = true;
+  int _standingTime = 0;
   String localversion = '';
   String _cancelTag = "";
   String _apkFilePath = "";
@@ -208,7 +211,22 @@ class _HomePageState extends State<HomePage> {
         ? Container(
             child: GestureDetector(
             // onTap: _onTap,
-            child: ClickAnimation(),
+            child: GestureDetector(
+              onTap: _onTap,
+              child: RiveAnimation.asset(
+                'assets/tomadoro_v3.riv',
+                animations: const [
+                  '惊吓',
+                  '休息',
+                  '站立转休息',
+                  '惊吓转站立',
+                  '站立',
+                  '开始站立',
+                  '什么都不做'
+                ],
+                controllers: [_controller2],
+              ),
+            ),
           ))
         : Container(
             //padding靠左
@@ -422,6 +440,9 @@ class _HomePageState extends State<HomePage> {
         _state.closeSideMenu();
       } else {
         print("打开2");
+        _controller2.isActive = false;
+
+        _controller.isActive = false;
         _state.openSideMenu();
       }
     }
@@ -588,9 +609,49 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _onTap() {
+    if (_isPlaying) {
+      _controller2.isActive = false;
+      setState(() {
+        _isPlaying = false;
+        _isStanding = true;
+        _standingTime = 0;
+      });
+    } else {
+      _controller2 = OneShotAnimation(
+        _isStanding ? '惊吓转站立' : '惊吓',
+        onStop: () {
+          setState(() {
+            _isPlaying = false;
+            _isStanding = true;
+            _standingTime = 0;
+            _controller2 = SimpleAnimation('休息');
+          });
+        },
+        onStart: () => setState(() => _isPlaying = true),
+      );
+      _controller2.isActiveChanged.addListener(() {
+        if (_controller2.isActive) {
+          setState(() => _isStanding = false);
+        }
+      });
+      _controller2..isActive = true;
+    }
+  }
+
   void initState() {
     Global.pureyzmset(false);
     // Global().getxuehao();
+    _controller2 = SimpleAnimation('站立');
+    Future.delayed(Duration(seconds: 4), () {
+      if (!_isPlaying) {
+        setState(() {
+          _isStanding = false;
+          _controller2 = SimpleAnimation('休息');
+          _controller2.isActive = true;
+        });
+      }
+    });
     bottomSheetBarController.addListener(() {
       if (bottomSheetBarController.isExpanded == true) {
         //如果是展开状态
@@ -2095,18 +2156,30 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ),
                                 floatingActionButton: Stack(children: [
-                                  Positioned(
-                                    bottom: 20.0,
-                                    right: 10.0,
-                                    child: MaterialButton(
-                                      onPressed: () {},
-                                      child: Text(
-                                        '回到今天',
-                                      ),
-                                      shape: StadiumBorder(),
-                                      textColor: Colors.white,
-                                      color: Global.home_currentcolor,
+                                  MaterialButton(
+                                    onPressed: () {
+                                      _controller = SimpleAnimation('起飞');
+                                      Future.delayed(Duration(seconds: 2), () {
+                                        _controller = SimpleAnimation('保持飞翔');
+                                        _controller = SimpleAnimation('降落');
+                                        Future.delayed(Duration(seconds: 2),
+                                            () {
+                                          _controller = SimpleAnimation('行走');
+                                        });
+                                      });
+                                      hItems(DateTime.now());
+                                      setState(() {
+                                        print('回到今天');
+                                        _calendarAgendaControllerAppBar
+                                            .goToDay(DateTime.now());
+                                      });
+                                    },
+                                    child: Text(
+                                      '回到今天',
                                     ),
+                                    shape: StadiumBorder(),
+                                    textColor: Colors.white,
+                                    color: Global.home_currentcolor,
                                   ),
                                   GestureDetector(
                                     onTap: () {
@@ -2128,10 +2201,10 @@ class _HomePageState extends State<HomePage> {
                                     },
                                     child: Container(
                                       width: MediaQuery.of(context).size.width *
-                                          0.13,
+                                          0.15,
                                       height:
                                           MediaQuery.of(context).size.width *
-                                              0.13,
+                                              0.15,
                                       child: RiveAnimation.asset(
                                         'assets/birds.riv',
                                         controllers: [_controller],

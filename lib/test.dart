@@ -13,11 +13,6 @@ class _ClickAnimationState extends State<ClickAnimation> {
   bool _isPlaying = false;
   bool _isStanding = true;
   int _standingTime = 0;
-  @override
-  void dispose() {
-    _controller2.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
