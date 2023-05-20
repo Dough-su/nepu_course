@@ -24,7 +24,7 @@ Future<void> main() async {
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
       backgroundColor: Colors.transparent, //背景色
-      skipTaskbar: true, //是否在任务栏显示
+      skipTaskbar: false, //是否在任务栏显示
       titleBarStyle: TitleBarStyle.hidden,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {

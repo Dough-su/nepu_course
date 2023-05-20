@@ -2099,25 +2099,7 @@ class _HomePageState extends State<HomePage> {
                                     bottom: 20.0,
                                     right: 10.0,
                                     child: MaterialButton(
-                                      onPressed: () {
-                                        _controller = SimpleAnimation('起飞');
-                                        Future.delayed(Duration(seconds: 2),
-                                            () {
-                                          _controller = SimpleAnimation('保持飞翔');
-
-                                          _controller = SimpleAnimation('降落');
-                                          Future.delayed(Duration(seconds: 2),
-                                              () {
-                                            _controller = SimpleAnimation('行走');
-                                          });
-                                        });
-                                        hItems(DateTime.now());
-                                        setState(() {
-                                          print('回到今天');
-                                          _calendarAgendaControllerAppBar
-                                              .goToDay(DateTime.now());
-                                        });
-                                      },
+                                      onPressed: () {},
                                       child: Text(
                                         '回到今天',
                                       ),
@@ -2126,15 +2108,35 @@ class _HomePageState extends State<HomePage> {
                                       color: Global.home_currentcolor,
                                     ),
                                   ),
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.4,
-                                    height:
-                                        MediaQuery.of(context).size.width * 0.4,
-                                    child: RiveAnimation.asset(
-                                      'assets/birds.riv',
-                                      controllers: [_controller],
-                                      animations: ['行走', '起飞', '保持飞翔', '降落'],
+                                  GestureDetector(
+                                    onTap: () {
+                                      _controller = SimpleAnimation('起飞');
+                                      Future.delayed(Duration(seconds: 2), () {
+                                        _controller = SimpleAnimation('保持飞翔');
+                                        _controller = SimpleAnimation('降落');
+                                        Future.delayed(Duration(seconds: 2),
+                                            () {
+                                          _controller = SimpleAnimation('行走');
+                                        });
+                                      });
+                                      hItems(DateTime.now());
+                                      setState(() {
+                                        print('回到今天');
+                                        _calendarAgendaControllerAppBar
+                                            .goToDay(DateTime.now());
+                                      });
+                                    },
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.13,
+                                      height:
+                                          MediaQuery.of(context).size.width *
+                                              0.13,
+                                      child: RiveAnimation.asset(
+                                        'assets/birds.riv',
+                                        controllers: [_controller],
+                                        animations: ['行走', '起飞', '保持飞翔', '降落'],
+                                      ),
                                     ),
                                   ),
                                 ]),

@@ -34,7 +34,6 @@ class TimelineDots {
       height: 12,
       width: 12,
       decoration: BoxDecoration(
-        
         image: null,
         shape: BoxShape.circle,
       ),
@@ -1227,7 +1226,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
     windowManager.addListener(this);
     WindowOptions windowOptions = WindowOptions(
       backgroundColor: Colors.transparent, //背景色
-      skipTaskbar: true, //是否在任务栏显示
+      skipTaskbar: false, //是否在任务栏显示
       titleBarStyle: TitleBarStyle.hidden,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
