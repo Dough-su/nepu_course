@@ -1,0 +1,4 @@
+workflows:
+  my-workflow:
+    environment:
+      flutter: 3.7.0
