@@ -72,7 +72,7 @@ class _chat_gptState extends State<chat_gpt> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat with GPT(双击复制)'),
+        title: Text('双击对话复制'),
         //加入返回按鈕
         leading: IconButton(
           icon: Icon(Icons.arrow_back),

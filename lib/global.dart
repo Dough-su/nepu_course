@@ -12,6 +12,7 @@ import 'package:muse_nepu_course/coursemenu/scoredetail.dart';
 import 'package:muse_nepu_course/flutterlogin/flutter_login.dart';
 import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
+import 'package:muse_nepu_course/test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
@@ -55,7 +56,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "127";
+  static String version = "128";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -79,6 +80,8 @@ class Global {
   //课表日历第一天
   static DateTime calendar_first_day =
       DateTime.now().subtract(Duration(days: 1400));
+  //课表当前日期
+  static DateTime calendar_current_day = DateTime.now();
   //透明验证码
   static bool _pureyzm = false;
   //评教进入模式是否为无感知登录(默认用无感知登录)

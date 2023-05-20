@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:rive/rive.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 class QRCode extends StatefulWidget {
