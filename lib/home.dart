@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
@@ -198,6 +199,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   RiveAnimationController _controller = SimpleAnimation('行走');
   late RiveAnimationController _controller2;
+  RiveAnimationController _controller3 = SimpleAnimation('行走');
   bool _isPlaying = false;
   bool _isStanding = true;
   int _standingTime = 0;
@@ -209,8 +211,6 @@ class _HomePageState extends State<HomePage> {
   Widget home_body() {
     return dailycourse.length == 0
         ? Container(
-            child: GestureDetector(
-            // onTap: _onTap,
             child: GestureDetector(
               onTap: _onTap,
               child: RiveAnimation.asset(
@@ -227,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                 controllers: [_controller2],
               ),
             ),
-          ))
+          )
         : Container(
             //padding靠左
             child: Scaffold(
@@ -236,6 +236,25 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           );
+  }
+
+  Widget side_cat() {
+    return Container(
+      //缩小0.5倍
+      transform: Matrix4.identity()..scale(0.1),
+
+      child: RiveAnimation.asset(
+        'assets/cat.riv',
+        animations: ['Sulamine'],
+        controllers: [_controller3],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller3.dispose();
+    super.dispose();
   }
 
   void updateappx() {
@@ -440,9 +459,6 @@ class _HomePageState extends State<HomePage> {
         _state.closeSideMenu();
       } else {
         print("打开2");
-        _controller2.isActive = false;
-
-        _controller.isActive = false;
         _state.openSideMenu();
       }
     }
@@ -625,7 +641,12 @@ class _HomePageState extends State<HomePage> {
             _isPlaying = false;
             _isStanding = true;
             _standingTime = 0;
-            _controller2 = SimpleAnimation('休息');
+            //随机0-1
+            var random = Random().nextInt(2);
+            if (random == 0)
+              _controller2 = SimpleAnimation('站立');
+            else
+              _controller2 = SimpleAnimation('休息');
           });
         },
         onStart: () => setState(() => _isPlaying = true),
@@ -1836,10 +1857,6 @@ class _HomePageState extends State<HomePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      RiveAnimation.asset(
-                                        'assets/cat.riv',
-                                      ),
-                                      SizedBox(height: 16.0),
                                       TextButton(
                                         onPressed: () =>
                                             Global().getrecently(context),
@@ -2143,18 +2160,7 @@ class _HomePageState extends State<HomePage> {
                                         },
                                       ),
                                     ]),
-                                body: dailycourse.length == 0
-                                    ? Container(
-                                        child: ClickAnimation(),
-                                      )
-                                    : Container(
-                                        //padding靠左
-                                        child: Scaffold(
-                                          body: ListView(
-                                            children: dailycourse,
-                                          ),
-                                        ),
-                                      ),
+                                body: home_body(),
                                 floatingActionButton: Stack(children: [
                                   MaterialButton(
                                     onPressed: () {
@@ -2201,10 +2207,10 @@ class _HomePageState extends State<HomePage> {
                                     },
                                     child: Container(
                                       width: MediaQuery.of(context).size.width *
-                                          0.15,
+                                          0.17,
                                       height:
                                           MediaQuery.of(context).size.width *
-                                              0.15,
+                                              0.17,
                                       child: RiveAnimation.asset(
                                         'assets/birds.riv',
                                         controllers: [_controller],
