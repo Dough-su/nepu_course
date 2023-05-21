@@ -739,6 +739,67 @@ class _HomePageState extends State<HomePage> {
                     file.writeAsString(response.data);
                     Global.isfirstread = true;
                     jpushs().uploadpushid();
+
+                    var urlscore =
+                        'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
+                            await Global().getLoginInfo() +
+                            '&index=' +
+                            Global.scoreinfos[Global.scoreinfos.length - 1]
+                                    ['cjdm']
+                                .toString();
+                    print(urlscore);
+                    getApplicationDocumentsDirectory().then((value) async {
+                      try {
+                        Response response = await dio.get(urlscore);
+                        if (response.statusCode == 200) {
+                          //获取路径
+                          Directory directory =
+                              await getApplicationDocumentsDirectory();
+                          String path = directory.path + '/score.json';
+                          //追加文件
+                          File file = new File(path);
+                          file.readAsString().then((value) {
+                            value = value.replaceAll(']', '') +
+                                ',' +
+                                response.data.toString().replaceAll('[', '');
+                            file.writeAsString(value);
+                            Global().getlist();
+                          });
+                          Dialogs.materialDialog(
+                            color: Colors.white,
+                            msg: '去看看不?',
+                            title: '有新成绩啦!',
+                            lottieBuilder: Lottie.asset(
+                              'assets/rockert-new.json',
+                              fit: BoxFit.contain,
+                            ),
+                            context: context,
+                            actions: [
+                              IconButton(
+                                onPressed: () {
+                                  //关闭
+                                  Navigator.pop(context);
+                                },
+                                icon: Icon(Icons.cancel_outlined),
+                              ),
+                              IconButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  //跳转到score页面
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => scorepage()));
+                                },
+                                icon: Icon(Icons.check),
+                              ),
+                            ],
+                          );
+                        }
+                      } catch (e) {
+                        print(e);
+                      }
+                    });
                     AchievementView(context,
                         title: "课程获取成功啦!",
                         subTitle: '你的课程已经同步至最新',
