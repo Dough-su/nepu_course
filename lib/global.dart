@@ -87,7 +87,7 @@ class Global {
   //评教进入模式是否为无感知登录(默认用无感知登录)
   static bool pingjiao_login_mode = true;
   //判断是否已经从本地读取json
-  bool isfirstread = true;
+  static bool isfirstread = true;
   //课表日历最后一天
   static DateTime calendar_last_day = DateTime.now().add(Duration(days: 180));
   //在内存中的courseinfo
@@ -111,7 +111,7 @@ class Global {
   //有课的日期
   static List<DateTime> course_day = [];
   //是否显示有课的日期
-  static bool show_course_day = false;
+  static bool show_course_day = true;
   //保存是否显示有课的日期到文件
   static void save_show_course_day() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -555,11 +555,12 @@ class Global {
 
   //加载课程到内存
   loadItems(DateTime date) async {
-    if (isfirstread)
+    if (isfirstread == true) {
       getCourseInfo().then((value) async {
         courseInfox = json.decode(value);
         isfirstread = false;
       }).then((value) {
+        print('加载课程到内存');
         try {
           courseInfox[0]['jsrq'];
           //写入jsrq到文件
@@ -611,6 +612,7 @@ class Global {
           return;
         }
       });
+    }
   }
 
   //读取有课的日期

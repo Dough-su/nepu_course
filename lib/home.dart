@@ -737,7 +737,7 @@ class _HomePageState extends State<HomePage> {
                     String path = directory.path + '/course.json';
                     File file = new File(path);
                     file.writeAsString(response.data);
-                    Global().isfirstread = true;
+                    Global.isfirstread = true;
                     jpushs().uploadpushid();
                     AchievementView(context,
                         title: "课程获取成功啦!",

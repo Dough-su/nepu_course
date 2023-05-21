@@ -90,7 +90,7 @@ class _aboutState extends State<about> {
               ListTile(
                 leading: Icon(Icons.info),
                 title: Text('展示有课的日期'),
-                subtitle: Text('开启后，请重新打开课表，请注意，开启此项会导致课表性能下降(默认关闭)'),
+                subtitle: Text('开启后，请重新打开课表，请注意，开启此项会导致课表性能下降'),
                 trailing: Switch(
                     activeColor: Global.home_currentcolor,
                     onChanged: (value) {
