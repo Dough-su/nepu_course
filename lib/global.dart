@@ -616,7 +616,7 @@ class Global {
   //读取有课的日期
   static void get_course_day() {
     Global.get_show_course_day().then((value) {
-      if (value == false) {
+      if (show_course_day == false) {
         return;
       }
       getApplicationDocumentsDirectory().then((value) {
