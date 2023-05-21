@@ -194,22 +194,6 @@ class _scoreState extends State<scorepage> {
 
   int _count = 10;
 
-  //读取下载的json
-  Future<String> getxscoreInfo() async {
-    //获取路径
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + '/score1.json';
-    //读取文件
-    File file = new File(path);
-    if (await file.exists()) {
-      String scoreInfo = await file.readAsString();
-
-      return scoreInfo;
-    } else {
-      return 'wrong';
-    }
-  }
-
   //存储获取到的新成绩信息
   Future saveString(easycontroller) async {
     Dio dio = Dio();

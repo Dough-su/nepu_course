@@ -73,6 +73,7 @@ class _chat_gptState extends State<chat_gpt> {
     return Scaffold(
       appBar: AppBar(
         title: Text('双击对话复制'),
+        backgroundColor: Global.home_currentcolor,
         //加入返回按鈕
         leading: IconButton(
           icon: Icon(Icons.arrow_back),

@@ -108,6 +108,8 @@ class Global {
   static String password = '';
   //qrocde
   static String qrcode = '';
+  //有课的日期
+  static List<DateTime> course_day = [];
   //qrocdegetter
   static String qrcodegetter() {
     return qrcode;
@@ -120,6 +122,19 @@ class Global {
     await getApplicationDocumentsDirectory().then((value) {
       File file = File(value.path + '/account.txt');
       file.writeAsStringSync(account + ' ' + password, mode: FileMode.write);
+    });
+  }
+
+  //从文件读取最后一天和第一天
+  static void getcalendar() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/calanderagenda.txt');
+      if (file.existsSync()) {
+        calendar_first_day =
+            DateTime.parse(file.readAsStringSync().split('\n')[1]);
+        calendar_last_day =
+            DateTime.parse(file.readAsStringSync().split('\n')[0]);
+      }
     });
   }
 
@@ -336,34 +351,6 @@ class Global {
         jwc_webvpn_username;
   }
 
-  //加载需要绘制的日期范围
-  Future<bool> loaddate() async {
-    //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
-    await getApplicationDocumentsDirectory().then((value) {
-      File file = new File(value.path + '/calanderagenda.txt');
-      file.exists().then((value) {
-        if (value) {
-          print('读取到文件了');
-          //读取数据
-          file.readAsString().then((value) {
-            //读取数据第一行
-            List<String> list = value.split('\n');
-            Global.calendar_first_day = DateTime(
-                int.parse(list[1].toString().split('-')[0]),
-                int.parse(list[1].toString().split('-')[1]),
-                int.parse(list[1].toString().split('-')[2]));
-          });
-          print('读完了');
-          return false;
-        } else {
-          print('没有读取到文件');
-          return true;
-        }
-      });
-    });
-    return true;
-  }
-
   //判断是不是首次登录
   void isFirst(context) {
     //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
@@ -568,6 +555,24 @@ class Global {
                   '\n' +
                   courseInfox[courseInfox.length - 1]['jsrq']);
             }
+            File file1 = File(value.path + '/hascourse.json');
+            //判断文件是否存在
+            if (file1.existsSync()) {
+              //清空
+              file1.writeAsStringSync('');
+              //将所有课程的日期换行写入文件
+              for (var item in courseInfox) {
+                file1.writeAsStringSync(item['jsrq'] + '\n',
+                    mode: FileMode.append);
+              }
+            } else {
+              //不存在则创建文件并写入
+              file1.createSync();
+              for (var item in courseInfox) {
+                file1.writeAsStringSync(item['jsrq'] + '\n',
+                    mode: FileMode.append);
+              }
+            }
           });
         } catch (e) {
           dailycourse = [
@@ -583,6 +588,23 @@ class Global {
           return;
         }
       });
+  }
+
+  //读取有课的日期
+  static void get_course_day() {
+    getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/hascourse.json');
+      if (file.existsSync()) {
+        file.readAsString().then((value) {
+          for (var item in value.split('\n')) {
+            if (item != '') {
+              //item是yyyy-mm-dd格式的日期.转为DateTime类型
+              course_day.add(DateTime.parse(item));
+            }
+          }
+        });
+      }
+    });
   }
 
   //获取成绩页面的颜色信息

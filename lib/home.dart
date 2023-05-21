@@ -238,19 +238,6 @@ class _HomePageState extends State<HomePage> {
           );
   }
 
-  Widget side_cat() {
-    return Container(
-      //缩小0.5倍
-      transform: Matrix4.identity()..scale(0.1),
-
-      child: RiveAnimation.asset(
-        'assets/cat.riv',
-        animations: ['Sulamine'],
-        controllers: [_controller3],
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _controller3.dispose();
@@ -1803,7 +1790,7 @@ class _HomePageState extends State<HomePage> {
                       fullCalendarDay: WeekDay.long,
                       dateColor: Colors.white,
                       calendarEventColor: Global.home_currentcolor,
-                      events: [DateTime.now().subtract(Duration(days: 0))],
+                      events: Global.course_day,
                       onDateSelected: (date) {
                         hItems(date);
                       },
@@ -1846,260 +1833,297 @@ class _HomePageState extends State<HomePage> {
                           background: Global.home_currentcolor,
                           key: _sideMenuKey,
                           menu: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(vertical: 50.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 16.0),
-                                  child: Column(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 50.0),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    // //缩小宽度
+                                    // width:
+                                    //     MediaQuery.of(context).size.width / 3,
+                                    // //缩小高度
+                                    // height:
+                                    //     MediaQuery.of(context).size.height / 2,
+                                    child: RiveAnimation.asset(
+                                      'assets/cat.riv',
+                                      //缩小
+                                      alignment: Alignment.center,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Global().getrecently(context),
-                                        child: Text(
-                                          shijian(),
-                                          style: TextStyle(color: Colors.white),
+                                      Padding(
+                                          padding: EdgeInsets.only(top: 20.0)),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            SizedBox(height: 16.0),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Global().getrecently(context),
+                                              child: Text(
+                                                shijian(),
+                                                style: TextStyle(
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                            SizedBox(height: 20.0),
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(height: 20.0),
+                                      ListTile(
+                                        leading: const Icon(Icons.cached,
+                                            size: 20.0, color: Colors.white),
+                                        title: Text(
+                                          '查看成绩',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onTap: () => Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => scorepage(),
+                                          ),
+                                        ),
+                                      ),
+                                      ListTile(
+                                          leading: const Icon(
+                                              Icons.score_outlined,
+                                              size: 20.0,
+                                              color: Colors.white),
+                                          title: Text(
+                                            'chatgpt',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          onTap: () {
+                                            Navigator.of(context).pop(); //关闭侧边栏
+
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        chat_gpt()));
+                                          }),
+                                      ListTile(
+                                        leading: const Icon(Icons.book_online,
+                                            size: 20.0, color: Colors.white),
+                                        title: Text(
+                                          '一键评教',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).pop(); //关闭侧边栏
+                                          Global()
+                                              .No_perception_login()
+                                              .then((value) => null);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      pingjiao()));
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.book_online,
+                                            size: 20.0, color: Colors.white),
+                                        title: Text(
+                                          '请假历史',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onTap: () {
+                                          Navigator.of(context).pop(); //关闭侧边栏
+                                          Global()
+                                              .No_perception_login()
+                                              .then((value) => null);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      qingjia()));
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.colorize,
+                                            size: 20.0, color: Colors.white),
+                                        title: Text(
+                                          '调个色',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onTap: () {
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return MaterialApp(
+                                                    theme: ThemeData.light(),
+                                                    darkTheme: ThemeData.dark(),
+                                                    home: AlertDialog(
+                                                      title: Text('选择当前页颜色'),
+                                                      content:
+                                                          SingleChildScrollView(
+                                                        child: ColorPicker(
+                                                          pickerColor: Global
+                                                              .home_currentcolor,
+                                                          onColorChanged:
+                                                              changeColor,
+                                                          colorPickerWidth:
+                                                              300.0,
+                                                          pickerAreaHeightPercent:
+                                                              0.7,
+                                                          enableAlpha: false,
+                                                          displayThumbColor:
+                                                              true,
+                                                          showLabel: true,
+                                                          paletteType:
+                                                              PaletteType.hsv,
+                                                          pickerAreaBorderRadius:
+                                                              const BorderRadius
+                                                                  .only(
+                                                            topLeft: const Radius
+                                                                .circular(2.0),
+                                                            topRight: const Radius
+                                                                .circular(2.0),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          child:
+                                                              const Text('确定'),
+                                                          onPressed: () async {
+                                                            setState(() => Global
+                                                                    .home_currentcolor =
+                                                                Global
+                                                                    .home_pickcolor);
+                                                            getApplicationDocumentsDirectory()
+                                                                .then((value) {
+                                                              File file = File(
+                                                                  value.path +
+                                                                      '/color.txt');
+                                                              //判断文件是否存在
+                                                              if (file
+                                                                  .existsSync()) {
+                                                                //存在则写入
+                                                                file.writeAsString(Global
+                                                                    .home_currentcolor
+                                                                    .value
+                                                                    .toString());
+                                                              } else {
+                                                                //不存在则创建文件并写入
+                                                                file.createSync();
+                                                                file.writeAsString(Global
+                                                                    .home_currentcolor
+                                                                    .value
+                                                                    .toString());
+                                                              }
+                                                            });
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ));
+                                              });
+                                        },
+                                      ),
+                                      ListTile(
+                                          leading: const Icon(
+                                              Icons.score_outlined,
+                                              size: 20.0,
+                                              color: Colors.white),
+                                          title: Text(
+                                            '查看学习通考试成绩',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          onTap: () {
+                                            Navigator.of(context).pop(); //关闭侧边栏
+
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        chaoxinglogin()));
+                                          }),
+                                      ListTile(
+                                        leading: const Icon(Icons.cached,
+                                            size: 20.0, color: Colors.white),
+                                        title: Text(
+                                          '重新登入',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onTap: () {
+                                          deleteFile();
+                                          AchievementView(context,
+                                              title: "成功!",
+                                              subTitle: "已清除课程和成绩缓存，请退出app重新登录",
+                                              //onTab: _onTabAchievement,
+                                              icon: Icon(
+                                                Icons.insert_emoticon,
+                                                color: Colors.white,
+                                              ),
+                                              //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
+                                              //borderRadius: 5.0,
+                                              color: Colors.green,
+                                              //textStyleTitle: TextStyle(),
+                                              //textStyleSubTitle: TextStyle(),
+                                              //alignment: Alignment.topCenter,
+                                              duration: Duration(seconds: 3),
+                                              isCircle: true,
+                                              listener: (status) {
+                                            print(status);
+                                          })
+                                            ..show();
+                                        },
+                                      ),
+                                      ListTile(
+                                        leading: const Icon(Icons.settings,
+                                            size: 20.0, color: Colors.white),
+                                        title: Text(
+                                          '关于&设置',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => about()),
+                                          );
+                                        },
+                                      ),
                                     ],
                                   ),
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.cached,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    '查看成绩',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => scorepage(),
-                                    ),
-                                  ),
-                                ),
-                                ListTile(
-                                    leading: const Icon(Icons.score_outlined,
-                                        size: 20.0, color: Colors.white),
-                                    title: Text(
-                                      'chatgpt',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context).pop(); //关闭侧边栏
-
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  chat_gpt()));
-                                    }),
-                                ListTile(
-                                  leading: const Icon(Icons.book_online,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    '一键评教',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).pop(); //关闭侧边栏
-                                    Global()
-                                        .No_perception_login()
-                                        .then((value) => null);
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => pingjiao()));
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.book_online,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    '请假历史',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () {
-                                    Navigator.of(context).pop(); //关闭侧边栏
-                                    Global()
-                                        .No_perception_login()
-                                        .then((value) => null);
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => qingjia()));
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.colorize,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    '调个色',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () {
-                                    showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return MaterialApp(
-                                              theme: ThemeData.light(),
-                                              darkTheme: ThemeData.dark(),
-                                              home: AlertDialog(
-                                                title: Text('选择当前页颜色'),
-                                                content: SingleChildScrollView(
-                                                  child: ColorPicker(
-                                                    pickerColor: Global
-                                                        .home_currentcolor,
-                                                    onColorChanged: changeColor,
-                                                    colorPickerWidth: 300.0,
-                                                    pickerAreaHeightPercent:
-                                                        0.7,
-                                                    enableAlpha: false,
-                                                    displayThumbColor: true,
-                                                    showLabel: true,
-                                                    paletteType:
-                                                        PaletteType.hsv,
-                                                    pickerAreaBorderRadius:
-                                                        const BorderRadius.only(
-                                                      topLeft:
-                                                          const Radius.circular(
-                                                              2.0),
-                                                      topRight:
-                                                          const Radius.circular(
-                                                              2.0),
-                                                    ),
-                                                  ),
-                                                ),
-                                                actions: <Widget>[
-                                                  TextButton(
-                                                    child: const Text('确定'),
-                                                    onPressed: () async {
-                                                      setState(() => Global
-                                                              .home_currentcolor =
-                                                          Global
-                                                              .home_pickcolor);
-                                                      getApplicationDocumentsDirectory()
-                                                          .then((value) {
-                                                        File file = File(
-                                                            value.path +
-                                                                '/color.txt');
-                                                        //判断文件是否存在
-                                                        if (file.existsSync()) {
-                                                          //存在则写入
-                                                          file.writeAsString(Global
-                                                              .home_currentcolor
-                                                              .value
-                                                              .toString());
-                                                        } else {
-                                                          //不存在则创建文件并写入
-                                                          file.createSync();
-                                                          file.writeAsString(Global
-                                                              .home_currentcolor
-                                                              .value
-                                                              .toString());
-                                                        }
-                                                      });
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    },
-                                                  ),
-                                                ],
-                                              ));
-                                        });
-                                  },
-                                ),
-                                ListTile(
-                                    leading: const Icon(Icons.score_outlined,
-                                        size: 20.0, color: Colors.white),
-                                    title: Text(
-                                      '查看学习通已批完的考试但未发布的成绩',
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    onTap: () {
-                                      Navigator.of(context).pop(); //关闭侧边栏
-
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  chaoxinglogin()));
-                                    }),
-                                ListTile(
-                                  leading: const Icon(Icons.cached,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    '重新登入',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () {
-                                    deleteFile();
-                                    AchievementView(context,
-                                        title: "成功!",
-                                        subTitle: "已清除课程和成绩缓存，请退出app重新登录",
-                                        //onTab: _onTabAchievement,
-                                        icon: Icon(
-                                          Icons.insert_emoticon,
-                                          color: Colors.white,
-                                        ),
-                                        //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
-                                        //borderRadius: 5.0,
-                                        color: Colors.green,
-                                        //textStyleTitle: TextStyle(),
-                                        //textStyleSubTitle: TextStyle(),
-                                        //alignment: Alignment.topCenter,
-                                        duration: Duration(seconds: 3),
-                                        isCircle: true, listener: (status) {
-                                      print(status);
-                                    })
-                                      ..show();
-                                  },
-                                ),
-                                ListTile(
-                                  leading: const Icon(Icons.settings,
-                                      size: 20.0, color: Colors.white),
-                                  title: Text(
-                                    '关于&设置',
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => about()),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
+                                ],
+                              )),
                           type: SideMenuType.slideNRotate,
                           onChange: (_isOpened) {
                             if (isOpened) {

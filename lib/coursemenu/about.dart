@@ -48,6 +48,7 @@ class _aboutState extends State<about> {
       darkTheme: ThemeData.dark(),
       home: Scaffold(
         appBar: AppBar(
+          backgroundColor: Global.home_currentcolor,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -76,6 +77,7 @@ class _aboutState extends State<about> {
                 title: Text('课程自动更新'),
                 subtitle: Text('开启后，每次打开软件都会自动更新课程表。'),
                 trailing: Switch(
+                  activeColor: Global.home_currentcolor,
                   onChanged: (value) {
                     setState(() {
                       Global.auto_update_course = value;
@@ -118,31 +120,20 @@ class _aboutState extends State<about> {
                 title: Text('请开发者喝杯咖啡'),
                 subtitle: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
                 onTap: () {
-                  if (Platform.isAndroid)
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('请开发者喝杯咖啡'),
-                            content: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
-                            actions: [
-                              //判断是否ios设备
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('请开发者喝杯咖啡'),
+                          content: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
+                          actions: [
+                            //判断是否ios设备
 
-                              //展示图片
-                              Image.asset('assets/pay/weixin.png'),
-                            ],
-                          );
-                        });
-                  else
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('苹果就不喝咖啡了'),
-                            content: Text('自己用喝个屁'),
-                            actions: [],
-                          );
-                        });
+                            //展示图片
+                            Image.asset('assets/pay/weixin.png'),
+                          ],
+                        );
+                      });
                 },
               ),
               ListTile(

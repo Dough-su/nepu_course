@@ -38,7 +38,7 @@ class LoginMessages with ChangeNotifier {
     this.recoverCodePasswordDescription = defaultRecoverCodePasswordDescription,
   });
 
-  static const defaultPasswordHint = '密码';
+  static const defaultPasswordHint = '教务处密码';
   static const defaultConfirmPasswordHint = 'Confirm Password';
   static const defaultForgotPasswordButton = 'Forgot Password?';
   static const defaultLoginButton = '登录';
