@@ -7,6 +7,7 @@ import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:muse_nepu_course/chatforgpt/chat_gpt.dart';
 import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/jpushs.dart';
@@ -288,38 +289,58 @@ class _HomePageState extends State<HomePage> {
                         //将版本号写入
                         file.writeAsString(version.toString());
                         Navigator.pop(context);
-
-                        //下载
-                        ProgressDialog pd = ProgressDialog(context: context);
-                        pd.show(
-                            max: 100,
-                            msg: '准备下载更新...',
-                            msgMaxLines: 5,
-                            completed: Completed(
-                              completedMsg: "下载完成!",
-                              completedImage: AssetImage
-                                  //加载gif
-                                  ("assets/completed.gif"),
-                              completionDelay: 2500,
-                            ));
-                        await EasyAppInstaller.instance.downloadAndInstallApk(
-                          fileUrl: value.data[0]['link'],
-                          fileDirectory: "updateApk",
-                          fileName: "newApk.apk",
-                          explainContent: "快去开启权限！！！",
-                          onDownloadingListener: (progress) {
-                            if (progress < 100) {
-                              pd.update(
-                                  value: progress.toInt(), msg: '安装包正在下载...');
-                            } else {
-                              pd.update(
-                                  value: progress.toInt(), msg: '安装包下载完成...');
-                            }
-                          },
-                          onCancelTagListener: (cancelTag) {
-                            _cancelTag = cancelTag;
-                          },
-                        );
+                        if (Platform.isAndroid) {
+                          //下载
+                          ProgressDialog pd = ProgressDialog(context: context);
+                          pd.show(
+                              max: 100,
+                              msg: '准备下载更新...',
+                              msgMaxLines: 5,
+                              completed: Completed(
+                                completedMsg: "下载完成!",
+                                completedImage: AssetImage
+                                    //加载gif
+                                    ("assets/completed.gif"),
+                                completionDelay: 2500,
+                              ));
+                          await EasyAppInstaller.instance.downloadAndInstallApk(
+                            fileUrl: value.data[0]['link'],
+                            fileDirectory: "updateApk",
+                            fileName: "newApk.apk",
+                            explainContent: "快去开启权限！！！",
+                            onDownloadingListener: (progress) {
+                              if (progress < 100) {
+                                pd.update(
+                                    value: progress.toInt(), msg: '安装包正在下载...');
+                              } else {
+                                pd.update(
+                                    value: progress.toInt(), msg: '安装包下载完成...');
+                              }
+                            },
+                            onCancelTagListener: (cancelTag) {
+                              _cancelTag = cancelTag;
+                            },
+                          );
+                        } else {
+                          Clipboard.setData(ClipboardData(
+                              text:
+                                  'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                          AchievementView(context,
+                              title: "复制成功",
+                              subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
+                              //onTab: _onTabAchievement,
+                              icon: Icon(
+                                Icons.insert_emoticon,
+                                color: Colors.white,
+                              ),
+                              color: Colors.green,
+                              duration: Duration(seconds: 15),
+                              isCircle: true, listener: (status) {
+                            print(status);
+                          })
+                            ..show();
+                        }
+                        ;
                       },
                       icon: Icon(Icons.check),
                     ),
