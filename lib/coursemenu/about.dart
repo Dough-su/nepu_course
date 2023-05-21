@@ -87,6 +87,20 @@ class _aboutState extends State<about> {
                   value: Global.auto_update_course,
                 ),
               ),
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('展示有课的日期'),
+                subtitle: Text('开启后，请重新打开课表，请注意，开启此项会导致课表性能下降(默认关闭)'),
+                trailing: Switch(
+                    activeColor: Global.home_currentcolor,
+                    onChanged: (value) {
+                      setState(() {
+                        Global.show_course_day = value;
+                        Global.save_show_course_day();
+                      });
+                    },
+                    value: Global.show_course_day),
+              ),
               //多版本下载网址，可以复制到剪切板
               ListTile(
                 leading: Icon(Icons.info),

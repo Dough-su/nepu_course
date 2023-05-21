@@ -110,6 +110,28 @@ class Global {
   static String qrcode = '';
   //有课的日期
   static List<DateTime> course_day = [];
+  //是否显示有课的日期
+  static bool show_course_day = false;
+  //保存是否显示有课的日期到文件
+  static void save_show_course_day() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/show_course_day.txt');
+      file.writeAsStringSync(show_course_day.toString(), mode: FileMode.write);
+    });
+  }
+
+  //读取是否显示有课的日期
+  static Future<bool> get_show_course_day() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/show_course_day.txt');
+      if (file.existsSync()) {
+        show_course_day = file.readAsStringSync() == 'true' ? true : false;
+        return show_course_day;
+      }
+    });
+    return false;
+  }
+
   //qrocdegetter
   static String qrcodegetter() {
     return qrcode;
@@ -150,6 +172,7 @@ class Global {
     });
   }
 
+//保存
   //保存自动更新课程状态到文件
   static void saveauto_update_course() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -592,18 +615,23 @@ class Global {
 
   //读取有课的日期
   static void get_course_day() {
-    getApplicationDocumentsDirectory().then((value) {
-      File file = File(value.path + '/hascourse.json');
-      if (file.existsSync()) {
-        file.readAsString().then((value) {
-          for (var item in value.split('\n')) {
-            if (item != '') {
-              //item是yyyy-mm-dd格式的日期.转为DateTime类型
-              course_day.add(DateTime.parse(item));
-            }
-          }
-        });
+    Global.get_show_course_day().then((value) {
+      if (value == false) {
+        return;
       }
+      getApplicationDocumentsDirectory().then((value) {
+        File file = File(value.path + '/hascourse.json');
+        if (file.existsSync()) {
+          file.readAsString().then((value) {
+            for (var item in value.split('\n')) {
+              if (item != '') {
+                //item是yyyy-mm-dd格式的日期.转为DateTime类型
+                course_day.add(DateTime.parse(item));
+              }
+            }
+          });
+        }
+      });
     });
   }
 
