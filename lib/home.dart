@@ -1863,8 +1863,8 @@ class _HomePageState extends State<HomePage> {
                                     width:
                                         MediaQuery.of(context).size.width / 3,
                                     //缩小高度
-                                    height:
-                                        MediaQuery.of(context).size.height / 2,
+                                    // height: MediaQuery.of(context).size.height /
+                                    //     1.4,
                                     child: RiveAnimation.asset(
                                       'assets/cat.riv',
                                       //缩小
