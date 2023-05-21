@@ -1231,8 +1231,8 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
       await windowManager.show();
-      await windowManager.focus();
-      await windowManager.setAlwaysOnBottom(true);
+      // await windowManager.focus();
+      // await windowManager.setAlwaysOnBottom(true);
     });
   }
 

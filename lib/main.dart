@@ -28,8 +28,8 @@ Future<void> main() async {
       titleBarStyle: TitleBarStyle.hidden,
     );
     windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
+      await windowManager.show(); //显示窗口
+      // await windowManager.focus();//聚焦窗口
     });
     //初始化开机自启
     WidgetsFlutterBinding.ensureInitialized();

@@ -85,7 +85,7 @@ dependencies:
   launch_at_startup: ^0.2.1
   package_info_plus: ^3.0.3
   bitsdojo_window: ^0.1.5
-  window_manager: ^0.3.0
+  window_manager: ^0.3.2
   flutter_markdown: ^0.6.14
   any_link_preview: ^3.0.0
   grouped_list: ^5.1.2
