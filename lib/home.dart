@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +17,7 @@ import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
 import 'package:muse_nepu_course/qingjia/qingjia.dart';
 import 'package:muse_nepu_course/qrcode/qrcode.dart';
-import 'package:muse_nepu_course/test.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/windowsfloat.dart';
 import 'package:rive/rive.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -36,6 +37,8 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_app_installer/easy_app_installer.dart';
 import 'package:achievement_view/achievement_view.dart';
+
+import 'ins.dart';
 
 List<Widget> dailycourse = [];
 GlobalKey scoredetailbtn = GlobalKey();
@@ -245,204 +248,152 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void updateappx() {
-    getApplicationDocumentsDirectory().then((value) {
-      var pathx = value;
-      File file = new File(value.path + '/version.txt');
-      file.exists().then((value) {
-        if (value) {
-          file.readAsString().then((value) {
-            localversion = value.toString();
-            var dio = Dio();
-            dio
-                .get(
-                    'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update')
-                .then((value) {
-              //截取json中的version
-              String version = value.data[0]['version'];
-              if (version.toString() !=
-                  Global.version) if (version.toString() != localversion) {
-                Dialogs.materialDialog(
-                  color: Colors.white,
-                  msg: '要下载吗?',
-                  title: '有新版本啦,版本号是' +
-                      version.toString() +
-                      "\n" +
-                      value.data[0]['descrption'],
-                  lottieBuilder: Lottie.asset(
-                    'assets/rockert-new.json',
-                    fit: BoxFit.contain,
-                  ),
-                  context: context,
-                  actions: [
-                    IconButton(
-                      onPressed: () {
-                        //将版本号写入
-                        file.writeAsString(version.toString());
-                        //关闭
-                        Navigator.pop(context);
-                      },
-                      icon: Icon(Icons.cancel_outlined),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        //将版本号写入
-                        file.writeAsString(version.toString());
-                        Navigator.pop(context);
-                        if (Platform.isAndroid) {
-                          //下载
-                          ProgressDialog pd = ProgressDialog(context: context);
-                          pd.show(
-                              max: 100,
-                              msg: '准备下载更新...',
-                              msgMaxLines: 5,
-                              completed: Completed(
-                                completedMsg: "下载完成!",
-                                completedImage: AssetImage
-                                    //加载gif
-                                    ("assets/completed.gif"),
-                                completionDelay: 2500,
-                              ));
-                          await EasyAppInstaller.instance.downloadAndInstallApk(
-                            fileUrl: value.data[0]['link'],
-                            fileDirectory: "updateApk",
-                            fileName: "newApk.apk",
-                            explainContent: "快去开启权限！！！",
-                            onDownloadingListener: (progress) {
-                              if (progress < 100) {
-                                pd.update(
-                                    value: progress.toInt(), msg: '安装包正在下载...');
-                              } else {
-                                pd.update(
-                                    value: progress.toInt(), msg: '安装包下载完成...');
-                              }
-                            },
-                            onCancelTagListener: (cancelTag) {
-                              _cancelTag = cancelTag;
-                            },
-                          );
-                        } else {
-                          Clipboard.setData(ClipboardData(
-                              text:
-                                  'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
-                          AchievementView(context,
-                              title: "复制成功",
-                              subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
-                              //onTab: _onTabAchievement,
-                              icon: Icon(
-                                Icons.insert_emoticon,
-                                color: Colors.white,
-                              ),
-                              color: Colors.green,
-                              duration: Duration(seconds: 15),
-                              isCircle: true, listener: (status) {
-                            print(status);
-                          })
-                            ..show();
-                        }
-                        ;
-                      },
-                      icon: Icon(Icons.check),
-                    ),
-                  ],
-                );
-              }
-            });
-          });
-        } else {
-          file.create();
-          getApplicationDocumentsDirectory().then((value) {
-            file.exists().then((value) {
-              if (value) {
-                file.readAsString().then((value) {
-                  var dio = Dio();
-                  dio
-                      .get(
-                          'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update')
-                      .then((value) {
-                    String version = value.data[0]['version'];
-                    print(value.toString());
-                    if (version.toString() != Global.version) if (version
-                            .toString() !=
-                        localversion) {
-                      Dialogs.materialDialog(
+  void updateappx() async {
+    var value = await getApplicationDocumentsDirectory();
+    var pathx = value.path;
+    File file = File('$pathx/version.txt');
+    if (await file.exists()) {
+      String localVersion = await file.readAsString();
+      var dio = Dio();
+      var value = await dio.get(
+          'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
+      String version = value.data[0]['version'];
+      if (version != Global.version && version != localVersion) {
+        await Dialogs.materialDialog(
+          color: Colors.white,
+          msg: '要下载吗?',
+          title: '有新版本啦,版本号是$version\n${value.data[0]['description']}',
+          lottieBuilder: Lottie.asset(
+            'assets/rockert-new.json',
+            fit: BoxFit.contain,
+          ),
+          context: context,
+          actions: [
+            IconButton(
+              onPressed: () {
+                file.writeAsString(version);
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.cancel_outlined),
+            ),
+            IconButton(
+              onPressed: () async {
+                file.writeAsString(version);
+                Navigator.pop(context);
+                if (Platform.isAndroid) {
+                  ProgressDialog pd = ProgressDialog(context: context);
+                  pd.show(
+                      max: 100,
+                      msg: '准备下载更新...',
+                      msgMaxLines: 5,
+                      completed: Completed(
+                        completedMsg: "下载完成!",
+                        completedImage: AssetImage("assets/completed.gif"),
+                        completionDelay: 2500,
+                      ));
+                  await EasyAppInstaller.instance.downloadAndInstallApk(
+                    fileUrl: value.data[0]['link'],
+                    fileDirectory: "updateApk",
+                    fileName: "newApk.apk",
+                    explainContent: "快去开启权限！！！",
+                    onDownloadingListener: (progress) {
+                      if (progress < 100) {
+                        pd.update(value: progress.toInt(), msg: '安装包正在下载...');
+                      } else {
+                        pd.update(value: progress.toInt(), msg: '安装包下载完成...');
+                      }
+                    },
+                    onCancelTagListener: (cancelTag) {
+                      _cancelTag = cancelTag;
+                    },
+                  );
+                } else {
+                  Clipboard.setData(ClipboardData(
+                      text:
+                          'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                  AchievementView(context,
+                      title: "复制成功",
+                      subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
+                      icon: Icon(
+                        Icons.insert_emoticon,
                         color: Colors.white,
-                        msg: '要下载吗?',
-                        title: '有新版本啦,版本号是' +
-                            version.toString() +
-                            "\n" +
-                            value.data[0]['descrption'],
-                        lottieBuilder: Lottie.asset(
-                          'assets/rockert-new.json',
-                          fit: BoxFit.contain,
-                        ),
-                        context: context,
-                        actions: [
-                          IconButton(
-                            onPressed: () {
-                              //将版本号写入
-                              file.writeAsString(version.toString());
-                              //关闭
-                              Navigator.pop(context);
-                            },
-                            icon: Icon(Icons.cancel_outlined),
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              //将版本号写入
-                              Navigator.pop(context);
-
-                              //下载
-                              ProgressDialog pd =
-                                  ProgressDialog(context: context);
-                              pd.show(
-                                  max: 100,
-                                  msg: '准备下载更新...',
-                                  msgMaxLines: 5,
-                                  completed: Completed(
-                                    completedMsg: "下载完成!",
-                                    completedImage: AssetImage
-                                        //加载gif
-                                        ("assets/completed.gif"),
-                                    completionDelay: 2500,
-                                  ));
-                              await EasyAppInstaller.instance
-                                  .downloadAndInstallApk(
-                                fileUrl: value.data[0]['link'],
-                                fileDirectory: "updateApk",
-                                fileName: "newApk.apk",
-                                explainContent: "快去开启权限！！！",
-                                onDownloadingListener: (progress) {
-                                  if (progress < 100) {
-                                    pd.update(
-                                        value: progress.toInt(),
-                                        msg: '安装包正在下载...');
-                                  } else {
-                                    file.writeAsString(version.toString());
-
-                                    pd.update(
-                                        value: progress.toInt(),
-                                        msg: '安装包下载完成...');
-                                  }
-                                },
-                                onCancelTagListener: (cancelTag) {
-                                  _cancelTag = cancelTag;
-                                },
-                              );
-                            },
-                            icon: Icon(Icons.check),
-                          ),
-                        ],
-                      );
-                    }
-                  });
-                });
-              }
-            });
-          });
+                      ),
+                      color: Colors.green,
+                      duration: Duration(seconds: 15),
+                      isCircle: true, listener: (status) {
+                    print(status);
+                  })
+                    ..show();
+                }
+              },
+              icon: Icon(Icons.check),
+            ),
+          ],
+        );
+      }
+    } else {
+      await file.create();
+      if (await file.exists()) {
+        var dio = Dio();
+        var value = await dio.get(
+            'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
+        String version = value.data[0]['version'];
+        if (version != Global.version) {
+          await Dialogs.materialDialog(
+            color: Colors.white,
+            msg: '要下载吗?',
+            title: '有新版本啦,版本号是$version\n${value.data[0]['description']}',
+            lottieBuilder: Lottie.asset(
+              'assets/rockert-new.json',
+              fit: BoxFit.contain,
+            ),
+            context: context,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  file.writeAsString(version);
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.cancel_outlined),
+              ),
+              IconButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  ProgressDialog pd = ProgressDialog(context: context);
+                  pd.show(
+                      max: 100,
+                      msg: '准备下载更新...',
+                      msgMaxLines: 5,
+                      completed: Completed(
+                        completedMsg: "下载完成!",
+                        completedImage: AssetImage("assets/completed.gif"),
+                        completionDelay: 2500,
+                      ));
+                  await EasyAppInstaller.instance.downloadAndInstallApk(
+                    fileUrl: value.data[0]['link'],
+                    fileDirectory: "updateApk",
+                    fileName: "newApk.apk",
+                    explainContent: "快去开启权限！！！",
+                    onDownloadingListener: (progress) {
+                      if (progress < 100) {
+                        pd.update(value: progress.toInt(), msg: '安装包正在下载...');
+                      } else {
+                        file.writeAsString(version);
+                        pd.update(value: progress.toInt(), msg: '安装包下载完成...');
+                      }
+                    },
+                    onCancelTagListener: (cancelTag) {
+                      _cancelTag = cancelTag;
+                    },
+                  );
+                },
+                icon: Icon(Icons.check),
+              ),
+            ],
+          );
         }
-      });
-    });
+      }
+    }
   }
 
   bool isOpened = false;
@@ -683,11 +634,6 @@ class _HomePageState extends State<HomePage> {
     });
     bottomSheetBarController.addListener(() {
       if (bottomSheetBarController.isExpanded == true) {
-        //如果是展开状态
-        // setState(() {
-        //   if (Global.locked == false) Global().getqr();
-        //   Global.locked = true;
-        // });
       } else {
         setState(() {
           Global.locked = false;
@@ -698,124 +644,29 @@ class _HomePageState extends State<HomePage> {
 
     getcolor();
     //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
-    getApplicationDocumentsDirectory().then((value) {
-      Dio dio = new Dio();
-      File file = new File(value.path + '/course.json');
-      file.exists().then((value) {
-        if (!value) {
-          //没有则下载
-          downApkFunction();
-        } else {
-          hItems(DateTime.now());
-          if (Global.auto_update_course) if (!Global.isrefreshcourse)
-            Global().No_perception_login().then((value) async {
-              Global.isrefreshcourse = true;
-              var url =
-                  'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                      await Global().getLoginInfo();
-              getApplicationDocumentsDirectory().then((value) async {
-                //判断响应状态
-                Response response = await dio.get(url);
-                if (response.statusCode == 500) {
-                  AchievementView(context,
-                      title: "与教务同步最新课程失败!",
-                      subTitle: '可能是服务器出现短暂问题，请稍后再试',
-                      icon: Icon(
-                        Icons.error,
-                        color: Colors.white,
-                      ),
-                      color: Colors.red,
-                      duration: Duration(seconds: 3),
-                      isCircle: true,
-                      listener: (status) {})
-                    ..show();
-                  return;
-                } else if (response.statusCode == 200) {
-                  if (!response.data.toString().contains('fail')) {
-                    Directory directory =
-                        await getApplicationDocumentsDirectory();
-                    String path = directory.path + '/course.json';
-                    File file = new File(path);
-                    file.writeAsString(response.data);
-                    Global.isfirstread = true;
-                    jpushs().uploadpushid();
-
-                    var urlscore =
-                        'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
-                            await Global().getLoginInfo() +
-                            '&index=' +
-                            Global.scoreinfos[Global.scoreinfos.length - 1]
-                                    ['cjdm']
-                                .toString();
-                    print(urlscore);
-                    getApplicationDocumentsDirectory().then((value) async {
-                      try {
-                        Response response = await dio.get(urlscore);
-                        if (response.statusCode == 200) {
-                          //获取路径
-                          Directory directory =
-                              await getApplicationDocumentsDirectory();
-                          String path = directory.path + '/score.json';
-                          //追加文件
-                          File file = new File(path);
-                          file.readAsString().then((value) {
-                            value = value.replaceAll(']', '') +
-                                ',' +
-                                response.data.toString().replaceAll('[', '');
-                            file.writeAsString(value);
-                            Global().getlist();
-                          });
-                          Dialogs.materialDialog(
-                            color: Colors.white,
-                            msg: '去看看不?',
-                            title: '有新成绩啦!',
-                            lottieBuilder: Lottie.asset(
-                              'assets/rockert-new.json',
-                              fit: BoxFit.contain,
-                            ),
-                            context: context,
-                            actions: [
-                              IconButton(
-                                onPressed: () {
-                                  //关闭
-                                  Navigator.pop(context);
-                                },
-                                icon: Icon(Icons.cancel_outlined),
-                              ),
-                              IconButton(
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  //跳转到score页面
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => scorepage()));
-                                },
-                                icon: Icon(Icons.check),
-                              ),
-                            ],
-                          );
-                        }
-                      } catch (e) {
-                        print(e);
-                      }
-                    });
+    if (!kIsWeb)
+      getApplicationDocumentsDirectory().then((value) {
+        Dio dio = new Dio();
+        File file = new File(value.path + '/course.json');
+        file.exists().then((value) {
+          if (!value) {
+            //没有则下载
+            downApkFunction();
+          } else {
+            hItems(DateTime.now());
+            if (Global.auto_update_course) if (!Global.isrefreshcourse)
+              ApiService.noPerceptionLogin().then((value) async {
+                Global.isrefreshcourse = true;
+                var url =
+                    'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                        await Global().getLoginInfo();
+                getApplicationDocumentsDirectory().then((value) async {
+                  //判断响应状态
+                  Response response = await dio.get(url);
+                  if (response.statusCode == 500) {
                     AchievementView(context,
-                        title: "课程获取成功啦!",
-                        subTitle: '你的课程已经同步至最新',
-                        icon: Icon(
-                          Icons.error,
-                          color: Colors.white,
-                        ),
-                        color: Global.home_currentcolor,
-                        duration: Duration(seconds: 3),
-                        isCircle: true,
-                        listener: (status) {})
-                      ..show();
-                  } else {
-                    AchievementView(context,
-                        title: "与教务同步课程失败!",
-                        subTitle: '请检查你的密码或者教务系统是否正常',
+                        title: "与教务同步最新课程失败!",
+                        subTitle: '可能是服务器出现短暂问题，请稍后再试',
                         icon: Icon(
                           Icons.error,
                           color: Colors.white,
@@ -826,49 +677,168 @@ class _HomePageState extends State<HomePage> {
                         listener: (status) {})
                       ..show();
                     return;
+                  } else if (response.statusCode == 200) {
+                    if (!response.data.toString().contains('fail')) {
+                      Directory directory =
+                          await getApplicationDocumentsDirectory();
+                      String path = directory.path + '/course.json';
+                      File file = new File(path);
+                      file.writeAsString(response.data);
+                      Global.isfirstread = true;
+                      jpushs().uploadpushid();
+
+                      var urlscore =
+                          'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
+                              await Global().getLoginInfo() +
+                              '&index=' +
+                              Global.scoreinfos[Global.scoreinfos.length - 1]
+                                      ['cjdm']
+                                  .toString();
+                      print(urlscore);
+                      getApplicationDocumentsDirectory().then((value) async {
+                        try {
+                          Response response = await dio.get(urlscore);
+                          if (response.statusCode == 200) {
+                            //获取路径
+                            Directory directory =
+                                await getApplicationDocumentsDirectory();
+                            String path = directory.path + '/score.json';
+                            //追加文件
+                            File file = new File(path);
+                            file.readAsString().then((value) {
+                              value = value.replaceAll(']', '') +
+                                  ',' +
+                                  response.data.toString().replaceAll('[', '');
+                              file.writeAsString(value);
+                              Global().getlist();
+                            });
+                            Dialogs.materialDialog(
+                              color: Colors.white,
+                              msg: '去看看不?',
+                              title: '有新成绩啦!',
+                              lottieBuilder: Lottie.asset(
+                                'assets/rockert-new.json',
+                                fit: BoxFit.contain,
+                              ),
+                              context: context,
+                              actions: [
+                                IconButton(
+                                  onPressed: () {
+                                    //关闭
+                                    Navigator.pop(context);
+                                  },
+                                  icon: Icon(Icons.cancel_outlined),
+                                ),
+                                IconButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    //跳转到score页面
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => scorepage()));
+                                  },
+                                  icon: Icon(Icons.check),
+                                ),
+                              ],
+                            );
+                          }
+                        } catch (e) {
+                          print(e);
+                        }
+                      });
+                      AchievementView(context,
+                          title: "课程获取成功啦!",
+                          subTitle: '你的课程已经同步至最新',
+                          icon: Icon(
+                            Icons.error,
+                            color: Colors.white,
+                          ),
+                          color: Global.home_currentcolor,
+                          duration: Duration(seconds: 3),
+                          isCircle: true,
+                          listener: (status) {})
+                        ..show();
+                    } else {
+                      AchievementView(context,
+                          title: "与教务同步课程失败!",
+                          subTitle: '请检查你的密码或者教务系统是否正常',
+                          icon: Icon(
+                            Icons.error,
+                            color: Colors.white,
+                          ),
+                          color: Colors.red,
+                          duration: Duration(seconds: 3),
+                          isCircle: true,
+                          listener: (status) {})
+                        ..show();
+                      return;
+                    }
                   }
-                }
+                });
               });
-            });
-          //有则读取
-          //判断是否windows
-          if (Platform.isWindows) {
-            //跳转到windows页面
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return windwosfloat();
-            }));
+            //有则读取
+            //判断是否windows
+            if (Platform.isWindows) {
+              //跳转到windows页面
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return windwosfloat();
+              }));
+            }
+            if (!kIsWeb) {
+              //判断是否web
+              updateappx();
+              xinshouyindao();
+              shownotice();
+            }
           }
-          updateappx();
-          xinshouyindao();
-          shownotice();
-        }
+        });
       });
-    });
   }
 
   var homecontext;
-  void deleteFile() {
-    getApplicationDocumentsDirectory().then((value) {
-      File file = new File(value.path + '/course.json');
-      if (file.existsSync()) {
+  void deleteFile() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+
+    //删除course.json
+    File file = new File('${documentsDirectory.path}/course.json');
+    if (file.existsSync()) {
+      try {
         file.deleteSync();
+      } catch (e) {
+        print(e);
       }
-      //删除score.json
-      File file2 = new File(value.path + '/score.json');
-      if (file2.existsSync()) {
+    }
+
+    //删除score.json
+    File file2 = new File('${documentsDirectory.path}/score.json');
+    if (file2.existsSync()) {
+      try {
         file2.deleteSync();
+      } catch (e) {
+        print(e);
       }
-      File file4 = new File(value.path + '/calanderagenda.txt');
-      //判断文件是否存在
-      if (file4.existsSync()) {
+    }
+
+    //删除calanderagenda.txt
+    File file3 = new File('${documentsDirectory.path}/calanderagenda.txt');
+    if (file3.existsSync()) {
+      try {
+        file3.deleteSync();
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    //删除account.txt
+    File file4 = new File('${documentsDirectory.path}/account.txt');
+    if (file4.existsSync()) {
+      try {
         file4.deleteSync();
+      } catch (e) {
+        print(e);
       }
-      File file5 = new File(value.path + '/account.txt');
-      //判断文件是否存在
-      if (file5.existsSync()) {
-        file5.deleteSync();
-      }
-    });
+    }
   }
 
   void downApkFunction() async {
@@ -891,45 +861,186 @@ class _HomePageState extends State<HomePage> {
             await Global().getLoginInfo();
     getApplicationDocumentsDirectory().then((value) async {
       isdownload = false;
-      //判断响应状态
-      Response response = await dio.get(url);
-      if (response.statusCode == 500) {
-        print('下载失败');
-        return;
-      } else if (response.statusCode == 200) {
-        Directory directory = await getApplicationDocumentsDirectory();
-        String path = directory.path + '/course.json';
-        //写入文件
-        File file = new File(path);
-        file.writeAsString(response.data);
-        setState(() {
-          title = '下载成绩中';
-        });
-        jpushs().uploadpushid();
-
-        var urlscore =
-            'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getscore' +
-                await Global().getLoginInfo();
-
-        getApplicationDocumentsDirectory().then((value) {
-          //获取下载进度并将进度设置为标题
-          dio.download(urlscore, value.path + '/score.json',
-              onReceiveProgress: (int count, int total) {
-            int progress = (((count / total) * 100).toInt());
-            pd.update(value: progress, msg: '久等了，数据正在下载...');
-            setState(() {});
-          }).then((value) async {
-            pd.close();
-            Global().getlist();
-            //下载完成
-            isdownload = true;
-            hItems(DateTime.now());
-            xinshouyindao();
+      try {
+        Response response = await dio.get(url);
+        if (response.statusCode == 500) {
+          pd.close();
+          print('下载失败');
+          return;
+        } else if (response.statusCode == 200) {
+          Directory directory = await getApplicationDocumentsDirectory();
+          String path = directory.path + '/course.json';
+          //写入文件
+          File file = new File(path);
+          file.writeAsString(response.data);
+          setState(() {
+            title = '下载成绩中';
           });
-        });
+          jpushs().uploadpushid();
+          var urlscore =
+              'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getscore' +
+                  await Global().getLoginInfo();
+
+          getApplicationDocumentsDirectory().then((value) {
+            dio.download(urlscore, value.path + '/score.json',
+                onReceiveProgress: (int count, int total) {
+              int progress = (((count / total) * 100).toInt());
+              pd.update(value: progress, msg: '久等了，数据正在下载...');
+              setState(() {});
+            }).then((value) async {
+              pd.close();
+              Global().getlist();
+              //下载完成
+              isdownload = true;
+              hItems(DateTime.now());
+              xinshouyindao();
+            });
+          });
+        }
+      } catch (e) {
+        print(e);
+        pd.close();
+        return;
       }
       //下载完成后调用hitems
     });
+  }
+
+  Container getContainer(String time, int index, String msg, eventcahe,
+      bool hasStartConnector, bool hasEndConnector) {
+    return Container(
+      child: TimelineTile(
+        oppositeContents: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            child: Container(
+              width: widthx,
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                time +
+                    '\n' +
+                    eventcahe[index]['qssj']
+                        .toString()
+                        .split(' ')[0]
+                        .substring(0, 5) +
+                    ' - ' +
+                    eventcahe[index]['jssj']
+                        .toString()
+                        .split(' ')[0]
+                        .substring(0, 5),
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+        contents: GestureDetector(
+          onTap: (() => Dialogs.bottomMaterialDialog(
+                color: Colors.white,
+                msg: msg,
+                title: '详细信息',
+                lottieBuilder: Lottie.asset(
+                  'assets/course.json',
+                  fit: BoxFit.contain,
+                ),
+                context: context,
+              )),
+          child: Card(
+            color: Global.home_currentcolor,
+            child: Container(
+              width: widthx,
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                eventcahe[index]['kcmc'] + '\n' + eventcahe[index]['jxcdmc'],
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+        node: TimelineNode(
+          indicator: DotIndicator(
+            color: Global.home_currentcolor,
+          ),
+          startConnector: hasStartConnector
+              ? SolidLineConnector(
+                  color: Global.home_currentcolor,
+                )
+              : null,
+          endConnector: hasEndConnector
+              ? SolidLineConnector(
+                  color: Global.home_currentcolor,
+                )
+              : null,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeContainer(String time) {
+    return Container(
+      padding: EdgeInsets.only(left: 60, top: 30),
+      child: Row(
+        children: [
+          Text(
+            time,
+            style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Global.home_currentcolor),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCourseTile(
+      String time, bool hasStartConnector, bool hasEndConnector) {
+    return Container(
+      child: TimelineTile(
+        oppositeContents: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            child: Container(
+              width: widthx,
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                time,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ),
+        contents: Card(
+          //透明
+          color: Colors.transparent,
+          shadowColor: Colors.transparent,
+          child: Container(
+            width: widthx,
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              '',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+        node: TimelineNode(
+          indicator: DotIndicator(
+            color: Global.home_currentcolor,
+          ),
+          startConnector: hasStartConnector
+              ? SolidLineConnector(
+                  color: Global.home_currentcolor,
+                )
+              : null,
+          endConnector: hasEndConnector
+              ? SolidLineConnector(
+                  color: Global.home_currentcolor,
+                )
+              : null,
+        ),
+      ),
+    );
   }
 
   loadwidget(DateTime date) {
@@ -960,10 +1071,6 @@ class _HomePageState extends State<HomePage> {
 
     //判断是否有课程
     if (cacheindex == 0) {
-      // print('pos是' + pos.toString());
-      // print(Global.courseInfox[pos]['zc']);
-      // print(Global.courseInfox[pos]['jsrq']);
-      // print(date.toString().substring(0, 10));
       //判断jsrq和date的日期差
       var date1 = DateTime.parse(Global.courseInfox[pos]['jsrq']);
       //获取date1的周日
@@ -996,282 +1103,15 @@ class _HomePageState extends State<HomePage> {
     });
 
     dailycourse = [
-      Container(
-        padding: EdgeInsets.only(left: 60, top: 30),
-        child: Row(
-          children: [
-            Text(
-              '上午',
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Global.home_currentcolor),
-            ),
-          ],
-        ),
-      ),
-      Container(
-        child: TimelineTile(
-          oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Container(
-                width: widthx,
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '1,2节\n8;00 - 9:35',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          contents: Card(
-            //透明
-            color: Colors.transparent,
-            shadowColor: Colors.transparent,
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                '',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-          node: TimelineNode(
-            indicator: DotIndicator(
-              color: Global.home_currentcolor,
-            ),
-            endConnector: SolidLineConnector(
-              color: Global.home_currentcolor,
-            ),
-          ),
-        ),
-      ),
-      Container(
-        child: TimelineTile(
-          oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Container(
-                width: widthx,
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '3,4节\n9:55 -11:30',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          contents: Card(
-            //透明
-            color: Colors.transparent,
-            shadowColor: Colors.transparent,
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                '',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-          node: TimelineNode(
-            indicator: DotIndicator(
-              color: Global.home_currentcolor,
-            ),
-            startConnector: SolidLineConnector(
-              color: Global.home_currentcolor,
-            ),
-          ),
-        ),
-      ),
-      Container(
-        padding: EdgeInsets.only(left: 60, top: 30),
-        child: Row(
-          children: [
-            Text(
-              '下午',
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Global.home_currentcolor),
-            ),
-          ],
-        ),
-      ),
-      Container(
-        child: TimelineTile(
-          oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Container(
-                width: widthx,
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '5,6节\n13;30 - 15:05',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          contents: Card(
-            //透明
-            color: Colors.transparent,
-            shadowColor: Colors.transparent,
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                '',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-          node: TimelineNode(
-            indicator: DotIndicator(
-              color: Global.home_currentcolor,
-            ),
-            endConnector: SolidLineConnector(
-              color: Global.home_currentcolor,
-            ),
-          ),
-        ),
-      ),
-      Container(
-        child: TimelineTile(
-          oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Container(
-                width: widthx,
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '7,8节\n15:25 - 17:00',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          contents: Card(
-            shadowColor: Colors.transparent,
-            //透明
-            color: Colors.transparent,
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                '',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-          node: TimelineNode(
-            indicator: DotIndicator(
-              color: Global.home_currentcolor,
-            ),
-            startConnector: SolidLineConnector(
-              color: Global.home_currentcolor,
-            ),
-          ),
-        ),
-      ),
-      Container(
-        padding: EdgeInsets.only(left: 60, top: 30),
-        child: Row(
-          children: [
-            Text(
-              '晚课',
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Global.home_currentcolor),
-            ),
-          ],
-        ),
-      ),
-      Container(
-        child: TimelineTile(
-          oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Container(
-                width: widthx,
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '9,10节\n18:00 - 19:35',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          contents: Card(
-            //透明
-            color: Colors.transparent,
-            shadowColor: Colors.transparent,
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                '',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-          node: TimelineNode(
-            indicator: DotIndicator(
-              color: Global.home_currentcolor,
-            ),
-            endConnector: SolidLineConnector(
-              color: Global.home_currentcolor,
-            ),
-          ),
-        ),
-      ),
-      Container(
-        child: TimelineTile(
-          oppositeContents: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Container(
-                width: widthx,
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  '11,12节\n19:55 - 21:30',
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          contents: Card(
-            //透明
-            color: Colors.transparent,
-            shadowColor: Colors.transparent,
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                '',
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-          node: TimelineNode(
-            indicator: DotIndicator(
-              color: Global.home_currentcolor,
-            ),
-            startConnector: SolidLineConnector(
-              color: Global.home_currentcolor,
-            ),
-          ),
-        ),
-      ),
+      _buildTimeContainer('上午'),
+      _buildCourseTile('1,2节\n08;00 - 09:35', false, true),
+      _buildCourseTile('3,4节\n09:55 - 11:30', true, false),
+      _buildTimeContainer('下午'),
+      _buildCourseTile('5,6节\n13;30 - 15:05', false, true),
+      _buildCourseTile('7,8节\n15:25 - 17:00', true, false),
+      _buildTimeContainer('晚课'),
+      _buildCourseTile('9,10节\n18:00 - 19:35', false, true),
+      _buildCourseTile('11,12节\n19:55 - 21:30', true, false),
     ];
     if (eventcahe.length == 0) {
       dailycourse = [];
@@ -1296,512 +1136,53 @@ class _HomePageState extends State<HomePage> {
           '\n' +
           '额外备注:' +
           eventcahe[i]['sknrjj'];
-      //判断课程时间段，如果是08,替换dailycourse中第二个Container
+      //判断课程时间段，替换对应的Container
+      //08,09,11,13,15,17,18,21
       if (eventcahe[i]['qssj'].toString().split(' ')[0].substring(0, 2) ==
           '08') {
-        //清空dailycourse
-
-        dailycourse[1] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '1,2节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents:
-                //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              endConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
-      }
-      //判断课程时间段，如果是09,替换dailycourse中第三个Container
-      if (eventcahe[i]['qssj'].toString().split(' ')[0].substring(0, 2) ==
+        dailycourse[1] = getContainer('1,2节', i, msg, eventcahe, false, true);
+      } else if (eventcahe[i]['qssj']
+              .toString()
+              .split(' ')[0]
+              .substring(0, 2) ==
           '09') {
-        dailycourse[2] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '3,4节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents: //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              startConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
-      }
-      //判断课程时间段，如果jssj是11,替换dailycourse中第三个Container
-      if (eventcahe[i]['jssj'].toString().split(' ')[0].substring(0, 2) ==
+        dailycourse[2] = getContainer('3,4节', i, msg, eventcahe, true, false);
+      } else if (eventcahe[i]['jssj']
+              .toString()
+              .split(' ')[0]
+              .substring(0, 2) ==
           '11') {
-        dailycourse[2] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '3,4节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents: //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              startConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
-      }
-      //判断课程时间段，如果qssj是13,替换dailycourse中第五个Container
-      if (eventcahe[i]['qssj'].toString().split(' ')[0].substring(0, 2) ==
+        dailycourse[2] = getContainer('3,4节', i, msg, eventcahe, true, false);
+      } else if (eventcahe[i]['qssj']
+              .toString()
+              .split(' ')[0]
+              .substring(0, 2) ==
           '13') {
-        dailycourse[4] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '5,6节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents: //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              endConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
-      }
-      //判断课程时间段，如果jssj是17,替换dailycourse中第六个Container
-      if (eventcahe[i]['jssj'].toString().split(' ')[0].substring(0, 2) ==
-          '17') {
-        dailycourse[5] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '7,8节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents: //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              startConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
-      }
-      //判断课程时间段，如果qssj是15,替换dailycourse中第六个Container
-      if (eventcahe[i]['qssj'].toString().split(' ')[0].substring(0, 2) ==
+        dailycourse[4] = getContainer('5,6节', i, msg, eventcahe, false, true);
+      } else if (eventcahe[i]['qssj']
+              .toString()
+              .split(' ')[0]
+              .substring(0, 2) ==
           '15') {
-        dailycourse[5] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '7,8节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents: //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              startConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
-      }
-      //判断课程时间段，如果qssj是18,替换dailycourse中第七个Container
-      if (eventcahe[i]['qssj'].toString().split(' ')[0].substring(0, 2) ==
+        dailycourse[5] = getContainer('7,8节', i, msg, eventcahe, true, false);
+      } else if (eventcahe[i]['qssj']
+              .toString()
+              .split(' ')[0]
+              .substring(0, 2) ==
+          '17') {
+        dailycourse[5] = getContainer('7,8节', i, msg, eventcahe, false, true);
+      } else if (eventcahe[i]['jssj']
+              .toString()
+              .split(' ')[0]
+              .substring(0, 2) ==
           '18') {
-        dailycourse[7] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '9,10节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents: //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              endConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
-      }
-      //判断课程时间段，如果jssj是21,替换dailycourse中第八个Container
-      if (eventcahe[i]['jssj'].toString().split(' ')[0].substring(0, 2) ==
+        dailycourse[7] = getContainer('9,10节', i, msg, eventcahe, false, true);
+      } else if (eventcahe[i]['jssj']
+              .toString()
+              .split(' ')[0]
+              .substring(0, 2) ==
           '21') {
-        dailycourse[8] = Container(
-          child: TimelineTile(
-            oppositeContents: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '9,10节\n' +
-                        eventcahe[i]['qssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5) +
-                        ' - ' +
-                        eventcahe[i]['jssj']
-                            .toString()
-                            .split(' ')[0]
-                            .substring(0, 5),
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            contents: //ontap
-                GestureDetector(
-              onTap: (() => Dialogs.bottomMaterialDialog(
-                    color: Colors.white,
-                    msg: msg,
-                    title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
-                    context: context,
-                  )),
-              child: Card(
-                color: Global.home_currentcolor,
-                child: Container(
-                  width: widthx,
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    eventcahe[i]['kcmc'] + '\n' + eventcahe[i]['jxcdmc'],
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ),
-            node: TimelineNode(
-              indicator: DotIndicator(
-                color: Global.home_currentcolor,
-              ),
-              startConnector: SolidLineConnector(
-                color: Global.home_currentcolor,
-              ),
-            ),
-          ),
-        );
+        dailycourse[8] = getContainer('11,12节', i, msg, eventcahe, true, false);
       }
     }
     setState(() {});
@@ -1809,9 +1190,11 @@ class _HomePageState extends State<HomePage> {
 
 //刷新items
   hItems(DateTime date) async {
-    Global.calendar_current_day = date;
-    await Global().loadItems(date);
-    loadwidget(date);
+    if (!kIsWeb) {
+      Global.calendar_current_day = date;
+      await Global().loadItems(date);
+      loadwidget(date);
+    }
   }
 
   Widget build(BuildContext context) {
@@ -1838,7 +1221,7 @@ class _HomePageState extends State<HomePage> {
                   expandedBuilder: (scrollController) {
                     return MaterialApp(
                       debugShowCheckedModeBanner: false,
-                      home: QRCode(),
+                      // home: QRCode(),
                     );
                   },
                   collapsed: SalomonBottomBar(
@@ -1857,6 +1240,15 @@ class _HomePageState extends State<HomePage> {
                   ),
                   body: Scaffold(
                     appBar: CalendarAgenda(
+                      leading: IconButton(
+                        icon: Icon(Icons.menu),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => InstagramHomePage()));
+                        },
+                      ),
                       controller: _calendarAgendaControllerAppBar,
                       initialDate: DateTime.now(),
                       appbar: true,
@@ -1920,10 +1312,6 @@ class _HomePageState extends State<HomePage> {
                               child: Stack(
                                 children: [
                                   Container(
-                                    // //缩小宽度
-                                    // width:
-                                    //     MediaQuery.of(context).size.width / 3,
-                                    //缩小高度
                                     height: MediaQuery.of(context).size.height /
                                         1.6,
                                     child: RiveAnimation.asset(
@@ -2008,8 +1396,7 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         onTap: () {
                                           Navigator.of(context).pop(); //关闭侧边栏
-                                          Global()
-                                              .No_perception_login()
+                                          ApiService.noPerceptionLogin()
                                               .then((value) => null);
                                           Navigator.push(
                                               context,
@@ -2030,8 +1417,7 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         onTap: () {
                                           Navigator.of(context).pop(); //关闭侧边栏
-                                          Global()
-                                              .No_perception_login()
+                                          ApiService.noPerceptionLogin()
                                               .then((value) => null);
                                           Navigator.push(
                                               context,
@@ -2248,12 +1634,7 @@ class _HomePageState extends State<HomePage> {
                                                   Icons.error,
                                                   color: Colors.white,
                                                 ),
-                                                //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
-                                                //borderRadius: 5.0,
                                                 color: Colors.red,
-                                                //textStyleTitle: TextStyle(),
-                                                //textStyleSubTitle: TextStyle(),
-                                                //alignment: Alignment.topCenter,
                                                 duration: Duration(seconds: 3),
                                                 isCircle: true,
                                                 listener: (status) {
@@ -2410,15 +1791,16 @@ calanderlogo() async {
 }
 
 getcardpng() async {
-  //获取应用目录的card.png，如果有则返回
-  await getApplicationDocumentsDirectory().then((value) {
-    File file = File(value.path + '/card.png');
-    if (file.existsSync()) {
-      //将本地图片保存到cardpic
-      //将file转换为image
-      cardpic = Image.file(File(file.path)).image;
-    }
-  });
+  if (!kIsWeb)
+    //获取应用目录的card.png，如果有则返回
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/card.png');
+      if (file.existsSync()) {
+        //将本地图片保存到cardpic
+        //将file转换为image
+        cardpic = Image.file(File(file.path)).image;
+      }
+    });
 }
 
 final buttonColors = WindowButtonColors(

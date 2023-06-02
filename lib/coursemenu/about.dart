@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:muse_nepu_course/black_jack/screens/black_jack_screen.dart';
-import 'package:muse_nepu_course/chess/bloc/app_blocs.dart';
 import 'package:muse_nepu_course/chess/screens/game_screen.dart';
 import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/global.dart';
@@ -17,10 +16,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
-import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class about extends StatefulWidget {
   @override

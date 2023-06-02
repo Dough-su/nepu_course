@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
@@ -29,7 +30,7 @@ class _pingjiaoLoginPageState extends State<pingjiaoLoginPage> {
   Duration get loginTime => Duration(milliseconds: 500);
   Future<String?> _authUser(LoginData data) {
     return Future.delayed(loginTime).then((_) async {
-      return await Global().getLoginstatus(
+      return await ApiService().getLoginStatus(
           data.name, data.password, data.verifyCode, setState, context);
     });
   }

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/home.dart';
 import 'package:timelines/timelines.dart';
 import 'package:window_manager/window_manager.dart';
 

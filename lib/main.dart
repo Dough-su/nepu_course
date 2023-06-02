@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/jpushs.dart';
+import 'package:muse_nepu_course/login/login.dart';
 import 'package:muse_nepu_course/progress.dart';
 import 'package:muse_nepu_course/easy_splash_screen.dart';
 import 'package:lunar/lunar.dart';
@@ -15,44 +17,54 @@ import 'package:jpush_flutter/jpush_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 
+Widget _page() {
+  //判断是不是web平台,如果是web直接去登录
+  if (kIsWeb) {
+    return HomePage();
+  } else
+    return SplashPage();
+}
+
 Future<void> main() async {
   //判断是否是windows系统，如果是则启用windowmanager
-  if (Platform.isWindows) {
-    //windowmanager初始化
-    WidgetsFlutterBinding.ensureInitialized();
-    // 必须加上这一行。
-    await windowManager.ensureInitialized();
-    WindowOptions windowOptions = WindowOptions(
-      backgroundColor: Colors.transparent, //背景色
-      skipTaskbar: false, //是否在任务栏显示
-      titleBarStyle: TitleBarStyle.hidden,
-    );
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show(); //显示窗口
-      // await windowManager.focus();//聚焦窗口
-    });
-    //初始化开机自启
-    WidgetsFlutterBinding.ensureInitialized();
+  if (!kIsWeb) {
+    if (Platform.isWindows) {
+      //windowmanager初始化
+      WidgetsFlutterBinding.ensureInitialized();
+      // 必须加上这一行。
+      await windowManager.ensureInitialized();
+      WindowOptions windowOptions = WindowOptions(
+        backgroundColor: Colors.transparent, //背景色
+        skipTaskbar: false, //是否在任务栏显示
+        titleBarStyle: TitleBarStyle.hidden,
+      );
+      windowManager.waitUntilReadyToShow(windowOptions, () async {
+        await windowManager.show(); //显示窗口
+        // await windowManager.focus();//聚焦窗口
+      });
+      //初始化开机自启
+      WidgetsFlutterBinding.ensureInitialized();
 
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
-    launchAtStartup.setup(
-      appName: packageInfo.appName,
-      appPath: Platform.resolvedExecutable,
-    );
-    await launchAtStartup.enable();
-    Global.getdesktopinfo();
+      launchAtStartup.setup(
+        appName: packageInfo.appName,
+        appPath: Platform.resolvedExecutable,
+      );
+      await launchAtStartup.enable();
+      Global.getdesktopinfo();
+    }
+    Global.getauto_update_course();
+
+    WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   }
-  Global.getauto_update_course();
-
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  runApp(SplashPage());
-  doWhenWindowReady(() {
-    const initialSize = Size(600, 700);
-    appWindow.size = initialSize;
-    appWindow.alignment = Alignment.center;
-    appWindow.show();
-  });
+  runApp(_page());
+  // doWhenWindowReady(() {
+  //   const initialSize = Size(600, 700);
+  //   appWindow.size = initialSize;
+  //   appWindow.alignment = Alignment.center;
+  //   appWindow.show();
+  // });
 }
 
 class SplashPage extends StatefulWidget {

@@ -32,6 +32,8 @@ class _RecoverCardState extends State<_RecoverCard>
 
   late TextEditingController _nameController;
 
+  late TextEditingController _dependencyController;
+
   late AnimationController _submitController;
 
   @override
@@ -40,6 +42,7 @@ class _RecoverCardState extends State<_RecoverCard>
 
     final auth = Provider.of<Auth>(context, listen: false);
     _nameController = TextEditingController(text: auth.email);
+    _dependencyController = TextEditingController();
 
     _submitController = AnimationController(
       vsync: this,
@@ -88,7 +91,7 @@ class _RecoverCardState extends State<_RecoverCard>
     Auth auth,
   ) {
     return AnimatedTextFormField(
-      controller: _nameController,
+      // controller: _nameController,
       loadingController: widget.loadingController,
       width: width,
       labelText: messages.userHint,
@@ -99,6 +102,26 @@ class _RecoverCardState extends State<_RecoverCard>
       onFieldSubmitted: (value) => _submit(),
       validator: widget.userValidator,
       onSaved: (value) => auth.email = value!,
+    );
+  }
+
+  Widget _buildRecoverdependencyField(
+    double width,
+    LoginMessages messages,
+    Auth auth,
+  ) {
+    return AnimatedTextFormField(
+      controller: _dependencyController,
+      loadingController: widget.loadingController,
+      width: width,
+      labelText: messages.userHint,
+      prefixIcon: const Icon(FontAwesomeIcons.solidCircleUser),
+      keyboardType: TextFieldUtils.getKeyboardType(widget.userType),
+      // autofillHints: [TextFieldUtils.getAutofillHints(widget.userType)],
+      // textInputAction: TextInputAction.done,
+      onFieldSubmitted: (value) => _submit(),
+      // validator: widget.userValidator,
+      // onSaved: (value) => auth.email = value!,
     );
   }
 
@@ -167,6 +190,7 @@ class _RecoverCardState extends State<_RecoverCard>
                 const SizedBox(height: 20),
                 _buildRecoverNameField(textFieldWidth, messages, auth),
                 const SizedBox(height: 20),
+                // _buildRecoverdependencyField(textFieldWidth, messages, auth),
                 Text(
                   auth.onConfirmRecover != null
                       ? messages.recoverCodePasswordDescription

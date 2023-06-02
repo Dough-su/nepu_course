@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:card_loading/card_loading.dart';
 
@@ -99,7 +100,7 @@ class _qingjiaState extends State<qingjia> {
     Global.pureyzmset(false);
     Global.bottombarheight = 60;
 
-    Global().No_perception_login().then((value) async {
+    ApiService.noPerceptionLogin().then((value) async {
       downApkFunction();
     });
   }

@@ -4,7 +4,6 @@ import 'package:achievement_view/achievement_view.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:card_flip/card_flip.dart';
 import 'package:flutter/foundation.dart';
-import 'package:muse_nepu_course/chat_stream.dart';
 import 'package:muse_nepu_course/chatforgpt/chat_gpt.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -12,14 +11,10 @@ import 'package:muse_nepu_course/coursemenu/scoredetail.dart';
 import 'package:muse_nepu_course/flutterlogin/flutter_login.dart';
 import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
-import 'package:muse_nepu_course/test.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
-import 'package:shrink_sidemenu/shrink_sidemenu.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-
-import 'qrcode/qrcode.dart';
+import 'service/api_service.dart';
 
 class LoginData {
   final String name;
@@ -112,6 +107,8 @@ class Global {
   static List<DateTime> course_day = [];
   //是否显示有课的日期
   static bool show_course_day = true;
+  ApiService apiService = ApiService();
+
   //保存是否显示有课的日期到文件
   static void save_show_course_day() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -216,6 +213,8 @@ class Global {
   static double desktopx = 0;
   //桌面平台的y坐标
   static double desktopy = 0;
+  //无感登陆重试次数
+  static int login_retry = 0;
   //保存桌面的高度，宽度，x坐标，y坐标到文件
   static void savedesktopinfo() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -249,6 +248,11 @@ class Global {
   //透明验证码setter
   static void pureyzmset(bool pureyzm) {
     _pureyzm = pureyzm;
+  }
+
+  //透明验证码getter
+  static bool pureyzmgetter() {
+    return _pureyzm;
   }
 
   //教务处学号setter
@@ -304,66 +308,6 @@ class Global {
     });
   }
 
-  //使用Dio插件获取验证码图片并返回图片
-  static Future<Widget> getVerifyCode(context, setState) async {
-    print(_pureyzm.toString());
-    if (!_pureyzm) {
-      Dio dio = Dio();
-      print('下载了');
-
-      Response response = await dio.get(
-          "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
-          options: Options(responseType: ResponseType.bytes));
-      print(response.headers.value('Set-Cookie').toString());
-      //如果分割后的字符串长度为32则为jessonid
-      for (var item in response.headers
-          .value('Set-Cookie')
-          .toString()
-          .replaceAll('{', '')
-          .replaceAll('}', '')
-          .replaceAll("'", '')
-          .replaceAll(' ', '')
-          .split(',')) {
-        if (item.length < 50 && item.length > 10) {
-          jwc_jsessionid = item;
-        }
-        if (item.length > 100) {
-          jwc_webvpn_key = item;
-        }
-        if (item.length > 50 && item.length < 100) {
-          jwc_webvpn_username = item;
-        }
-        if (item.length == 4) {
-          jwc_verifycode = item;
-          jwc_verifycodeController.text = item;
-        }
-        if (item.length == 5) {
-          setState(() {});
-        }
-      }
-
-      try {
-        await AchievementView(context,
-            title: "你可以无需验证码登录啦，验证码是",
-            subTitle: Global.jwc_verifycode,
-            icon: Icon(
-              Icons.error,
-              color: Colors.white,
-            ),
-            color: Colors.green,
-            duration: Duration(seconds: 3),
-            isCircle: true,
-            listener: (status) {})
-          ..show();
-      } catch (e) {
-        print(e);
-      }
-      return Image.memory(response.data);
-    } else {
-      return Image.asset('assets/jwc_login.jpg');
-    }
-  }
-
   //读取登录信息
   Future<String> getLoginInfo() async {
     return '?JSESSIONID=' +
@@ -377,6 +321,11 @@ class Global {
   //判断是不是首次登录
   void isFirst(context) {
     //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
+    if (kIsWeb) {
+      //直接跳转到登录页面
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
+    }
     getApplicationDocumentsDirectory().then((value) {
       File file = new File(value.path + '/course.json');
       file.exists().then((value) {
@@ -394,7 +343,8 @@ class Global {
   //登录页面
   Widget loginreq(
       String login_title, _authUser, context, setState, contextbuilder) {
-    return Center(
+    return MaterialApp(
+        home: Center(
       child: FlutterLogin(
         title: login_title,
         onLogin: (loginData) {
@@ -421,7 +371,7 @@ class Global {
             child: GestureDetector(
               child: Container(
                 child: FutureBuilder(
-                  future: Global.getVerifyCode(context, setState),
+                  future: apiService.getVerifyCode(context, setState),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return snapshot.data as Widget;
@@ -438,119 +388,7 @@ class Global {
           ),
         ],
       ),
-    );
-  }
-
-  //读取下载的json
-  Future<String> getCourseInfo() async {
-    //获取路径
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + '/course.json';
-    //读取文件
-    File file = new File(path);
-    String courseInfo = await file.readAsString();
-    return courseInfo;
-  }
-
-  //无感知登录
-  Future<void> No_perception_login() async {
-    Dio dio = Dio();
-    Response response = await dio
-        .get(
-            "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
-            options: Options(responseType: ResponseType.bytes))
-        .then((value) async {
-      //如果分割后的字符串长度为32则为jessonid
-      for (var item in value.headers
-          .value('Set-Cookie')
-          .toString()
-          .replaceAll('{', '')
-          .replaceAll('}', '')
-          .replaceAll("'", '')
-          .replaceAll(' ', '')
-          .split(',')) {
-        if (item.length < 50 && item.length > 10) {
-          jwc_jsessionid = item;
-        }
-        if (item.length > 100) {
-          jwc_webvpn_key = item;
-        }
-        if (item.length > 50 && item.length < 100) {
-          jwc_webvpn_username = item;
-        }
-        if (item.length == 4) {
-          jwc_verifycode = item;
-        }
-        if (item.length == 5) {
-          No_perception_login();
-        }
-      }
-      Response response1 = await dio.get(
-          //设置超时时间
-
-          "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
-          options: Options(),
-          queryParameters: {
-            'account': Global.jwc_xuehao,
-            'password': Global.jwc_password,
-            'verifycode': Global.jwc_verifycode,
-            'JSESSIONID': Global.jwc_jsessionid,
-            '_webvpn_key': Global.jwc_webvpn_key,
-            'webvpn_username': Global.jwc_webvpn_username
-          }).then((value1) async {
-        if (value1.data['message'].toString() == '登录成功') {
-          print('无感登陆成功了');
-          print(await Global().getLoginInfo());
-        }
-        //FutureOr<Response<dynamic>>
-        return value1;
-      });
-
-      return value;
-    });
-  }
-
-  //登录校验
-  //使用Dio插件获取登录信息并返回登录信息
-  Future<String> getLoginstatus(
-    String username,
-    String password,
-    String verifyCode,
-    setState,
-    context,
-  ) async {
-    Dio dio = Dio();
-    Response response = await dio.get(
-        //设置超时时间
-
-        "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
-        options: Options(),
-        queryParameters: {
-          'account': username,
-          'password': password,
-          'verifycode': verifyCode,
-          'JSESSIONID': Global.jwc_jsessionid,
-          '_webvpn_key': Global.jwc_webvpn_key,
-          'webvpn_username': Global.jwc_webvpn_username
-        });
-    //持久化存储登录信息
-    saveString() {
-      Global().storelogininfo(username, password);
-    }
-
-    //切换到HomePage页面
-    print(response.data.toString());
-    if (response.data['message'].toString() == '登录成功') {
-      saveString();
-      _pureyzm = true;
-      Global.getVerifyCode(context, setState);
-      setState(() {});
-      return '';
-    } else {
-      setState(() {});
-    }
-
-    return response.data['message'].toString() + ',请等待新的验证码刷新或手动点击更新';
+    ));
   }
 
   //加载课程到内存
@@ -615,6 +453,17 @@ class Global {
     }
   }
 
+  //读取下载的json
+  Future<String> getCourseInfo() async {
+    //获取路径
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/course.json';
+    //读取文件
+    File file = new File(path);
+    String courseInfo = await file.readAsString();
+    return courseInfo;
+  }
+
   //读取有课的日期
   static void get_course_day() {
     Global.get_show_course_day().then((value) {
@@ -675,6 +524,17 @@ class Global {
         file1.deleteSync();
       }
     });
+  }
+
+  //读取json
+  Future<String> getscoreInfo() async {
+    //获取路径
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/score.json';
+    //读取文件
+    File file = new File(path);
+    String scoreInfo = await file.readAsString();
+    return scoreInfo;
   }
 
   void getlist() {
@@ -942,17 +802,6 @@ class Global {
     });
   }
 
-  //读取json
-  Future<String> getscoreInfo() async {
-    //获取路径
-    Directory directory = await getApplicationDocumentsDirectory();
-    String path = directory.path + '/score.json';
-    //读取文件
-    File file = new File(path);
-    String scoreInfo = await file.readAsString();
-    return scoreInfo;
-  }
-
   //获取一卡通余额
   void getbalance(xuehao) async {
     print(xuehao);
@@ -971,37 +820,7 @@ class Global {
   //获取一卡通近期流水
   void getrecently(context) async {
     yikatong_recent.clear();
-    Dio dio = new Dio();
-    print(jwc_xuehao);
-    String starttime = await DateTime.now()
-        .add(Duration(days: -30))
-        .toString()
-        .substring(0, 10)
-        .replaceAll('-', '')
-        .toString();
-    String endtime = await DateTime.now()
-        .toString()
-        .substring(0, 10)
-        .replaceAll('-', '')
-        .toString();
-    dio
-        .post('http://wxy.hrbxyz.cn/api/Apixyk/gethistorytrjn?account=' +
-            jwc_xuehao.toString() +
-            '&schoolname=%E4%B8%9C%E5%8C%97%E7%9F%B3%E6%B2%B9%E5%A4%A7%E5%AD%A6&starttime=' +
-            starttime.toString() +
-            '&endtime=' +
-            endtime.toString())
-        .then((value) {
-      //获取近期流水
-      for (int i = 0; i < value.data['data']['obj'].length; i++) {
-        yikatong_recent.add({
-          'Effective_time': value.data['data']['obj'][i]['effectdate'],
-          'Trading_time': value.data['data']['obj'][i]['JnDateTime'],
-          'Transaction_amount':
-              (value.data['data']['obj'][i]['TranAmt'] / 100).toString(),
-          'TranName': value.data['data']['obj'][i]['TranName'],
-        });
-      }
+    apiService.getRecentlyTransactions(jwc_xuehao).then((value) {
       //创建流水表格
       Widget yikatong_recently = DataTable(
         columns: <DataColumn>[
@@ -1070,45 +889,11 @@ class Global {
   //获取一卡通的accno
   Future<String> getaccno() async {
     if (Global.account == '') {
-      Response response = await Dio().post(
-          'http://wxy.hrbxyz.cn/api/Apixyk/getcardinfo?schoolname=东北石油大学&account=' +
-              Global.jwc_xuehao +
-              '&password=112233');
-      //转为json
-      var data = json.decode(response.toString());
-      account = data['data']['obj']['AccNo'];
-      print(account);
-      Response response2 = await Dio().post(
-          'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/pw?stuid=' +
-              Global.jwc_xuehao);
-      password = response2.data;
-      saveaccount();
-      return "ok";
+      apiService.getAccno(jwc_xuehao).then((value) {
+        saveaccount();
+        return "ok";
+      });
     }
-    return "ok";
-  }
-
-  //获取一卡通的二维码
-  Future<String> getqr() async {
-    await getaccno().then((value) async {
-      Response response2 = await Dio().post(
-          'http://wxy.hrbxyz.cn/api/Apixyk/getval?schoolname=东北石油大学&account=' +
-              jwc_xuehao +
-              '&accno=' +
-              account +
-              '&password=' +
-              password.substring(password.length - 6, password.length));
-      //{code: 1, msg: 返回成功, time: 1681376353, data: XYWM:1659140069602523EBA02}
-      //转为json
-      var data = json.decode(response2.toString());
-      try {
-        qrcode = data['data'];
-      } catch (e) {
-        qrcode = '一卡通系统错误';
-      }
-      print(qrcode);
-    });
-
     return "ok";
   }
 }

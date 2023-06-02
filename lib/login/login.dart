@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   Duration get loginTime => Duration(milliseconds: 500);
   Future<String?> _authUser(LoginData data) {
     return Future.delayed(loginTime).then((_) async {
-      return await Global().getLoginstatus(
+      return await ApiService().getLoginStatus(
           data.name, data.password, data.verifyCode, setState, context);
     });
   }

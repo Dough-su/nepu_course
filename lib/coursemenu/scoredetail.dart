@@ -5,6 +5,7 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:muse_nepu_course/diffcult_flutter_refresh/easy_refresh.dart';
 import 'package:muse_nepu_course/diffcult_flutter_refresh/src/styles/space/easy_refresh_space.dart';
 import 'package:muse_nepu_course/global.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:card_flip/card_flip.dart';
@@ -343,7 +344,7 @@ class _scoreState extends State<scorepage> {
                 onRefresh: () async {
                   print('onfresh被调用了');
 
-                  Global().No_perception_login().then((value) async {
+                  ApiService.noPerceptionLogin().then((value) async {
                     print(Global().getLoginInfo());
                     saveString(_controller);
                   });

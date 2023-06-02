@@ -104,6 +104,7 @@ dependencies:
   flutter_parsed_text: ^2.2.1
   pretty_qr_code: ^2.0.3
   slide_countdown: ^0.5.0
+  carousel_slider: ^4.2.1
 
   
 

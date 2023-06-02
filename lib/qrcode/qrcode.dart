@@ -1,10 +1,7 @@
-import 'dart:async';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/global.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
-import 'package:rive/rive.dart';
 import 'package:slide_countdown/slide_countdown.dart';
 
 class QRCode extends StatefulWidget {
@@ -17,7 +14,7 @@ class _QRCodeState extends State<QRCode> {
 
   void initState() {
     super.initState();
-    Global().getqr();
+    ApiService().getQr();
   }
 
   String passtemp = "";
@@ -82,7 +79,7 @@ class _QRCodeState extends State<QRCode> {
                   //如果剩余时间等于1,恢复倒计时为50s
                   if (remaining.inSeconds <= 1) {
                     streamDuration.change(Duration(seconds: 51));
-                    Global().getqr().then((value) {
+                    ApiService().getQr().then((value) {
                       setState(() {});
                     });
                   }
@@ -92,8 +89,7 @@ class _QRCodeState extends State<QRCode> {
             Expanded(
               child: GestureDetector(
                 onTap: () {
-                  print('被点击了');
-                  Global().getqr().then((value) {
+                  ApiService().getQr().then((value) {
                     streamDuration.change(Duration(seconds: 51));
                     setState(() {});
                   });

@@ -10,6 +10,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:http/http.dart' as http;
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mime/mime.dart';
@@ -51,13 +52,7 @@ class _chat_gptState extends State<chat_gpt> {
   void initState() {
     super.initState();
     Global.bottombarheight = 60;
-
-    Dio dio = Dio();
-    dio
-        .get('https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/')
-        .then((response) {
-      print(response.data);
-    });
+    ApiService().active_chatgpt();
     _loadMessages();
     loadprompts();
   }
@@ -173,13 +168,6 @@ class _chat_gptState extends State<chat_gpt> {
                 );
               }
             },
-
-            // return Container(
-            //   width: messageWidth.toDouble(),
-            //   child: Markdown(
-            //     data: '111',
-            //     selectable: true,
-            //   ),
           );
         },
         showUserNames: true,
@@ -226,23 +214,8 @@ class _chat_gptState extends State<chat_gpt> {
     } else {
       print("未超过7000个token" + tokenCount.toString());
     }
-    Dio dio = new Dio();
-
-    var headers = {'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)'};
-
-    FormData formData = FormData.fromMap({
-      'content': Global.messages_pure,
-    });
-
     try {
-      Response response = await Dio().post(
-        'https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/test',
-        data: formData,
-        options: Options(
-          headers: headers,
-          responseType: ResponseType.stream,
-        ),
-      );
+      Response response = await ApiService().sendToServer(Global.messages_pure);
 
       Timer timer;
       bool isTimeout = false;

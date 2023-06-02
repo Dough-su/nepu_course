@@ -20,7 +20,7 @@ class _wuziqiState extends State<wuziqi> {
         onWebResourceError: (WebResourceError error) {},
         onNavigationRequest: (NavigationRequest request) {
           if (request.url.startsWith(
-              'http://express.web-framework-ecpd.1635718952176230.cn-beijing.fc.devsapp.net/')) {
+              'https://express.web-framework-ecpd.1635718952176230.cn-beijing.fc.devsapp.net/')) {
             return NavigationDecision.prevent;
           }
           return NavigationDecision.navigate;
@@ -28,7 +28,7 @@ class _wuziqiState extends State<wuziqi> {
       ),
     )
     ..loadRequest(Uri.parse(
-        'http://express.web-framework-ecpd.1635718952176230.cn-beijing.fc.devsapp.net/'));
+        'https://express.web-framework-ecpd.1635718952176230.cn-beijing.fc.devsapp.net/'));
   @override
   Widget build(BuildContext context) {
     return Scaffold(
