@@ -12,71 +12,35 @@ class QRCode extends StatefulWidget {
 class _QRCodeState extends State<QRCode> {
   final streamDuration = StreamDuration(Duration(seconds: 50));
 
-  void initState() {
-    super.initState();
-    ApiService().getQr();
-  }
-
-  String passtemp = "";
-  void refresh() {
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Global.home_currentcolor,
-          //设置
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.settings),
-              onPressed: () {
-                //弹窗一个文本框加上一个确认框
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: Text("修改你的一卡通密码\n如果没有错误请不要修改"),
-                        content: TextField(
-                          onChanged: (value) {
-                            passtemp = value;
-                          },
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text("确认"),
-                            onPressed: () {
-                              Global.password = passtemp;
-                              Global.saveaccount();
-                              Navigator.of(context).pop();
-                            },
-                          )
-                        ],
-                      );
-                    });
-              },
+              onPressed: _showDialog,
             ),
           ],
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('点击二维码可手动刷新\n当前是' + Global.qrcode),
+            Text('点击二维码可手动刷新\n当前是 ${Global.qrcode}'),
             Align(
               alignment: Alignment.topCenter,
               child: SlideCountdown(
-                decoration: BoxDecoration(
-                    color: Global.home_currentcolor,
-                    borderRadius: BorderRadius.circular(10)),
+                decoration: _buildDecoration(),
                 durationTitle: DurationTitle(
-                    days: "天", hours: "时", minutes: "分", seconds: "秒"),
-                // This duration no effect if you customize stream duration
+                  days: "天",
+                  hours: "时",
+                  minutes: "分",
+                  seconds: "秒",
+                ),
                 streamDuration: streamDuration,
                 onChanged: (Duration remaining) {
-                  print("剩余" + remaining.inSeconds.toString()); //这里可以获取到剩余时间
-                  //如果剩余时间等于1,恢复倒计时为50s
                   if (remaining.inSeconds <= 1) {
                     streamDuration.change(Duration(seconds: 51));
                     ApiService().getQr().then((value) {
@@ -94,18 +58,54 @@ class _QRCodeState extends State<QRCode> {
                     setState(() {});
                   });
                 },
-                child: PrettyQr(
-                  typeNumber: 3,
-                  size: 200,
-                  data: Global.qrcodegetter(),
-                  errorCorrectLevel: QrErrorCorrectLevel.M,
-                  roundEdges: true,
-                ),
+                child: _buildQrCode(),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("修改你的一卡通密码\n如果没有错误请不要修改"),
+          content: TextField(
+            onChanged: (value) {
+              Global.password = value;
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text("确认"),
+              onPressed: () {
+                Global.saveaccount();
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  BoxDecoration _buildDecoration() {
+    return BoxDecoration(
+      color: Global.home_currentcolor,
+      borderRadius: BorderRadius.circular(10),
+    );
+  }
+
+  Widget _buildQrCode() {
+    return PrettyQr(
+      typeNumber: 3,
+      size: 200,
+      data: Global.qrcodegetter(),
+      errorCorrectLevel: QrErrorCorrectLevel.M,
+      roundEdges: true,
     );
   }
 }

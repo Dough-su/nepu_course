@@ -105,6 +105,10 @@ dependencies:
   pretty_qr_code: ^2.0.3
   slide_countdown: ^0.5.0
   carousel_slider: ^4.2.1
+  flip_card: ^0.7.0
+  pointycastle: ^3.7.3
+  flustars: ^2.0.1
+  encrypt: ^5.0.1
 
   
 

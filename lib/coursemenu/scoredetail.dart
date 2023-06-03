@@ -6,12 +6,10 @@ import 'package:muse_nepu_course/diffcult_flutter_refresh/easy_refresh.dart';
 import 'package:muse_nepu_course/diffcult_flutter_refresh/src/styles/space/easy_refresh_space.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
+import 'package:muse_nepu_course/service/io_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:card_flip/card_flip.dart';
-
-ImageProvider cardpic = AssetImage('images/image.png');
-ImageProvider avaterpic = AssetImage('images/avatar.png');
 
 class scorepage extends StatefulWidget {
   @override
@@ -41,8 +39,6 @@ Widget component1(fenshu, paiming, shijian, coursename, leixing, jidian) {
           child: Row(
             children: [
               Container(
-                //距离上下边距
-                // margin: const EdgeInsets.only(bottom: 20.0),
                 width: 88,
                 color: Global.score_currentcolor,
                 child: Column(
@@ -372,12 +368,16 @@ class _scoreState extends State<scorepage> {
                       : IndicatorResult.success);
                 },
                 child: ListView.builder(
-                    itemCount: Global.scorelist.length,
+                    itemCount: Global.isfirstuser
+                        ? Global.scorelist.length
+                        : Global.scorelist2.length,
                     itemBuilder: (context, index) {
                       return Container(
                         child: Padding(
                           padding: const EdgeInsets.all(18.0),
-                          child: Global.scorelist[index],
+                          child: Global.isfirstuser
+                              ? Global.scorelist[index]
+                              : Global.scorelist2[index],
                         ),
                       );
                     })
@@ -446,35 +446,11 @@ Widget explainText(String title, String subtitle,
 }
 
 ImageProvider<Object> getcardpngx() {
-  getcardpng();
-  return cardpic;
-}
-
-getcardpng() async {
-  //获取应用目录的card.png，如果有则返回
-  await getApplicationDocumentsDirectory().then((value) {
-    File file = File(value.path + '/card.png');
-    if (file.existsSync()) {
-      //将本地图片保存到cardpic
-      //将file转换为image
-      cardpic = Image.file(File(file.path)).image;
-    }
-  });
+  io_service().getcardpng();
+  return Global().cardpic;
 }
 
 ImageProvider<Object> getavaterpngx() {
-  getavaterpng();
-  return avaterpic;
-}
-
-getavaterpng() async {
-  //获取应用目录的card.png，如果有则返回
-  await getApplicationDocumentsDirectory().then((value) {
-    File file = File(value.path + '/avater.png');
-    if (file.existsSync()) {
-      //将本地图片保存到cardpic
-      //将file转换为image
-      avaterpic = Image.file(File(file.path)).image;
-    }
-  });
+  io_service().getavaterpng();
+  return Global().avaterpic;
 }

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/login/login.dart';
 import 'package:muse_nepu_course/progress.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 class EasySplashScreen extends StatefulWidget {
@@ -114,16 +115,20 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
 
     _countdownTimer();
     //获取主页和成绩页面的成绩信息
-    Global().getxuehao();
     Global.get_course_day();
+    Global.get_course_day2();
+    ApiService().getQr();
+    Global().readislogin2();
     Global().score_getcolor();
     //读取一卡通的账号
     Global().getaccount();
     Global.getcalendar();
+    Global.getcalendar2();
 
     Global().home_getcolor();
     Global().deletepj();
     Global().getlist();
+    Global().getlist2();
     bool progressorhome = false;
     getApplicationDocumentsDirectory().then((value) {
       //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法

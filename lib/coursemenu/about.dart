@@ -66,6 +66,34 @@ class _aboutState extends State<about> {
                 title: Text('内部版本号'),
                 subtitle: Text(Global.version),
               ),
+              ListTile(
+                leading: Icon(Icons.info),
+                title: Text('点击生成我的密钥，传给ta'),
+                subtitle: Text('密钥5分钟内有效，超时无效'),
+                onTap: () {
+                  //http://course.musecloud.tech/
+                  Clipboard.setData(ClipboardData(
+                      text: Global().Encrypt(
+                    Global.jwc_xuehao,
+                    Global.jwc_password,
+                    //现在
+                  )));
+                  AchievementView(context,
+                      title: "复制成功",
+                      subTitle: '请注意不要泄露你的密钥,请交给你信任的人',
+                      //onTab: _onTabAchievement,
+                      icon: Icon(
+                        Icons.insert_emoticon,
+                        color: Colors.white,
+                      ),
+                      color: Colors.green,
+                      duration: Duration(seconds: 3),
+                      isCircle: true, listener: (status) {
+                    print(status);
+                  })
+                    ..show();
+                },
+              ),
               //切换课程自动更新开关
               ListTile(
                 leading: Icon(Icons.info),

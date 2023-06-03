@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
@@ -48,7 +49,8 @@ class ApiService {
             '&password=112233');
     var data = json.decode(response.toString());
     Global.account = data['data']['obj']['AccNo'];
-    Response response2 = await dio.post(
+    print("账号是" + Global.jwc_xuehao);
+    Response response2 = await dio.get(
         'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/pw?stuid=' +
             Global.jwc_xuehao);
     Global.password = response2.data;
@@ -69,8 +71,11 @@ class ApiService {
                 .substring(Global.password.length - 6, Global.password.length));
     var data = json.decode(response.toString());
     try {
+      Global.qrcode = data['data'];
+      print("二维码是" + Global.qrcode);
       return data['data'];
     } catch (e) {
+      Global.qrcode = '一卡通系统错误';
       return '一卡通系统错误';
     }
   }
@@ -197,6 +202,70 @@ class ApiService {
     });
   }
 
+  //用户2无感登陆
+  //无感知登录
+  static Future<void> noPerceptionLogin2() async {
+    Dio dio = Dio();
+    Response response = await dio
+        .get(
+            "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
+            options: Options(responseType: ResponseType.bytes))
+        .then((value) async {
+      //如果分割后的字符串长度为32则为jessonid
+      for (var item in value.headers
+          .value('Set-Cookie')
+          .toString()
+          .replaceAll('{', '')
+          .replaceAll('}', '')
+          .replaceAll("'", '')
+          .replaceAll(' ', '')
+          .split(',')) {
+        if (item.length < 50 && item.length > 10) {
+          Global.jwc_jsessionid2 = item;
+        }
+        if (item.length > 100) {
+          Global.jwc_webvpn_key2 = item;
+        }
+        if (item.length > 50 && item.length < 100) {
+          Global.jwc_webvpn_username2 = item;
+        }
+        if (item.length == 4) {
+          Global.jwc_verifycode2 = item;
+        }
+        if (item.length == 5) {
+          noPerceptionLogin2();
+        }
+      }
+      Response response1 = await dio.get(
+          //设置超时时间
+
+          "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
+          options: Options(),
+          queryParameters: {
+            'account': Global.jwc_xuehao2,
+            'password': Global.jwc_password2,
+            'verifycode': Global.jwc_verifycode2,
+            'JSESSIONID': Global.jwc_jsessionid2,
+            '_webvpn_key': Global.jwc_webvpn_key2,
+            'webvpn_username': Global.jwc_webvpn_username2
+          }).then((value1) async {
+        if (value1.data['message'].toString() == '登录成功') {
+          Global.login_retry = 0;
+          print('无感登陆成功了');
+          print(await Global().getLoginInfo());
+        } else {
+          Global.login_retry++;
+          if (Global.login_retry < 2) {
+            noPerceptionLogin();
+          }
+        }
+        return value1;
+      });
+
+      return value;
+    });
+  }
+
   //登录校验
   //使用Dio插件获取登录信息并返回登录信息
   Future<String> getLoginStatus(String username, String password,
@@ -260,5 +329,42 @@ class ApiService {
     } catch (e) {
       throw e;
     }
+  }
+
+  static Future<List<Map<String, dynamic>>> getNotice() async {
+    try {
+      Response response = await Dio().get(
+          'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/notice');
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(response.data);
+      } else {
+        throw Exception('请求通知接口失败，状态码：${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('请求通知接口失败：$e');
+    }
+  }
+
+  //更新接口
+  Future<Map<String, dynamic>> getUpdateInfo() async {
+    var dio = Dio();
+    var value = await dio.get(
+        'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
+    return value.data[0];
+  }
+
+  //通用下载文件方法
+  Future<void> downloadAndUpdateFile(
+      {required File file,
+      required String fileUrl,
+      required Function(int) onDownloadingListener}) async {
+    var dio = Dio();
+    await dio.download(
+      fileUrl,
+      file.path,
+      onReceiveProgress: (count, total) {
+        onDownloadingListener((count / total * 100).toInt());
+      },
+    );
   }
 }

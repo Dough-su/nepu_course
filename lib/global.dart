@@ -15,6 +15,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'service/api_service.dart';
+import 'dart:convert';
+import 'dart:math';
+import 'package:flustars/flustars.dart';
+import 'package:encrypt/encrypt.dart' as enc;
 
 class LoginData {
   final String name;
@@ -47,23 +51,41 @@ class LoginData {
   int get hashCode => hash2(name, password);
 }
 
+///定义秘钥
+var _KEY = "0123456789becoin";
+
+///定义偏移量
+var _IV = "0123456789becoin";
+
 class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "130";
+  static String version = "131";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
   static String jwc_password = '';
+  //用户2教务处学号
+  static String jwc_xuehao2 = '';
+  //用户2教务处密码
+  static String jwc_password2 = '';
   //教务处JSESSIONID
   static String jwc_jsessionid = '';
+  //用户2教务处JSESSIONID
+  static String jwc_jsessionid2 = '';
   //教务处验证码
   static String jwc_verifycode = '';
   //教务处webvpn_key
   static String jwc_webvpn_key = '';
   //教务处webvpn_username
   static String jwc_webvpn_username = '';
+  //教务处2验证码
+  static String jwc_verifycode2 = '';
+  //教务处2webvpn_key
+  static String jwc_webvpn_key2 = '';
+  //教务处2webvpn_username
+  static String jwc_webvpn_username2 = '';
   //主页的currentcolor
   static Color home_currentcolor = Colors.blue;
   //主页的pickcolor
@@ -75,20 +97,33 @@ class Global {
   //课表日历第一天
   static DateTime calendar_first_day =
       DateTime.now().subtract(Duration(days: 1400));
+  //用户2课表日历第一天
+  static DateTime calendar_first_day2 =
+      DateTime.now().subtract(Duration(days: 1400));
   //课表当前日期
   static DateTime calendar_current_day = DateTime.now();
+  //用户2课表当前日期
+  static DateTime calendar_current_day2 = DateTime.now();
   //透明验证码
   static bool _pureyzm = false;
   //评教进入模式是否为无感知登录(默认用无感知登录)
   static bool pingjiao_login_mode = true;
   //判断是否已经从本地读取json
   static bool isfirstread = true;
+  //判断用户2是否已经从本地读取json
+  static bool isfirstread2 = true;
   //课表日历最后一天
   static DateTime calendar_last_day = DateTime.now().add(Duration(days: 180));
+  //用户2课表日历最后一天
+  static DateTime calendar_last_day2 = DateTime.now().add(Duration(days: 180));
   //在内存中的courseinfo
   static var courseInfox;
+  //用户2在内存中的courseinfo
+  static var courseInfox2;
   //本次启动是否已经刷新课程
   static bool isrefreshcourse = false;
+  //本次启动用户2是否已经刷新课程
+  static bool isrefreshcourse2 = false;
   //自动更新课程
   static bool auto_update_course = true;
   //消息列表
@@ -105,9 +140,109 @@ class Global {
   static String qrcode = '';
   //有课的日期
   static List<DateTime> course_day = [];
+  //用户2有课的日期
+  static List<DateTime> course_day2 = [];
   //是否显示有课的日期
   static bool show_course_day = true;
   ApiService apiService = ApiService();
+  //当前用户是否是第一个
+  static bool isfirstuser = true;
+  //用户2是否登陆过
+  static bool islogin2 = false;
+  //保存用户2是否登陆过到文件
+  void saveislogin2() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/islogin2.txt');
+      file.writeAsStringSync(islogin2.toString());
+    });
+  }
+
+  //读取用户2是否登陆过到文件
+  void readislogin2() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/islogin2.txt');
+      if (file.existsSync()) {
+        islogin2 = file.readAsStringSync() == 'true' ? true : false;
+      }
+    });
+  }
+
+  //文本控制器
+  static TextEditingController textEditingController =
+      TextEditingController(text: '');
+
+  Encrypt(String username, String password) {
+    try {
+      final key = enc.Key.fromUtf8(_KEY);
+      final iv = enc.IV.fromUtf8(_IV);
+      final plainText = username +
+          " " +
+          password +
+          " " +
+          DateTime.now().millisecondsSinceEpoch.toString(); // 在明文中加入当前时间戳
+
+      final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
+      final encrypted = encrypter.encrypt(plainText, iv: iv);
+      return encrypted.base16;
+    } catch (err) {
+      print("aes encode error:$err");
+    }
+  }
+
+  dynamic Decrypt(encrypted, BuildContext context) {
+    try {
+      final key = enc.Key.fromUtf8(_KEY);
+      final iv = enc.IV.fromUtf8(_IV);
+      final encrypter = enc.Encrypter(enc.AES(key, mode: enc.AESMode.cbc));
+      final decrypted = encrypter.decrypt16(encrypted, iv: iv);
+
+      final parts = decrypted.split(' ');
+      final timestamp = int.tryParse(parts.last); // 解析时间戳
+      if (timestamp == null ||
+          DateTime.now().millisecondsSinceEpoch - timestamp > 5 * 60 * 1000) {
+        AchievementView(context,
+            title: "警告",
+            subTitle: '密钥已超过时效',
+            //onTab: _onTabAchievement,
+            icon: Icon(
+              Icons.insert_emoticon,
+              color: Colors.white,
+            ),
+            color: Colors.red,
+            duration: Duration(seconds: 3),
+            isCircle: true, listener: (status) {
+          print(status);
+        })
+          ..show();
+        throw Exception("Decryption failed"); // 如果时间戳无效或超过5分钟，则解密失败
+      }
+      String plain =
+          decrypted.substring(0, decrypted.length - parts.last.length - 1);
+      jwc_xuehao2 = plain.split(' ')[0];
+      jwc_password2 = plain.split(' ')[1];
+      storelogininfo2(jwc_xuehao2, jwc_password2);
+      print(jwc_xuehao2 + jwc_password2);
+      islogin2 = true;
+      return ('success'); // 返回去掉时间戳的明文部分
+    } catch (err) {
+      print("aes decode error:$err");
+      AchievementView(context,
+          title: "警告",
+          subTitle: '你的密钥不对哦',
+          //onTab: _onTabAchievement,
+          icon: Icon(
+            Icons.insert_emoticon,
+            color: Colors.white,
+          ),
+          color: Colors.red,
+          duration: Duration(seconds: 3),
+          isCircle: true, listener: (status) {
+        print(status);
+      })
+        ..show();
+      return encrypted;
+    }
+  }
 
   //保存是否显示有课的日期到文件
   static void save_show_course_day() async {
@@ -157,6 +292,19 @@ class Global {
     });
   }
 
+  //从文件读取用户2最后一天和第一天
+  static void getcalendar2() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/calanderagenda1.txt');
+      if (file.existsSync()) {
+        calendar_first_day2 =
+            DateTime.parse(file.readAsStringSync().split('\n')[1]);
+        calendar_last_day2 =
+            DateTime.parse(file.readAsStringSync().split('\n')[0]);
+      }
+    });
+  }
+
   //从文件中读取账号密码
   void getaccount() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -199,8 +347,12 @@ class Global {
   static String yikatong_balance = '';
   //成绩组件列表
   static List<Widget> scorelist = [];
+  //用户2成绩组件列表
+  static List<Widget> scorelist2 = [];
   //成绩信息
   static var scoreinfos = [];
+  //用户2成绩信息
+  static var scoreinfos2 = [];
   //底栏高度
   static double bottombarheight = 60;
   //一卡通近期流水
@@ -215,6 +367,13 @@ class Global {
   static double desktopy = 0;
   //无感登陆重试次数
   static int login_retry = 0;
+  //成绩页面的图片
+  ImageProvider cardpic = AssetImage('images/image.png');
+  ImageProvider avaterpic = AssetImage('images/avatar.png');
+  //主页logo图片
+  ImageProvider calendarlogo = AssetImage('images/logo.png');
+  ImageProvider logopic = AssetImage('images/logo.png');
+
   //保存桌面的高度，宽度，x坐标，y坐标到文件
   static void savedesktopinfo() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -278,16 +437,15 @@ class Global {
     });
   }
 
-  void getxuehao() async {
-    await getApplicationDocumentsDirectory().then((value) async {
-      File file = File(value.path + '/logininfo.txt');
+  //将用户名和密码导入到global.dart中
+  static getusername2() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/logininfo1.txt');
       if (file.existsSync()) {
-        jwc_xuehao = file.readAsStringSync().split(',')[0].toString();
-        jwc_password = file.readAsStringSync().split(',')[1].toString();
         //根据,分割
-        //如果是在调试
-        if (!kDebugMode)
-          getbalance(file.readAsStringSync().split(',')[0].toString());
+        List<String> list = file.readAsStringSync().split(',');
+        jwc_xuehao2 = list[0];
+        jwc_password2 = list[1];
       }
     });
   }
@@ -308,10 +466,36 @@ class Global {
     });
   }
 
+  //存储用户2名和密码
+  void storelogininfo2(username, password) {
+    Global.jwc_xuehao2 = username;
+    Global.jwc_password2 = password;
+    getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/logininfo1.txt');
+      //创建file
+      file.create();
+      //判断是否存在file
+      file.exists().then((value) {
+        //写入username和password分别占一行
+        file.writeAsString('$username,$password');
+      });
+    });
+  }
+
   //读取登录信息
   Future<String> getLoginInfo() async {
     return '?JSESSIONID=' +
         jwc_jsessionid +
+        '&_webvpn_key=' +
+        jwc_webvpn_key +
+        '&webvpn_username=' +
+        jwc_webvpn_username;
+  }
+
+  //读取用户2登录信息
+  Future<String> getLoginInfo2() async {
+    return '?JSESSIONID=' +
+        jwc_jsessionid2 +
         '&_webvpn_key=' +
         jwc_webvpn_key +
         '&webvpn_username=' +
@@ -453,6 +637,68 @@ class Global {
     }
   }
 
+  //加载用户2课程到内存
+  loadItems2(DateTime date) async {
+    if (isfirstread2 == true) {
+      getCourseInfo2().then((value) async {
+        courseInfox2 = json.decode(value);
+        isfirstread2 = false;
+      }).then((value) {
+        print('加载课程到内存');
+        try {
+          courseInfox2[0]['jsrq'];
+          //写入jsrq到文件
+          getApplicationDocumentsDirectory().then((value) {
+            File file = File(value.path + '/calanderagenda1.txt');
+            //判断文件是否存在
+            if (file.existsSync()) {
+              //存在则写入第一条数据和最后一条数据，并换行
+              file.writeAsStringSync(courseInfox2[0]['jsrq'] +
+                  '\n' +
+                  courseInfox2[courseInfox2.length - 1]['jsrq']);
+            } else {
+              //不存在则创建文件并写入
+              file.createSync();
+              file.writeAsStringSync(courseInfox2[0]['jsrq'] +
+                  '\n' +
+                  courseInfox2[courseInfox2.length - 1]['jsrq']);
+            }
+            File file1 = File(value.path + '/hascourse1.json');
+            //判断文件是否存在
+            if (file1.existsSync()) {
+              //清空
+              file1.writeAsStringSync('');
+              //将所有课程的日期换行写入文件
+              for (var item in courseInfox2) {
+                file1.writeAsStringSync(item['jsrq'] + '\n',
+                    mode: FileMode.append);
+              }
+            } else {
+              //不存在则创建文件并写入
+              file1.createSync();
+              for (var item in courseInfox2) {
+                file1.writeAsStringSync(item['jsrq'] + '\n',
+                    mode: FileMode.append);
+              }
+            }
+          });
+        } catch (e) {
+          dailycourse2 = [
+            Text(
+              '当你看到这段话，证明出错了，当然可能服务器出错了(概率很小),出错在哪里了呢，可能在于学校，学校是不是现在正在有选课的问题，有这个问题的话，可能会导致超时，因为教务处压力太大，导致没办法加载，下次建议不要在抢课时登陆课表，现在你可以点开三个横那里，里面有个重新登入，按下它，退出app，等到学校不在抢课时重新登陆吧，good luck',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.red,
+              ),
+            )
+          ];
+
+          return;
+        }
+      });
+    }
+  }
+
   //读取下载的json
   Future<String> getCourseInfo() async {
     //获取路径
@@ -462,6 +708,22 @@ class Global {
     File file = new File(path);
     String courseInfo = await file.readAsString();
     return courseInfo;
+  }
+
+  //读取用户2的下载的json
+  Future<String> getCourseInfo2() async {
+    //获取路径
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/course1.json';
+    //判断文件是否存在
+    File file = new File(path);
+    if (file.existsSync()) {
+      islogin2 = true;
+      String courseInfo = await file.readAsString();
+      return courseInfo;
+    } else {
+      return '';
+    }
   }
 
   //读取有课的日期
@@ -478,6 +740,28 @@ class Global {
               if (item != '') {
                 //item是yyyy-mm-dd格式的日期.转为DateTime类型
                 course_day.add(DateTime.parse(item));
+              }
+            }
+          });
+        }
+      });
+    });
+  }
+
+  //读取用户2有课的日期
+  static void get_course_day2() {
+    Global.get_show_course_day().then((value) {
+      if (show_course_day == false) {
+        return;
+      }
+      getApplicationDocumentsDirectory().then((value) {
+        File file = File(value.path + '/hascourse1.json');
+        if (file.existsSync()) {
+          file.readAsString().then((value) {
+            for (var item in value.split('\n')) {
+              if (item != '') {
+                //item是yyyy-mm-dd格式的日期.转为DateTime类型
+                course_day2.add(DateTime.parse(item));
               }
             }
           });
@@ -537,6 +821,17 @@ class Global {
     return scoreInfo;
   }
 
+  //读取用户2json
+  Future<String> getscoreInfo2() async {
+    //获取路径
+    Directory directory = await getApplicationDocumentsDirectory();
+    String path = directory.path + '/score1.json';
+    //读取文件
+    File file = new File(path);
+    String scoreInfo = await file.readAsString();
+    return scoreInfo;
+  }
+
   void getlist() {
     scoreinfos.clear();
     scorelist.clear();
@@ -552,6 +847,271 @@ class Global {
         //组件1
 
         Global.scorelist.add(FlipLayout(
+          duration: 500,
+          foldState: true,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(8.0),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    height: 44,
+                    color: Global.score_currentcolor,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(
+                          Icons.menu,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          scoreinfos[i]['kcmc'],
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            backgroundColor: Global.score_currentcolor,
+                          ),
+                        ),
+                        Text(
+                          scoreinfos[i]['zcj'] + '分',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Stack(
+                    children: [
+                      Image(
+                        image: cardpic,
+                        width: double.infinity,
+                        height: 121,
+                        fit: BoxFit.cover,
+                      ),
+                      Positioned.fill(
+                        bottom: 12,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            explainText('绩点', scoreinfos[i]['cjjd'],
+                                subtitleColor: Colors.white),
+                            explainText(
+                                '排名',
+                                scoreinfos[i]['paiming'] +
+                                    '/' +
+                                    scoreinfos[i]['zongrenshu'],
+                                subtitleColor: Colors.white),
+                            explainText('类型', scoreinfos[i]['xdfsmc'],
+                                subtitleColor: Colors.white),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8.0),
+              ),
+              child: Container(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        '姓名',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image(
+                            image: avaterpic,
+                            width: 48,
+                            height: 48,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              scoreinfos[i]['xsxm'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Row(
+                              children: const [
+                                SizedBox(
+                                  width: 4,
+                                ),
+                                Text(
+                                  '加油哦',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                      ],
+                    ),
+                    Divider(
+                      color: Colors.grey[300],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: multipleLineText(
+                        '小于60分有', scoreinfos[i]['fenshu60'] + '人'),
+                  ),
+                  Expanded(
+                    child: multipleLineText(
+                        '60-70分有', scoreinfos[i]['fenshu70'] + '人'),
+                  ),
+                  Expanded(
+                    child: multipleLineText(
+                        '70-80分有', scoreinfos[i]['fenshu80'] + '人'),
+                  ),
+                  Expanded(
+                      child: multipleLineText(
+                          '80-90分有', scoreinfos[i]['fenshu90'] + '人')),
+                  Expanded(
+                    child: multipleLineText(
+                        '90-100分有', scoreinfos[i]['fenshu100'] + '人'),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: multipleLineText('平时成绩', scoreinfos[i]['pscj'])),
+                  Expanded(
+                    child: multipleLineText('实验成绩', scoreinfos[i]['sycj']),
+                  ),
+                  Expanded(
+                    child: multipleLineText('期中成绩', scoreinfos[i]['qzcj']),
+                  ),
+                  Expanded(
+                    child: multipleLineText('期末成绩', scoreinfos[i]['qmcj']),
+                  ),
+                  Expanded(
+                    child: multipleLineText('实践成绩', scoreinfos[i]['sjcj']),
+                  ),
+                ],
+              ),
+            ),
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(8)),
+              child: Container(
+                width: double.infinity,
+                color: Colors.white,
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Builder(builder: (context) {
+                      return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                          primary: Global.score_currentcolor,
+                        ),
+                        onPressed: () {
+                          FlipLayout.of(context).toggle();
+                        },
+                        child: const Text(
+                          '收起',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    const Text(' ',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ))
+                  ],
+                ),
+              ),
+            ),
+          ],
+          foldChild: FoldCard(
+              scoreinfos[i]['zcjfs'],
+              scoreinfos[i]['paiming'] + '/' + scoreinfos[i]['zongrenshu'] + '',
+              scoreinfos[i]['xnxqmc'],
+              scoreinfos[i]['kcmc'],
+              scoreinfos[i]['xdfsmc'],
+              scoreinfos[i]['cjjd']),
+        ));
+      }
+    });
+  }
+
+  void getlist2() {
+    scoreinfos2.clear();
+    scorelist2.clear();
+    //从json读取
+    getscoreInfo2().then((value) {
+      //转为json
+      scoreinfos2 = json.decode(value);
+      //反向读取
+      for (int i = scoreinfos2.length - 1; i >= 0; i--) {
+        avgmark.add(scoreinfos2[i]['zcj']);
+        avgjidian.add(scoreinfos2[i]['cjjd']);
+        //打印分数zcj
+        //组件1
+
+        Global.scorelist2.add(FlipLayout(
           duration: 500,
           foldState: true,
           children: [
