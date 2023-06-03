@@ -1466,7 +1466,7 @@ class _HomePageState extends State<HomePage> {
       //判断是否是今天的课程
       if (Global.courseInfox2[i]['jsrq'] == date.toString().substring(0, 10)) {
         cacheindex++;
-        eventcahe.add(Global.courseInfox[i]);
+        eventcahe.add(Global.courseInfox2[i]);
       }
       //如果读取之后的时间在今天之前则跳过
       if (Global.courseInfox2[i]['jsrq']

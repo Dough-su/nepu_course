@@ -117,13 +117,13 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
     //获取主页和成绩页面的成绩信息
     Global.get_course_day();
     Global.get_course_day2();
-    ApiService().getQr();
     Global().readislogin2();
     Global().score_getcolor();
     //读取一卡通的账号
     Global().getaccount();
     Global.getcalendar();
     Global.getcalendar2();
+    ApiService().getQr();
 
     Global().home_getcolor();
     Global().deletepj();
