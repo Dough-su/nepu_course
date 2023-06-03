@@ -304,7 +304,7 @@ class _HomePageState extends State<HomePage> {
         await Dialogs.materialDialog(
           color: Colors.white,
           msg: '要下载吗?',
-          title: '有新版本啦,版本号是$version\n${value.data[0]['description']}',
+          title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
           lottieBuilder: Lottie.asset(
             'assets/rockert-new.json',
             fit: BoxFit.contain,
@@ -384,7 +384,7 @@ class _HomePageState extends State<HomePage> {
           await Dialogs.materialDialog(
             color: Colors.white,
             msg: '要下载吗?',
-            title: '有新版本啦,版本号是$version\n${value.data[0]['description']}',
+            title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
             lottieBuilder: Lottie.asset(
               'assets/rockert-new.json',
               fit: BoxFit.contain,
