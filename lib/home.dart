@@ -400,34 +400,51 @@ class _HomePageState extends State<HomePage> {
               ),
               IconButton(
                 onPressed: () async {
-                  Navigator.pop(context);
-                  ProgressDialog pd = ProgressDialog(context: context);
-                  pd.show(
-                      max: 100,
-                      msg: '准备下载更新...',
-                      msgMaxLines: 5,
-                      completed: Completed(
-                        completedMsg: "下载完成!",
-                        completedImage: AssetImage("assets/completed.gif"),
-                        completionDelay: 2500,
-                      ));
-                  await EasyAppInstaller.instance.downloadAndInstallApk(
-                    fileUrl: value.data[0]['link'],
-                    fileDirectory: "updateApk",
-                    fileName: "newApk.apk",
-                    explainContent: "快去开启权限！！！",
-                    onDownloadingListener: (progress) {
-                      if (progress < 100) {
-                        pd.update(value: progress.toInt(), msg: '安装包正在下载...');
-                      } else {
-                        file.writeAsString(version);
-                        pd.update(value: progress.toInt(), msg: '安装包下载完成...');
-                      }
-                    },
-                    onCancelTagListener: (cancelTag) {
-                      _cancelTag = cancelTag;
-                    },
-                  );
+                  if (Platform.isAndroid) {
+                    ProgressDialog pd = ProgressDialog(context: context);
+                    pd.show(
+                        max: 100,
+                        msg: '准备下载更新...',
+                        msgMaxLines: 5,
+                        completed: Completed(
+                          completedMsg: "下载完成!",
+                          completedImage: AssetImage("assets/completed.gif"),
+                          completionDelay: 2500,
+                        ));
+                    await EasyAppInstaller.instance.downloadAndInstallApk(
+                      fileUrl: value.data[0]['link'],
+                      fileDirectory: "updateApk",
+                      fileName: "newApk.apk",
+                      explainContent: "快去开启权限！！！",
+                      onDownloadingListener: (progress) {
+                        if (progress < 100) {
+                          pd.update(value: progress.toInt(), msg: '安装包正在下载...');
+                        } else {
+                          pd.update(value: progress.toInt(), msg: '安装包下载完成...');
+                        }
+                      },
+                      onCancelTagListener: (cancelTag) {
+                        _cancelTag = cancelTag;
+                      },
+                    );
+                  } else {
+                    Clipboard.setData(ClipboardData(
+                        text:
+                            'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                    AchievementView(context,
+                        title: "复制成功",
+                        subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
+                        icon: Icon(
+                          Icons.insert_emoticon,
+                          color: Colors.white,
+                        ),
+                        color: Colors.green,
+                        duration: Duration(seconds: 15),
+                        isCircle: true, listener: (status) {
+                      print(status);
+                    })
+                      ..show();
+                  }
                 },
                 icon: Icon(Icons.check),
               ),
@@ -688,6 +705,7 @@ class _HomePageState extends State<HomePage> {
 
     getcolor();
     initall();
+    initall2();
   }
 
   void initall() {
@@ -842,126 +860,31 @@ class _HomePageState extends State<HomePage> {
 
   void initall2() {
     Global.isfirstread2 = true;
-
-    getApplicationDocumentsDirectory().then((value) {
-      Dio dio = new Dio();
-      File file = new File(value.path + '/course1.json');
-      file.exists().then((value) {
-        if (!value) {
-          ApiService.noPerceptionLogin2().then((value) {
-            downApkFunction2();
-          });
-        } else {
-          hItems(DateTime.now());
-          if (Global.auto_update_course) if (!Global.isrefreshcourse2)
-            ApiService.noPerceptionLogin2().then((value) async {
-              Global.isrefreshcourse2 = true;
-              print('开始同步用户2课程');
-              var url =
-                  'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                      await Global().getLoginInfo2();
-              getApplicationDocumentsDirectory().then((value) async {
-                //判断响应状态
-                Response response = await dio.get(url);
-                if (response.statusCode == 500) {
-                  AchievementView(context,
-                      title: "与教务同步最新课程失败!",
-                      subTitle: '可能是服务器出现短暂问题，请稍后再试',
-                      icon: Icon(
-                        Icons.error,
-                        color: Colors.white,
-                      ),
-                      color: Colors.red,
-                      duration: Duration(seconds: 3),
-                      isCircle: true,
-                      listener: (status) {})
-                    ..show();
-                  return;
-                } else if (response.statusCode == 200) {
-                  if (!response.data.toString().contains('fail')) {
-                    Directory directory =
-                        await getApplicationDocumentsDirectory();
-                    String path = directory.path + '/course1.json';
-                    File file = new File(path);
-                    file.writeAsString(response.data);
-                    Global.isfirstread2 = true;
-
-                    var urlscore =
-                        'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
-                            await Global().getLoginInfo2() +
-                            '&index=' +
-                            Global.scoreinfos2[Global.scoreinfos2.length - 1]
-                                    ['cjdm']
-                                .toString();
-                    print(urlscore);
-                    getApplicationDocumentsDirectory().then((value) async {
-                      try {
-                        Response response = await dio.get(urlscore);
-                        if (response.statusCode == 200) {
-                          //获取路径
-                          Directory directory =
-                              await getApplicationDocumentsDirectory();
-                          String path = directory.path + '/score1.json';
-                          //追加文件
-                          File file = new File(path);
-                          file.readAsString().then((value) {
-                            value = value.replaceAll(']', '') +
-                                ',' +
-                                response.data.toString().replaceAll('[', '');
-                            file.writeAsString(value);
-                            Global().getlist2();
-                          });
-                          Dialogs.materialDialog(
-                            color: Colors.white,
-                            msg: '去看看不?',
-                            title: '有新成绩啦!',
-                            lottieBuilder: Lottie.asset(
-                              'assets/rockert-new.json',
-                              fit: BoxFit.contain,
-                            ),
-                            context: context,
-                            actions: [
-                              IconButton(
-                                onPressed: () {
-                                  //关闭
-                                  Navigator.pop(context);
-                                },
-                                icon: Icon(Icons.cancel_outlined),
-                              ),
-                              IconButton(
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  //跳转到score页面
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => scorepage()));
-                                },
-                                icon: Icon(Icons.check),
-                              ),
-                            ],
-                          );
-                        }
-                      } catch (e) {
-                        print(e);
-                      }
-                    });
+    if (Global.islogin2)
+      getApplicationDocumentsDirectory().then((value) {
+        Dio dio = new Dio();
+        File file = new File(value.path + '/course1.json');
+        file.exists().then((value) {
+          if (!value) {
+            ApiService.noPerceptionLogin2().then((value) {
+              downApkFunction2();
+            });
+          } else {
+            hItems(DateTime.now());
+            if (Global.auto_update_course) if (!Global.isrefreshcourse2)
+              ApiService.noPerceptionLogin2().then((value) async {
+                Global.isrefreshcourse2 = true;
+                print('开始同步用户2课程');
+                var url =
+                    'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                        await Global().getLoginInfo2();
+                getApplicationDocumentsDirectory().then((value) async {
+                  //判断响应状态
+                  Response response = await dio.get(url);
+                  if (response.statusCode == 500) {
                     AchievementView(context,
-                        title: "课程获取成功啦!",
-                        subTitle: '你的课程已经同步至最新',
-                        icon: Icon(
-                          Icons.error,
-                          color: Colors.white,
-                        ),
-                        color: Global.home_currentcolor,
-                        duration: Duration(seconds: 3),
-                        isCircle: true,
-                        listener: (status) {})
-                      ..show();
-                  } else {
-                    AchievementView(context,
-                        title: "与教务同步课程失败!",
-                        subTitle: '请检查你的密码或者教务系统是否正常',
+                        title: "与教务同步最新课程失败!",
+                        subTitle: '可能是服务器出现短暂问题，请稍后再试',
                         icon: Icon(
                           Icons.error,
                           color: Colors.white,
@@ -972,22 +895,117 @@ class _HomePageState extends State<HomePage> {
                         listener: (status) {})
                       ..show();
                     return;
+                  } else if (response.statusCode == 200) {
+                    if (!response.data.toString().contains('fail')) {
+                      Directory directory =
+                          await getApplicationDocumentsDirectory();
+                      String path = directory.path + '/course1.json';
+                      File file = new File(path);
+                      file.writeAsString(response.data);
+                      Global.isfirstread2 = true;
+
+                      var urlscore =
+                          'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
+                              await Global().getLoginInfo2() +
+                              '&index=' +
+                              Global.scoreinfos2[Global.scoreinfos2.length - 1]
+                                      ['cjdm']
+                                  .toString();
+                      print(urlscore);
+                      getApplicationDocumentsDirectory().then((value) async {
+                        try {
+                          Response response = await dio.get(urlscore);
+                          if (response.statusCode == 200) {
+                            //获取路径
+                            Directory directory =
+                                await getApplicationDocumentsDirectory();
+                            String path = directory.path + '/score1.json';
+                            //追加文件
+                            File file = new File(path);
+                            file.readAsString().then((value) {
+                              value = value.replaceAll(']', '') +
+                                  ',' +
+                                  response.data.toString().replaceAll('[', '');
+                              file.writeAsString(value);
+                              Global().getlist2();
+                            });
+                            Dialogs.materialDialog(
+                              color: Colors.white,
+                              msg: '去看看不?',
+                              title: '有新成绩啦!',
+                              lottieBuilder: Lottie.asset(
+                                'assets/rockert-new.json',
+                                fit: BoxFit.contain,
+                              ),
+                              context: context,
+                              actions: [
+                                IconButton(
+                                  onPressed: () {
+                                    //关闭
+                                    Navigator.pop(context);
+                                  },
+                                  icon: Icon(Icons.cancel_outlined),
+                                ),
+                                IconButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    //跳转到score页面
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => scorepage()));
+                                  },
+                                  icon: Icon(Icons.check),
+                                ),
+                              ],
+                            );
+                          }
+                        } catch (e) {
+                          print(e);
+                        }
+                      });
+                      AchievementView(context,
+                          title: "课程获取成功啦!",
+                          subTitle: '你的课程已经同步至最新',
+                          icon: Icon(
+                            Icons.error,
+                            color: Colors.white,
+                          ),
+                          color: Global.home_currentcolor,
+                          duration: Duration(seconds: 3),
+                          isCircle: true,
+                          listener: (status) {})
+                        ..show();
+                    } else {
+                      AchievementView(context,
+                          title: "与教务同步课程失败!",
+                          subTitle: '请检查你的密码或者教务系统是否正常',
+                          icon: Icon(
+                            Icons.error,
+                            color: Colors.white,
+                          ),
+                          color: Colors.red,
+                          duration: Duration(seconds: 3),
+                          isCircle: true,
+                          listener: (status) {})
+                        ..show();
+                      return;
+                    }
                   }
-                }
+                });
               });
-            });
-          //有则读取
-          //判断是否windows
-          if (Platform.isWindows) {
-            //跳转到windows页面
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return windwosfloat();
-            }));
+            //有则读取
+            //判断是否windows
+            if (Platform.isWindows) {
+              //跳转到windows页面
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return windwosfloat();
+              }));
+            }
+            hItems(DateTime.now());
           }
-          hItems(DateTime.now());
-        }
+        });
       });
-    });
   }
 
   var homecontext;
@@ -1392,7 +1410,7 @@ class _HomePageState extends State<HomePage> {
               .substring(0, 2) ==
           '17') {
         dailycourse[5] = getContainer('7,8节', i, msg, eventcahe, false, true);
-      } else if (eventcahe[i]['jssj']
+      } else if (eventcahe[i]['qssj']
               .toString()
               .split(' ')[0]
               .substring(0, 2) ==
@@ -1537,7 +1555,7 @@ class _HomePageState extends State<HomePage> {
               .substring(0, 2) ==
           '17') {
         dailycourse2[5] = getContainer('7,8节', i, msg, eventcahe, false, true);
-      } else if (eventcahe[i]['jssj']
+      } else if (eventcahe[i]['qssj']
               .toString()
               .split(' ')[0]
               .substring(0, 2) ==
