@@ -2050,13 +2050,27 @@ class _HomePageState extends State<HomePage> {
           onHorizontalDragEnd: (details) {
             if (!_isVerticalDrag) {
               if (details.velocity.pixelsPerSecond.dx < 0) {
-                hItems(Global.calendar_current_day.add(Duration(days: 1)));
-                _calendarAgendaControllerAppBar
-                    .goToDay(Global.calendar_current_day);
+                if (isfront) {
+                  hItems(Global.calendar_current_day.add(Duration(days: 1)));
+                  _calendarAgendaControllerAppBar
+                      .goToDay(Global.calendar_current_day);
+                } else {
+                  hItems(Global.calendar_current_day2.add(Duration(days: 1)));
+                  _calendarAgendaControllerAppBar2
+                      .goToDay(Global.calendar_current_day2);
+                }
               } else if (details.velocity.pixelsPerSecond.dx > 0) {
-                hItems(Global.calendar_current_day.subtract(Duration(days: 1)));
-                _calendarAgendaControllerAppBar
-                    .goToDay(Global.calendar_current_day);
+                if (isfront) {
+                  hItems(
+                      Global.calendar_current_day.subtract(Duration(days: 1)));
+                  _calendarAgendaControllerAppBar
+                      .goToDay(Global.calendar_current_day);
+                } else {
+                  hItems(
+                      Global.calendar_current_day2.subtract(Duration(days: 1)));
+                  _calendarAgendaControllerAppBar2
+                      .goToDay(Global.calendar_current_day2);
+                }
               }
             }
           },

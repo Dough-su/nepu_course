@@ -11,6 +11,11 @@ class QRCode extends StatefulWidget {
 
 class _QRCodeState extends State<QRCode> {
   final streamDuration = StreamDuration(Duration(seconds: 50));
+  @override
+  void initState() {
+    super.initState();
+    ApiService().getQr();
+  }
 
   @override
   Widget build(BuildContext context) {
