@@ -222,6 +222,7 @@ class Global {
       jwc_password2 = plain.split(' ')[1];
       storelogininfo2(jwc_xuehao2, jwc_password2);
       print(jwc_xuehao2 + jwc_password2);
+
       islogin2 = true;
       return ('success'); // 返回去掉时间戳的明文部分
     } catch (err) {
@@ -312,6 +313,7 @@ class Global {
       if (file.existsSync()) {
         account = file.readAsStringSync().split(' ')[0];
         password = file.readAsStringSync().split(' ')[1];
+        print("账号密码" + account + password);
       }
       getaccno();
     });
@@ -430,6 +432,7 @@ class Global {
       File file = File(value.path + '/logininfo.txt');
       if (file.existsSync()) {
         //根据,分割
+        print('读取到的学号' + file.readAsStringSync().split(',')[0]);
         List<String> list = file.readAsStringSync().split(',');
         Global().jwc_xuehaosetter(list[0]);
         Global().jwc_passwordsetter(list[1]);
@@ -1106,8 +1109,6 @@ class Global {
       scoreinfos2 = json.decode(value);
       //反向读取
       for (int i = scoreinfos2.length - 1; i >= 0; i--) {
-        avgmark.add(scoreinfos2[i]['zcj']);
-        avgjidian.add(scoreinfos2[i]['cjjd']);
         //打印分数zcj
         //组件1
 
@@ -1133,7 +1134,7 @@ class Global {
                           color: Colors.white,
                         ),
                         Text(
-                          scoreinfos[i]['kcmc'],
+                          scoreinfos2[i]['kcmc'],
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -1141,7 +1142,7 @@ class Global {
                           ),
                         ),
                         Text(
-                          scoreinfos[i]['zcj'] + '分',
+                          scoreinfos2[i]['zcj'] + '分',
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
@@ -1165,15 +1166,15 @@ class Global {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            explainText('绩点', scoreinfos[i]['cjjd'],
+                            explainText('绩点', scoreinfos2[i]['cjjd'],
                                 subtitleColor: Colors.white),
                             explainText(
                                 '排名',
-                                scoreinfos[i]['paiming'] +
+                                scoreinfos2[i]['paiming'] +
                                     '/' +
-                                    scoreinfos[i]['zongrenshu'],
+                                    scoreinfos2[i]['zongrenshu'],
                                 subtitleColor: Colors.white),
-                            explainText('类型', scoreinfos[i]['xdfsmc'],
+                            explainText('类型', scoreinfos2[i]['xdfsmc'],
                                 subtitleColor: Colors.white),
                           ],
                         ),
@@ -1220,7 +1221,7 @@ class Global {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              scoreinfos[i]['xsxm'],
+                              scoreinfos2[i]['xsxm'],
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -1263,22 +1264,22 @@ class Global {
                 children: [
                   Expanded(
                     child: multipleLineText(
-                        '小于60分有', scoreinfos[i]['fenshu60'] + '人'),
+                        '小于60分有', scoreinfos2[i]['fenshu60'] + '人'),
                   ),
                   Expanded(
                     child: multipleLineText(
-                        '60-70分有', scoreinfos[i]['fenshu70'] + '人'),
+                        '60-70分有', scoreinfos2[i]['fenshu70'] + '人'),
                   ),
                   Expanded(
                     child: multipleLineText(
-                        '70-80分有', scoreinfos[i]['fenshu80'] + '人'),
+                        '70-80分有', scoreinfos2[i]['fenshu80'] + '人'),
                   ),
                   Expanded(
                       child: multipleLineText(
-                          '80-90分有', scoreinfos[i]['fenshu90'] + '人')),
+                          '80-90分有', scoreinfos2[i]['fenshu90'] + '人')),
                   Expanded(
                     child: multipleLineText(
-                        '90-100分有', scoreinfos[i]['fenshu100'] + '人'),
+                        '90-100分有', scoreinfos2[i]['fenshu100'] + '人'),
                   ),
                 ],
               ),
@@ -1289,18 +1290,18 @@ class Global {
               child: Row(
                 children: [
                   Expanded(
-                      child: multipleLineText('平时成绩', scoreinfos[i]['pscj'])),
+                      child: multipleLineText('平时成绩', scoreinfos2[i]['pscj'])),
                   Expanded(
-                    child: multipleLineText('实验成绩', scoreinfos[i]['sycj']),
+                    child: multipleLineText('实验成绩', scoreinfos2[i]['sycj']),
                   ),
                   Expanded(
-                    child: multipleLineText('期中成绩', scoreinfos[i]['qzcj']),
+                    child: multipleLineText('期中成绩', scoreinfos2[i]['qzcj']),
                   ),
                   Expanded(
-                    child: multipleLineText('期末成绩', scoreinfos[i]['qmcj']),
+                    child: multipleLineText('期末成绩', scoreinfos2[i]['qmcj']),
                   ),
                   Expanded(
-                    child: multipleLineText('实践成绩', scoreinfos[i]['sjcj']),
+                    child: multipleLineText('实践成绩', scoreinfos2[i]['sjcj']),
                   ),
                 ],
               ),
@@ -1351,12 +1352,15 @@ class Global {
             ),
           ],
           foldChild: FoldCard(
-              scoreinfos[i]['zcjfs'],
-              scoreinfos[i]['paiming'] + '/' + scoreinfos[i]['zongrenshu'] + '',
-              scoreinfos[i]['xnxqmc'],
-              scoreinfos[i]['kcmc'],
-              scoreinfos[i]['xdfsmc'],
-              scoreinfos[i]['cjjd']),
+              scoreinfos2[i]['zcjfs'],
+              scoreinfos2[i]['paiming'] +
+                  '/' +
+                  scoreinfos2[i]['zongrenshu'] +
+                  '',
+              scoreinfos2[i]['xnxqmc'],
+              scoreinfos2[i]['kcmc'],
+              scoreinfos2[i]['xdfsmc'],
+              scoreinfos2[i]['cjjd']),
         ));
       }
     });
@@ -1449,7 +1453,7 @@ class Global {
   //获取一卡通的accno
   Future<String> getaccno() async {
     if (Global.account == '') {
-      apiService.getAccno(jwc_xuehao).then((value) {
+      apiService.getAccno().then((value) {
         saveaccount();
         return "ok";
       });

@@ -91,10 +91,13 @@ class io_service {
       'course.json',
       'score.json',
       'calanderagenda.txt',
+      'calanderagenda1.txt',
       'account.txt',
       'course1.json',
       'logininfo1.txt',
       'score1.json',
+      'hascourse.json',
+      'hascourse1.json',
     ];
 
     for (final filename in filesToDelete) {

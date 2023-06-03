@@ -42,42 +42,52 @@ class ApiService {
   }
 
   //获取一卡通的accno
-  Future<String> getAccno(String jwc_xuehao) async {
-    Response response = await dio.post(
-        'http://wxy.hrbxyz.cn/api/Apixyk/getcardinfo?schoolname=东北石油大学&account=' +
-            jwc_xuehao +
-            '&password=112233');
-    var data = json.decode(response.toString());
-    Global.account = data['data']['obj']['AccNo'];
-    print("账号是" + Global.jwc_xuehao);
-    Response response2 = await dio.get(
-        'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/pw?stuid=' +
-            Global.jwc_xuehao);
-    Global.password = response2.data;
-    return data['data']['obj']['AccNo'];
+  Future<String> getAccno() async {
+    if (Global.account == '') {
+      try {
+        print('获取accno为空');
+        Response response = await Dio().post(
+            'http://wxy.hrbxyz.cn/api/Apixyk/getcardinfo?schoolname=东北石油大学&account=' +
+                Global.jwc_xuehao +
+                '&password=112233');
+        //转为json
+        var data = json.decode(response.toString());
+        Global.account = data['data']['obj']['AccNo'];
+        Response response2 = await Dio().post(
+            'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/pw?stuid=' +
+                Global.jwc_xuehao);
+        Global.password = response2.data;
+        Global.saveaccount();
+        return "ok";
+      } catch (e) {}
+    }
+    return "ok";
   }
 
   //获取一卡通的二维码
   Future<String> getQr() async {
     String jwc_xuehao = Global.jwc_xuehao;
-    String accno = await getAccno(jwc_xuehao);
-    Response response = await dio.post(
-        'http://wxy.hrbxyz.cn/api/Apixyk/getval?schoolname=东北石油大学&account=' +
-            jwc_xuehao +
-            '&accno=' +
-            accno +
-            '&password=' +
-            Global.password
-                .substring(Global.password.length - 6, Global.password.length));
-    var data = json.decode(response.toString());
-    try {
-      Global.qrcode = data['data'];
-      print("二维码是" + Global.qrcode);
-      return data['data'];
-    } catch (e) {
-      Global.qrcode = '一卡通系统错误';
-      return '一卡通系统错误';
-    }
+    print('学号是' + jwc_xuehao);
+    await getAccno().then((value) async {
+      Response response = await dio.post(
+          'http://wxy.hrbxyz.cn/api/Apixyk/getval?schoolname=东北石油大学&account=' +
+              jwc_xuehao +
+              '&accno=' +
+              Global.account +
+              '&password=' +
+              Global.password.substring(
+                  Global.password.length - 6, Global.password.length));
+      var data = json.decode(response.toString());
+      try {
+        Global.qrcode = data['data'];
+        print("二维码是" + Global.qrcode);
+        return data['data'];
+      } catch (e) {
+        Global.qrcode = '一卡通系统错误';
+        return '一卡通系统错误';
+      }
+    });
+    return '一卡通系统错误';
   }
 
   Future<Widget> getVerifyCode(context, setState) async {

@@ -112,6 +112,8 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
   @override
   void initState() {
     super.initState();
+    Global().getaccount();
+    Global().getusername();
 
     _countdownTimer();
     //获取主页和成绩页面的成绩信息
@@ -120,7 +122,6 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
     Global().readislogin2();
     Global().score_getcolor();
     //读取一卡通的账号
-    Global().getaccount();
     Global.getcalendar();
     Global.getcalendar2();
     ApiService().getQr();

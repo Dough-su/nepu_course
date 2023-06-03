@@ -58,7 +58,6 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     createAppBlocs();
-    Global().getusername();
     Global.getusername2();
     Global().loadItems(DateTime.now());
     Global().loadItems2(DateTime.now());

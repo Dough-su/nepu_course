@@ -256,6 +256,7 @@ class _scoreState extends State<scorepage> {
   }
 
   void initState() {
+    print(Global.isfirstuser.toString());
     _controller = EasyRefreshController(
       controlFinishRefresh: true,
       controlFinishLoad: true,

@@ -19,6 +19,7 @@ import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
 import 'package:muse_nepu_course/qingjia/qingjia.dart';
 import 'package:muse_nepu_course/qrcode/qrcode.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
+import 'package:muse_nepu_course/service/io_service.dart';
 import 'package:muse_nepu_course/windowsfloat.dart';
 import 'package:rive/rive.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -990,49 +991,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   var homecontext;
-  void deleteFile() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();
-
-    //删除course.json
-    File file = new File('${documentsDirectory.path}/course.json');
-    if (file.existsSync()) {
-      try {
-        file.deleteSync();
-      } catch (e) {
-        print(e);
-      }
-    }
-
-    //删除score.json
-    File file2 = new File('${documentsDirectory.path}/score.json');
-    if (file2.existsSync()) {
-      try {
-        file2.deleteSync();
-      } catch (e) {
-        print(e);
-      }
-    }
-
-    //删除calanderagenda.txt
-    File file3 = new File('${documentsDirectory.path}/calanderagenda.txt');
-    if (file3.existsSync()) {
-      try {
-        file3.deleteSync();
-      } catch (e) {
-        print(e);
-      }
-    }
-
-    //删除account.txt
-    File file4 = new File('${documentsDirectory.path}/account.txt');
-    if (file4.existsSync()) {
-      try {
-        file4.deleteSync();
-      } catch (e) {
-        print(e);
-      }
-    }
-  }
 
   void downApkFunction() async {
     ProgressDialog pd = ProgressDialog(context: context);
@@ -1819,7 +1777,7 @@ class _HomePageState extends State<HomePage> {
                             fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
-                        deleteFile();
+                        io_service().deleteFiles();
                         AchievementView(context,
                             title: "成功!",
                             subTitle: "已清除课程和成绩缓存，请退出app重新登录",
@@ -2059,6 +2017,7 @@ class _HomePageState extends State<HomePage> {
       appBar: CalendarAgenda(
         leading: IconButton(
           icon: Icon(Icons.swap_horizontal_circle_outlined),
+          color: Colors.white,
           onPressed: () {
             Global.isfirstuser = !Global.isfirstuser;
 
