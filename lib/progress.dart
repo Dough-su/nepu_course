@@ -78,101 +78,99 @@ class _WithBuilder extends State<WithBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            LiquidSwipe.builder(
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  width: double.infinity,
-                  color: data[index].color,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Image.asset(
-                        data[index].image,
-                        height: 400,
-                        fit: BoxFit.contain,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(20.0),
-                      ),
-                      Column(
-                        children: <Widget>[
-                          Text(
-                            data[index].text1,
-                            style: WithPages.style,
-                          ),
-                          Text(
-                            data[index].text2,
-                            style: WithPages.style,
-                          ),
-                          Text(
-                            data[index].text3,
-                            style: WithPages.style,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-              positionSlideIcon: 0.8,
-              slideIconWidget: Icon(Icons.arrow_back_ios),
-              onPageChangeCallback: pageChangeCallback,
-              waveType: WaveType.liquidReveal,
-              liquidController: liquidController,
-              fullTransitionValue: 880,
-              enableSideReveal: true,
-              enableLoop: true,
-              ignoreUserGestureWhileAnimating: true,
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: <Widget>[
-                  Expanded(child: SizedBox()),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List<Widget>.generate(data.length, _buildDot),
-                  ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: TextButton(
-                  onPressed: () {
-                    liquidController.animateToPage(
-                        page: data.length - 1, duration: 700);
-                  },
-                  child: Text("进入课表"),
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          LiquidSwipe.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return Container(
+                width: double.infinity,
+                color: data[index].color,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Image.asset(
+                      data[index].image,
+                      height: 400,
+                      fit: BoxFit.contain,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(20.0),
+                    ),
+                    Column(
+                      children: <Widget>[
+                        Text(
+                          data[index].text1,
+                          style: WithPages.style,
+                        ),
+                        Text(
+                          data[index].text2,
+                          style: WithPages.style,
+                        ),
+                        Text(
+                          data[index].text3,
+                          style: WithPages.style,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
+              );
+            },
+            positionSlideIcon: 0.8,
+            slideIconWidget: Icon(Icons.arrow_back_ios),
+            onPageChangeCallback: pageChangeCallback,
+            waveType: WaveType.liquidReveal,
+            liquidController: liquidController,
+            fullTransitionValue: 880,
+            enableSideReveal: true,
+            enableLoop: true,
+            ignoreUserGestureWhileAnimating: true,
+          ),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                Expanded(child: SizedBox()),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List<Widget>.generate(data.length, _buildDot),
+                ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: TextButton(
+                onPressed: () {
+                  liquidController.animateToPage(
+                      page: data.length - 1, duration: 700);
+                },
+                child: Text("进入课表"),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: TextButton(
-                  onPressed: () {
-                    liquidController.jumpToPage(
-                        page: liquidController.currentPage + 1 > data.length - 1
-                            ? 0
-                            : liquidController.currentPage + 1);
-                  },
-                  child: Text("下一个"),
-                ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: TextButton(
+                onPressed: () {
+                  liquidController.jumpToPage(
+                      page: liquidController.currentPage + 1 > data.length - 1
+                          ? 0
+                          : liquidController.currentPage + 1);
+                },
+                child: Text("下一个"),
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }
@@ -239,62 +237,59 @@ class _WithPages extends State<WithPages> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            LiquidSwipe(
-              pages: pages,
-              slideIconWidget: Icon(Icons.arrow_back_ios),
-              onPageChangeCallback: pageChangeCallback,
-              waveType: WaveType.liquidReveal,
-              liquidController: liquidController,
-              enableSideReveal: true,
-              ignoreUserGestureWhileAnimating: true,
-            ),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: Column(
-                children: <Widget>[
-                  Expanded(child: SizedBox()),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List<Widget>.generate(pages.length, _buildDot),
-                  ),
-                ],
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: TextButton(
-                  onPressed: () {
-                    liquidController.animateToPage(
-                        page: pages.length - 1, duration: 700);
-                  },
-                  child: Text("跳过引导"),
+    return Scaffold(
+      body: Stack(
+        children: <Widget>[
+          LiquidSwipe(
+            pages: pages,
+            slideIconWidget: Icon(Icons.arrow_back_ios),
+            onPageChangeCallback: pageChangeCallback,
+            waveType: WaveType.liquidReveal,
+            liquidController: liquidController,
+            enableSideReveal: true,
+            ignoreUserGestureWhileAnimating: true,
+          ),
+          Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              children: <Widget>[
+                Expanded(child: SizedBox()),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List<Widget>.generate(pages.length, _buildDot),
                 ),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: TextButton(
+                onPressed: () {
+                  liquidController.animateToPage(
+                      page: pages.length - 1, duration: 700);
+                },
+                child: Text("跳过引导"),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: TextButton(
-                  onPressed: () {
-                    liquidController.jumpToPage(
-                        page:
-                            liquidController.currentPage + 1 > pages.length - 1
-                                ? 0
-                                : liquidController.currentPage + 1);
-                  },
-                  child: Text("下一页"),
-                ),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding: const EdgeInsets.all(25.0),
+              child: TextButton(
+                onPressed: () {
+                  liquidController.jumpToPage(
+                      page: liquidController.currentPage + 1 > pages.length - 1
+                          ? 0
+                          : liquidController.currentPage + 1);
+                },
+                child: Text("下一页"),
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

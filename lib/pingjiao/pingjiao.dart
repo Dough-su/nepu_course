@@ -187,72 +187,66 @@ class _pingjiaoState extends State<pingjiao> {
   }
 
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        appBar: AppBar(
-          actions: [
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('设置高分和低分'),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          controller: highmarkcontroller,
-                          decoration:
-                              InputDecoration(labelText: '高分，必须至少得有小数点后一位'),
-                        ),
-                        TextField(
-                          controller: lowmarkcontroller,
-                          decoration:
-                              InputDecoration(labelText: '低分,必须至少得有小数点后一位'),
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      TextButton(
-                        child: Text('取消'),
-                        onPressed: () => Navigator.of(context).pop(),
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('设置高分和低分'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: highmarkcontroller,
+                        decoration:
+                            InputDecoration(labelText: '高分，必须至少得有小数点后一位'),
                       ),
-                      TextButton(
-                        child: Text('确定'),
-                        onPressed: () {
-                          pingjiaohighmark =
-                              double.parse(highmarkcontroller.text);
-                          pingjiaolowmark =
-                              double.parse(lowmarkcontroller.text);
-                          setState(() {});
-                          Navigator.of(context).pop();
-                        },
+                      TextField(
+                        controller: lowmarkcontroller,
+                        decoration:
+                            InputDecoration(labelText: '低分,必须至少得有小数点后一位'),
                       ),
                     ],
                   ),
-                );
-              },
-            ),
-          ],
-          leading: IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              pingjiaoinfo.clear();
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => HomePage()));
+                  actions: [
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: () {
+                        pingjiaohighmark =
+                            double.parse(highmarkcontroller.text);
+                        pingjiaolowmark = double.parse(lowmarkcontroller.text);
+                        setState(() {});
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              );
             },
           ),
-          title: Text('评教,右滑高分，左滑低分'),
+        ],
+        leading: IconButton(
+          icon: Icon(Icons.home),
+          onPressed: () {
+            pingjiaoinfo.clear();
+            Navigator.pop(context);
+          },
         ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Column(children: pingjiaowidget),
-            ),
+        title: Text('评教,右滑高分，左滑低分'),
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: Column(children: pingjiaowidget),
           ),
         ),
       ),

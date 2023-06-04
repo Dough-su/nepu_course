@@ -67,6 +67,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       home: EasySplashScreen(
         logo: Image.asset('images/logo.png'),
         title: Text(

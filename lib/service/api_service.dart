@@ -321,7 +321,6 @@ class ApiService {
 
   Future<Response> sendToServer(String message) async {
     var headers = {'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)'};
-
     FormData formData = FormData.fromMap({
       'content': Global.messages_pure,
     });

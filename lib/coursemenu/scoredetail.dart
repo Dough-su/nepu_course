@@ -270,124 +270,117 @@ class _scoreState extends State<scorepage> {
   late EasyRefreshController _controller;
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
-        home: Scaffold(
-            appBar: AppBar(
-              backgroundColor: Global.score_currentcolor,
-              leading: IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              title: const Text('下拉获取新成绩'),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.color_lens),
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('选择当前页面主题颜色'),
-                          content: SingleChildScrollView(
-                            child: ColorPicker(
-                              pickerColor: Global.score_pickcolor,
-                              onColorChanged: changeColor,
-                              showLabel: true,
-                              pickerAreaHeightPercent: 0.8,
-                            ),
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              child: const Text('确定'),
-                              onPressed: () {
-                                setState(() => Global.score_currentcolor =
-                                    Global.score_pickcolor);
-                                getApplicationDocumentsDirectory()
-                                    .then((value) {
-                                  File file = File(value.path + '/color1.txt');
-                                  //判断文件是否存在
-                                  if (file.existsSync()) {
-                                    //存在则写入
-                                    file.writeAsString(Global
-                                        .score_currentcolor.value
-                                        .toString());
-                                  } else {
-                                    //不存在则创建文件并写入
-                                    file.createSync();
-                                    file.writeAsString(Global
-                                        .score_currentcolor.value
-                                        .toString());
-                                  }
-                                  Global().getlist();
-                                });
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Global.score_currentcolor,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          title: const Text('下拉获取新成绩'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.color_lens),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('选择当前页面主题颜色'),
+                      content: SingleChildScrollView(
+                        child: ColorPicker(
+                          pickerColor: Global.score_pickcolor,
+                          onColorChanged: changeColor,
+                          showLabel: true,
+                          pickerAreaHeightPercent: 0.8,
+                        ),
+                      ),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('确定'),
+                          onPressed: () {
+                            setState(() => Global.score_currentcolor =
+                                Global.score_pickcolor);
+                            getApplicationDocumentsDirectory().then((value) {
+                              File file = File(value.path + '/color1.txt');
+                              //判断文件是否存在
+                              if (file.existsSync()) {
+                                //存在则写入
+                                file.writeAsString(
+                                    Global.score_currentcolor.value.toString());
+                              } else {
+                                //不存在则创建文件并写入
+                                file.createSync();
+                                file.writeAsString(
+                                    Global.score_currentcolor.value.toString());
+                              }
+                              Global().getlist();
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
                     );
                   },
-                ),
-              ],
+                );
+              },
             ),
-            body: EasyRefresh(
-                controller: _controller,
-                header: const SpaceHeader(),
-                onRefresh: () async {
-                  print('onfresh被调用了');
+          ],
+        ),
+        body: EasyRefresh(
+            controller: _controller,
+            header: const SpaceHeader(),
+            onRefresh: () async {
+              print('onfresh被调用了');
 
-                  ApiService.noPerceptionLogin().then((value) async {
-                    print(Global().getLoginInfo());
-                    saveString(_controller);
-                  });
-                  await Future.delayed(Duration(seconds: 100));
+              ApiService.noPerceptionLogin().then((value) async {
+                print(Global().getLoginInfo());
+                saveString(_controller);
+              });
+              await Future.delayed(Duration(seconds: 100));
 
-                  if (!mounted) {
-                    return;
-                  }
-                  _count = 10;
+              if (!mounted) {
+                return;
+              }
+              _count = 10;
 
-                  _controller.resetFooter();
-                },
-                onLoad: () async {
-                  print('onload被调用了');
+              _controller.resetFooter();
+            },
+            onLoad: () async {
+              print('onload被调用了');
 
-                  await Future.delayed(const Duration(seconds: 4));
-                  if (!mounted) {
-                    return;
-                  }
+              await Future.delayed(const Duration(seconds: 4));
+              if (!mounted) {
+                return;
+              }
 
-                  _count += 5;
+              _count += 5;
 
-                  _controller.finishLoad(1 >= 20
-                      ? IndicatorResult.noMore
-                      : IndicatorResult.success);
-                },
-                child: ListView.builder(
-                    itemCount: Global.isfirstuser
-                        ? Global.scorelist.length
-                        : Global.scorelist2.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: Global.isfirstuser
-                              ? Global.scorelist[index]
-                              : Global.scorelist2[index],
-                        ),
-                      );
-                    })
+              _controller.finishLoad(
+                  1 >= 20 ? IndicatorResult.noMore : IndicatorResult.success);
+            },
+            child: ListView.builder(
+                itemCount: Global.isfirstuser
+                    ? Global.scorelist.length
+                    : Global.scorelist2.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: Global.isfirstuser
+                          ? Global.scorelist[index]
+                          : Global.scorelist2[index],
+                    ),
+                  );
+                })
 
-                // SingleChildScrollView(
-                //   child: Center(
+            // SingleChildScrollView(
+            //   child: Center(
 
-                //   ),
-                )));
+            //
+            ));
   }
 }
 

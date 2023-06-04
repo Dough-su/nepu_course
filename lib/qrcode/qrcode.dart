@@ -19,55 +19,53 @@ class _QRCodeState extends State<QRCode> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Global.home_currentcolor,
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: _showDialog,
-            ),
-          ],
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('点击二维码可手动刷新\n当前是 ${Global.qrcode}'),
-            Align(
-              alignment: Alignment.topCenter,
-              child: SlideCountdown(
-                decoration: _buildDecoration(),
-                durationTitle: DurationTitle(
-                  days: "天",
-                  hours: "时",
-                  minutes: "分",
-                  seconds: "秒",
-                ),
-                streamDuration: streamDuration,
-                onChanged: (Duration remaining) {
-                  if (remaining.inSeconds <= 1) {
-                    streamDuration.change(Duration(seconds: 51));
-                    ApiService().getQr().then((value) {
-                      setState(() {});
-                    });
-                  }
-                },
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Global.home_currentcolor,
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: _showDialog,
+          ),
+        ],
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('点击二维码可手动刷新\n当前是 ${Global.qrcode}'),
+          Align(
+            alignment: Alignment.topCenter,
+            child: SlideCountdown(
+              decoration: _buildDecoration(),
+              durationTitle: DurationTitle(
+                days: "天",
+                hours: "时",
+                minutes: "分",
+                seconds: "秒",
               ),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
+              streamDuration: streamDuration,
+              onChanged: (Duration remaining) {
+                if (remaining.inSeconds <= 1) {
+                  streamDuration.change(Duration(seconds: 51));
                   ApiService().getQr().then((value) {
-                    streamDuration.change(Duration(seconds: 51));
                     setState(() {});
                   });
-                },
-                child: _buildQrCode(),
-              ),
+                }
+              },
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: GestureDetector(
+              onTap: () {
+                ApiService().getQr().then((value) {
+                  streamDuration.change(Duration(seconds: 51));
+                  setState(() {});
+                });
+              },
+              child: _buildQrCode(),
+            ),
+          ),
+        ],
       ),
     );
   }

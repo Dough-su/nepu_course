@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:muse_nepu_course/chatforgpt/chat_gpt.dart';
+import 'package:muse_nepu_course/chatforgpt/chatgpt2.dart';
 import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
@@ -29,6 +29,7 @@ import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:timelines/timelines.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:window_manager/window_manager.dart';
+import 'chaoxing/chaoxing.dart';
 import 'coursemenu/about.dart';
 import 'coursemenu/scoredetail.dart';
 import 'dart:io';
@@ -681,6 +682,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initState() {
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    });
     Global.pureyzmset(false);
     // Global().getxuehao();
     _controller2 = SimpleAnimation('站立');
@@ -789,13 +793,11 @@ class _HomePageState extends State<HomePage> {
                               IconButton(
                                 onPressed: () {
                                   //关闭
-                                  Navigator.pop(context);
                                 },
                                 icon: Icon(Icons.cancel_outlined),
                               ),
                               IconButton(
                                 onPressed: () async {
-                                  Navigator.pop(context);
                                   //跳转到score页面
                                   Navigator.push(
                                       context,
@@ -942,13 +944,11 @@ class _HomePageState extends State<HomePage> {
                                 IconButton(
                                   onPressed: () {
                                     //关闭
-                                    Navigator.pop(context);
                                   },
                                   icon: Icon(Icons.cancel_outlined),
                                 ),
                                 IconButton(
                                   onPressed: () async {
-                                    Navigator.pop(context);
                                     //跳转到score页面
                                     Navigator.push(
                                         context,
@@ -1654,12 +1654,10 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.bold),
                         ),
                         onTap: () {
-                          Navigator.of(context).pop(); //关闭侧边栏
-
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => chat_gpt()));
+                                  builder: (context) => ChatPage()));
                         }),
                     ListTile(
                       leading: const Icon(Icons.book_online,
@@ -1672,7 +1670,6 @@ class _HomePageState extends State<HomePage> {
                             fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
-                        Navigator.of(context).pop(); //关闭侧边栏
                         ApiService.noPerceptionLogin().then((value) => null);
                         Navigator.push(
                             context,
@@ -1691,7 +1688,6 @@ class _HomePageState extends State<HomePage> {
                             fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
-                        Navigator.of(context).pop(); //关闭侧边栏
                         ApiService.noPerceptionLogin().then((value) => null);
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => qingjia()));
@@ -1777,8 +1773,27 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.bold),
                         ),
                         onTap: () {
-                          Navigator.of(context).pop(); //关闭侧边栏
-
+                          getApplicationDocumentsDirectory()
+                              .then((value) async {
+                            //读取chaoxing.txt
+                            var file =
+                                await new File(value.path + "/chaoxing.txt");
+                            //如果文件存在，就跳转到成绩页面
+                            if (file.existsSync()) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => chaoxing()),
+                              );
+                            } else {
+                              //如果文件不存在，就跳转到登录页面
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => chaoxinglogin()),
+                              );
+                            }
+                          });
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -2116,57 +2131,51 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     widthx = MediaQuery.of(context).size.width;
 
-    return MaterialApp(
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
-        home: Container(
-            child: Column(children: [
-          getwindow(context),
-          Expanded(
-              child: Scaffold(
-                  bottomNavigationBar: Container(
-                      //圆角
-                      width: MediaQuery.of(context).size.width / 2,
-                      child: BottomSheetBar(
-                          controller: bottomSheetBarController,
-                          color: //透明
-                              Colors.white,
-                          isDismissable: false,
-                          locked: false,
-                          height: Global.bottombarheight,
-                          expandedBuilder: (scrollController) {
-                            return MaterialApp(
-                              debugShowCheckedModeBanner: false,
-                              home: QRCode(),
-                            );
-                          },
-                          collapsed: SalomonBottomBar(
-                            currentIndex: 0,
-                            onTap: (i) {
-                              // setState(() => _currentIndex = i);
-                            },
-                            items: [
-                              /// Home
-                              SalomonBottomBarItem(
-                                icon: Icon(Icons.home),
-                                title: Text("此处上滑显示图书馆二维码"),
-                                selectedColor: Global.home_currentcolor,
-                              ),
-                            ],
+    return Container(
+        child: Column(children: [
+      getwindow(context),
+      Expanded(
+          child: Scaffold(
+              bottomNavigationBar: Container(
+                  //圆角
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: BottomSheetBar(
+                      controller: bottomSheetBarController,
+                      color: //透明
+                          Colors.white,
+                      isDismissable: false,
+                      locked: false,
+                      height: Global.bottombarheight,
+                      expandedBuilder: (scrollController) {
+                        return QRCode();
+                      },
+                      collapsed: SalomonBottomBar(
+                        currentIndex: 0,
+                        onTap: (i) {
+                          // setState(() => _currentIndex = i);
+                        },
+                        items: [
+                          /// Home
+                          SalomonBottomBarItem(
+                            icon: Icon(Icons.home),
+                            title: Text("此处上滑显示图书馆二维码"),
+                            selectedColor: Global.home_currentcolor,
                           ),
-                          body: flip.FlipCard(
-                            key: cardKey,
-                            flipOnTouch: false,
+                        ],
+                      ),
+                      body: flip.FlipCard(
+                        key: cardKey,
+                        flipOnTouch: false,
 
-                            fill: flip.Fill
-                                .fillBack, // Fill the back side of the card to make in the same size as the front.
-                            direction: flip.FlipDirection.HORIZONTAL, // default
-                            side: flip.CardSide
-                                .FRONT, // The side to initially display.
-                            front: flipContainer(true),
-                            back: flipContainer(false),
-                          )))))
-        ])));
+                        fill: flip.Fill
+                            .fillBack, // Fill the back side of the card to make in the same size as the front.
+                        direction: flip.FlipDirection.HORIZONTAL, // default
+                        side: flip
+                            .CardSide.FRONT, // The side to initially display.
+                        front: flipContainer(true),
+                        back: flipContainer(false),
+                      )))))
+    ]));
   }
 
   Widget getwindow(context) {

@@ -125,48 +125,42 @@ class _chaoxingState extends State<chaoxing> {
   }
 
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return HomePage();
-              }));
-            },
-          ),
-          title: Text("成绩列表"),
-          actions: [
-            TextButton(
-              child: Text(
-                "重新登陆",
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () {
-                //删除chaoxing.txt
-                getApplicationDocumentsDirectory().then((value) async {
-                  var file = await new File(value.path + "/chaoxing.txt");
-                  file.delete();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => chaoxinglogin()),
-                  );
-                });
-              },
-            )
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: Stack(children: [
-          SingleChildScrollView(
-            child: Column(
-              children: listx,
+        title: Text("成绩列表"),
+        actions: [
+          TextButton(
+            child: Text(
+              "重新登陆",
+              style: TextStyle(color: Colors.white),
             ),
-          ),
-        ]),
+            onPressed: () {
+              //删除chaoxing.txt
+              getApplicationDocumentsDirectory().then((value) async {
+                var file = await new File(value.path + "/chaoxing.txt");
+                file.delete();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => chaoxinglogin()),
+                );
+              });
+            },
+          )
+        ],
       ),
+      body: Stack(children: [
+        SingleChildScrollView(
+          child: Column(
+            children: listx,
+          ),
+        ),
+      ]),
     );
   }
 }

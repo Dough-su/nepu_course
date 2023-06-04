@@ -142,9 +142,6 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
     });
     if (widget.futureNavigator == null) {
       Timer(Duration(seconds: widget.durationInSeconds), () {
-        if (kIsWeb) {
-          Global().isFirst(context);
-        }
         getApplicationDocumentsDirectory().then((value) {
           //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
           File file = new File(value.path + '/first.txt');

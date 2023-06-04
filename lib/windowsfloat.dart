@@ -1258,54 +1258,50 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
   @override
   Widget build(BuildContext context) {
     widthx = MediaQuery.of(context).size.width;
-    return MaterialApp(
-      color: //透明
-          Colors.black,
-      home: Container(
-        child: Column(
-          children: [
-            Container(
-              child: WindowTitleBarBox(
-                child: Row(
-                  children: [
-                    Expanded(child: MoveWindow()),
-                    Row(
-                      children: [
-                        //加一个按钮
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            child: WindowTitleBarBox(
+              child: Row(
+                children: [
+                  Expanded(child: MoveWindow()),
+                  Row(
+                    children: [
+                      //加一个按钮
 
-                        MinimizeWindowButton(colors: buttonColors),
-                        RestoreWindowButton(
-                          colors: buttonColors,
-                          onPressed: () {
-                            appWindow.alignment = Alignment.center;
-                            const initialSize = Size(900, 800);
-                            appWindow.size = initialSize;
+                      MinimizeWindowButton(colors: buttonColors),
+                      RestoreWindowButton(
+                        colors: buttonColors,
+                        onPressed: () {
+                          appWindow.alignment = Alignment.center;
+                          const initialSize = Size(900, 800);
+                          appWindow.size = initialSize;
 
-                            //跳转到主页
-                            Navigator.pop(context);
-                          },
-                        ),
+                          //跳转到主页
+                          Navigator.pop(context);
+                        },
+                      ),
 
-                        CloseWindowButton(colors: closeButtonColors),
-                      ],
-                    )
-                  ],
+                      CloseWindowButton(colors: closeButtonColors),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              //padding靠左
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: ListView(
+                  children: dailycourse,
                 ),
               ),
             ),
-            Expanded(
-              child: Container(
-                //padding靠左
-                child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: ListView(
-                    children: dailycourse,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

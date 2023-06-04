@@ -197,36 +197,30 @@ class _qingjiaState extends State<qingjia> {
   }
 
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: ThemeData.light(),
-        darkTheme: ThemeData.dark(),
-        home: Scaffold(
-          appBar: AppBar(
-            //加入主页图标
-            leading: IconButton(
-              icon: Icon(Icons.home),
-              onPressed: () {
-                Global().deletepj();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
-            ),
-            title: Text('请假历史'),
-          ),
-          body: Stack(
-            children: [
-              SingleChildScrollView(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: Column(children: qingjiawidget),
-                  ),
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        //加入主页图标
+        leading: IconButton(
+          icon: Icon(Icons.home),
+          onPressed: () {
+            Global().deletepj();
+            Navigator.pop(context);
+          },
+        ),
+        title: Text('请假历史'),
+      ),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Column(children: qingjiawidget),
               ),
-            ],
+            ),
           ),
-        ));
+        ],
+      ),
+    );
   }
 }

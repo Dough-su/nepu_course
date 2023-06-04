@@ -4,7 +4,6 @@ import 'package:achievement_view/achievement_view.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:card_flip/card_flip.dart';
 import 'package:flutter/foundation.dart';
-import 'package:muse_nepu_course/chatforgpt/chat_gpt.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/coursemenu/scoredetail.dart';
@@ -61,7 +60,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "133";
+  static String version = "134";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -508,17 +507,14 @@ class Global {
   //判断是不是首次登录
   void isFirst(context) {
     //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
-    if (kIsWeb) {
-      //直接跳转到登录页面
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
-    }
     getApplicationDocumentsDirectory().then((value) {
       File file = new File(value.path + '/course.json');
       file.exists().then((value) {
         if (value) {
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => HomePage()));
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
         } else {
           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => LoginPage()));
@@ -530,51 +526,49 @@ class Global {
   //登录页面
   Widget loginreq(
       String login_title, _authUser, context, setState, contextbuilder) {
-    return MaterialApp(
-        home: Center(
-      child: FlutterLogin(
-        title: login_title,
-        onLogin: (loginData) {
-          return _authUser(loginData);
-        },
-        hideForgotPasswordButton: true,
-        userType: LoginUserType.name,
-        savedEmail: jwc_xuehao,
-        savedPassword: jwc_password,
-        yazhengma: Container(),
-        verifyCode: '',
-        onSubmitAnimationCompleted: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => contextbuilder));
-        },
-        onRecoverPassword: (name) {
-          return null;
-        },
-        children: [
-          //添加验证码图片
-          //修改验证码图片大小
-          Container(
-            //点击刷新
-            child: GestureDetector(
-              child: Container(
-                child: FutureBuilder(
-                  future: apiService.getVerifyCode(context, setState),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return snapshot.data as Widget;
-                    } else {
-                      return CircularProgressIndicator();
-                    }
-                  },
-                ),
+    return Center(
+        child: FlutterLogin(
+      title: login_title,
+      onLogin: (loginData) {
+        return _authUser(loginData);
+      },
+      hideForgotPasswordButton: true,
+      userType: LoginUserType.name,
+      savedEmail: jwc_xuehao,
+      savedPassword: jwc_password,
+      yazhengma: Container(),
+      verifyCode: '',
+      onSubmitAnimationCompleted: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => contextbuilder));
+      },
+      onRecoverPassword: (name) {
+        return null;
+      },
+      children: [
+        //添加验证码图片
+        //修改验证码图片大小
+        Container(
+          //点击刷新
+          child: GestureDetector(
+            child: Container(
+              child: FutureBuilder(
+                future: apiService.getVerifyCode(context, setState),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return snapshot.data as Widget;
+                  } else {
+                    return CircularProgressIndicator();
+                  }
+                },
               ),
             ),
-            width: 100,
-            height: 30,
-            margin: EdgeInsets.only(top: 220),
           ),
-        ],
-      ),
+          width: 100,
+          height: 30,
+          margin: EdgeInsets.only(top: 220),
+        ),
+      ],
     ));
   }
 

@@ -20,45 +20,27 @@ class _chaoxingloginState extends State<chaoxinglogin> {
   @override
   void initState() {
     super.initState();
-    getApplicationDocumentsDirectory().then((value) async {
-      //读取chaoxing.txt
-      var file = await new File(value.path + "/chaoxing.txt");
-      //如果文件存在，就跳转到成绩页面
-      //等待1s
-      await Future.delayed(Duration(seconds: 1), () {
-        if (file.existsSync()) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => chaoxing()),
-          );
-        }
-      });
-    });
   }
 
   Widget build(BuildContext context) {
     login = context;
-    return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
-      home: Scaffold(
-        backgroundColor: Colors.blue,
-        body: RameezAnimatedLoginScreen(
-          //flareController: flareController,
-          passwordFieldCaretMovement: (Offset globalCaretPosition) {},
-          userFieldCaretMovement: (Offset globalCaretPosition) {},
-          flareImage: 'assets/Teddy.flr',
-          routeAfterSuccessFulSignIn: () {
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) => chaoxing(),
-              ),
-            );
-          },
-          validateUserNameAndPassword: validate,
-          defaultAnimation: true, passwordLabel: '输入学习通密码',
-          usernameLabel: '输入学习通手机号', themeBasedtextColor: Colors.white,
-        ),
+    return Scaffold(
+      backgroundColor: Colors.blue,
+      body: RameezAnimatedLoginScreen(
+        //flareController: flareController,
+        passwordFieldCaretMovement: (Offset globalCaretPosition) {},
+        userFieldCaretMovement: (Offset globalCaretPosition) {},
+        flareImage: 'assets/Teddy.flr',
+        routeAfterSuccessFulSignIn: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (BuildContext context) => chaoxing(),
+            ),
+          );
+        },
+        validateUserNameAndPassword: validate,
+        defaultAnimation: true, passwordLabel: '输入学习通密码',
+        usernameLabel: '输入学习通手机号', themeBasedtextColor: Colors.white,
       ),
     );
   }
@@ -116,7 +98,7 @@ Future<bool> validate(LoginData loginData) {
             .create(recursive: true);
         //写入文件
         file.writeAsString(value.data.toString());
-        Navigator.push(
+        Navigator.pushReplacement(
           login,
           MaterialPageRoute(builder: (context) => chaoxing()),
         );
