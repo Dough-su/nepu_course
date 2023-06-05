@@ -1343,7 +1343,7 @@ class _HomePageState extends State<HomePage> {
 
     dailycourse = [
       _buildTimeContainer('上午'),
-      _buildCourseTile('1,2节\n08;00 - 09:35', false, true),
+      _buildCourseTile('1,2节\n08:00 - 09:35', false, true),
       _buildCourseTile('3,4节\n09:55 - 11:30', true, false),
       _buildTimeContainer('下午'),
       _buildCourseTile('5,6节\n13;30 - 15:05', false, true),
@@ -1488,7 +1488,7 @@ class _HomePageState extends State<HomePage> {
 
     dailycourse2 = [
       _buildTimeContainer('上午'),
-      _buildCourseTile('1,2节\n08;00 - 09:35', false, true),
+      _buildCourseTile('1,2节\n08:00 - 09:35', false, true),
       _buildCourseTile('3,4节\n09:55 - 11:30', true, false),
       _buildTimeContainer('下午'),
       _buildCourseTile('5,6节\n13;30 - 15:05', false, true),

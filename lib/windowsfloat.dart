@@ -70,7 +70,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
               width: widthx,
               padding: EdgeInsets.all(8.0),
               child: Text(
-                '1,2节\n8;00 - 9:35',
+                '1,2节\n8:00 - 9:35',
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
@@ -422,7 +422,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                 width: widthx,
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  '1,2节\n8;00 - 9:35',
+                  '1,2节\n8:00 - 9:35',
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
                 ),
