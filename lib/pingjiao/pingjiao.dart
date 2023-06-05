@@ -22,35 +22,34 @@ double pingjiaohighmark = 95;
 double pingjiaolowmark = 20;
 List<dynamic> pingjiaoinfo = [];
 
-List<Widget> pingjiaowidget = [
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-];
-
 class _pingjiaoState extends State<pingjiao> {
+  List<Widget> pingjiaowidget = [
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+  ];
   //定义一个highmarkcontroller,来获取输入框的内容
   TextEditingController highmarkcontroller =
       TextEditingController(text: pingjiaohighmark.toString() //获取输入框的内容

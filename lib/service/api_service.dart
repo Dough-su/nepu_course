@@ -8,6 +8,21 @@ import 'package:muse_nepu_course/global.dart';
 
 class ApiService {
   Dio dio = Dio();
+  //获取一卡通余额
+  void getbalance(xuehao) async {
+    print(xuehao);
+    Dio dio = new Dio();
+    dio.post('https://wxy.hrbxyz.cn/api/Apixyk/getcardinfo', queryParameters: {
+      'account': xuehao,
+      'schoolname': '东北石油大学'
+    }).then((value) {
+      //获取余额
+      Global.yikatong_balance =
+          (value.data['data']['obj']['cardbalance'] / 100 +
+                  value.data['data']['obj']['tmpbalance'] / 100)
+              .toString();
+    });
+  }
 
   //获取一卡通近期流水
   Future<List> getRecentlyTransactions(String jwc_xuehao) async {

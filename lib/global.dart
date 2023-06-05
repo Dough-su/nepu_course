@@ -60,7 +60,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "135";
+  static String version = "136";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -144,6 +144,8 @@ class Global {
   //是否显示有课的日期
   static bool show_course_day = true;
   ApiService apiService = ApiService();
+  static bool isfirst = true;
+
   //当前用户是否是第一个
   static bool isfirstuser = true;
   //用户2是否登陆过
@@ -162,6 +164,12 @@ class Global {
       File file = File(value.path + '/islogin2.txt');
       if (file.existsSync()) {
         islogin2 = file.readAsStringSync() == 'true' ? true : false;
+        if (islogin2) {
+          Global.get_course_day2();
+          Global.getcalendar2();
+          Global().getlist2();
+          Global.get_course_day2();
+        }
       }
     });
   }
@@ -313,8 +321,8 @@ class Global {
         account = file.readAsStringSync().split(' ')[0];
         password = file.readAsStringSync().split(' ')[1];
         print("账号密码" + account + password);
-      }
-      getaccno();
+      } else
+        getaccno();
     });
   }
 
@@ -507,20 +515,15 @@ class Global {
   //判断是不是首次登录
   void isFirst(context) {
     //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
-    getApplicationDocumentsDirectory().then((value) {
-      File file = new File(value.path + '/course.json');
-      file.exists().then((value) {
-        if (value) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomePage()),
-          );
-        } else {
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => LoginPage()));
-        }
-      });
-    });
+    if (!isfirst) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
+    }
   }
 
   //登录页面
@@ -793,20 +796,6 @@ class Global {
     });
   }
 
-  //删除评教缓存文件
-  Future<void> deletepj() async {
-    getApplicationDocumentsDirectory().then((value) {
-      File file = File(value.path + '/pingjiao.json');
-      File file1 = File(value.path + '/qingjia.json');
-      if (file.existsSync()) {
-        file.deleteSync();
-      }
-      if (file1.existsSync()) {
-        file1.deleteSync();
-      }
-    });
-  }
-
   //读取json
   Future<String> getscoreInfo() async {
     //获取路径
@@ -838,11 +827,6 @@ class Global {
       scoreinfos = json.decode(value);
       //反向读取
       for (int i = scoreinfos.length - 1; i >= 0; i--) {
-        avgmark.add(scoreinfos[i]['zcj']);
-        avgjidian.add(scoreinfos[i]['cjjd']);
-        //打印分数zcj
-        //组件1
-
         Global.scorelist.add(FlipLayout(
           duration: 500,
           foldState: true,
@@ -1360,21 +1344,6 @@ class Global {
     });
   }
 
-  //获取一卡通余额
-  void getbalance(xuehao) async {
-    print(xuehao);
-    Dio dio = new Dio();
-    dio.post('https://wxy.hrbxyz.cn/api/Apixyk/getcardinfo', queryParameters: {
-      'account': xuehao,
-      'schoolname': '东北石油大学'
-    }).then((value) {
-      //获取余额
-      yikatong_balance = (value.data['data']['obj']['cardbalance'] / 100 +
-              value.data['data']['obj']['tmpbalance'] / 100)
-          .toString();
-    });
-  }
-
   //获取一卡通近期流水
   void getrecently(context) async {
     yikatong_recent.clear();
@@ -1453,5 +1422,15 @@ class Global {
       });
     }
     return "ok";
+  }
+
+  static Map<String, dynamic> _globalData = {};
+
+  static dynamic get(String key) {
+    return _globalData[key];
+  }
+
+  static void set(String key, dynamic value) {
+    _globalData[key] = value;
   }
 }

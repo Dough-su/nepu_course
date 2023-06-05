@@ -111,25 +111,20 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
 
   @override
   void initState() {
+    _countdownTimer();
+
     super.initState();
     Global().getaccount();
     Global().getusername();
-
-    _countdownTimer();
     //获取主页和成绩页面的成绩信息
     Global.get_course_day();
-    Global.get_course_day2();
     Global().readislogin2();
+
     Global().score_getcolor();
     //读取一卡通的账号
     Global.getcalendar();
-    Global.getcalendar2();
-    ApiService().getQr();
-
     Global().home_getcolor();
-    Global().deletepj();
     Global().getlist();
-    Global().getlist2();
     bool progressorhome = false;
     getApplicationDocumentsDirectory().then((value) {
       //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
@@ -137,6 +132,12 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
       file.exists().then((value) async {
         if (value) {
           progressorhome = true;
+          getApplicationDocumentsDirectory().then((value) {
+            File file = new File(value.path + '/course.json');
+            file.exists().then((value) {
+              Global.isfirst = false;
+            });
+          });
         }
       });
     });

@@ -20,35 +20,35 @@ class qingjia extends StatefulWidget {
 int isfirst = 1;
 double qingjiahighmark = 95;
 double qingjialowmark = 20;
-List<Widget> qingjiawidget = [
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-  CardLoading(
-    height: 40,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
-    margin: EdgeInsets.only(bottom: 10),
-  ),
-];
 
 class _qingjiaState extends State<qingjia> {
+  List<Widget> qingjiawidget = [
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+    CardLoading(
+      height: 40,
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      margin: EdgeInsets.only(bottom: 10),
+    ),
+  ];
 //读取下载的json
   Future<String> getqingjiaoInfo() async {
     //获取路径
@@ -203,7 +203,6 @@ class _qingjiaState extends State<qingjia> {
         leading: IconButton(
           icon: Icon(Icons.home),
           onPressed: () {
-            Global().deletepj();
             Navigator.pop(context);
           },
         ),
