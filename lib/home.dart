@@ -298,12 +298,12 @@ class _HomePageState extends State<HomePage> {
     if (await file.exists()) {
       String localVersion = await file.readAsString();
       var dio = Dio();
+
       var value = await dio.get(
           'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
       String version = value.data[0]['version'];
       if (version != Global.version && version != localVersion) {
         await Dialogs.materialDialog(
-          color: Colors.white,
           msg: '要下载吗?',
           title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
           lottieBuilder: Lottie.asset(
@@ -684,71 +684,73 @@ class _HomePageState extends State<HomePage> {
   void initAll(bool executeAll) async {
     final dir = await getApplicationDocumentsDirectory();
     final dio = Dio();
-    final courseFile = File('${dir.path}/course.json');
-    final course1File = File('${dir.path}/course1.json');
-
-    if (!courseFile.existsSync()) {
-      downApkFunction(await Global().getLoginInfo(), 'course.json');
-    } else {
-      await updateCourseFromJW(dio, courseFile, context);
-      if (Platform.isWindows) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return windwosfloat();
-        }));
-      }
-      updateappx();
-      xinshouyindao();
-      shownotice();
-
-      if (executeAll && Global.islogin2) {
-        Global.isfirstread2 = true;
-        if (!course1File.existsSync()) {
-          await ApiService.noPerceptionLogin2();
-          downApkFunction(await Global().getLoginInfo2(), 'course1.json');
-        } else {
-          await updateCourseFromJW(dio, course1File, context);
-          hItems(DateTime.now());
+    if (executeAll) {
+      final courseFile = File('${dir.path}/course.json');
+      final scoreFile = File('${dir.path}/score.json');
+      if (!courseFile.existsSync()) {
+        downApkFunction(
+            await Global().getLoginInfo(), 'course.json', 'score.json');
+      } else {
+        await updateCourseFromJW(
+          dio,
+          courseFile,
+          context,
+          true,
+          scoreFile,
+        );
+        if (Platform.isWindows) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return windwosfloat();
+          }));
         }
+        updateappx();
+        xinshouyindao();
+        shownotice();
+      }
+    }
+    if (Global.islogin2 || !executeAll) {
+      final course1File = File('${dir.path}/course1.json');
+      final scorre1File = File('${dir.path}/score1.json');
+
+      print('开始更新课程2');
+      Global.isfirstread2 = true;
+      if (!course1File.existsSync()) {
+        await ApiService.noPerceptionLogin2();
+        downApkFunction(
+            await Global().getLoginInfo2(), 'course1.json', 'score1.json');
+      } else {
+        await updateCourseFromJW(dio, course1File, context, false, scorre1File);
+        hItems(DateTime.now(), false);
       }
     }
   }
 
   //更新课程
-  Future<void> updateCourseFromJW(
-      Dio dio, File file, BuildContext context) async {
-    hItems(DateTime.now());
+  Future<void> updateCourseFromJW(Dio dio, File file, BuildContext context,
+      bool user1, File scoreFile) async {
+    hItems(DateTime.now(), true);
     if (Global.auto_update_course && !Global.isrefreshcourse) {
-      ApiService.noPerceptionLogin().then((value) async {
-        Global.isrefreshcourse = true;
-        var url =
-            'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                await Global().getLoginInfo();
-        getApplicationDocumentsDirectory().then((value) async {
-          //判断响应状态
-          Response response = await dio.get(url);
-          if (response.statusCode == 500) {
-            showupdatenotice(
-                context,
-                3,
-                '与教务同步课程失败!',
-                '请检查你的密码或者教务系统是否正常',
-                Icon(
-                  Icons.error,
-                  color: Colors.white,
-                ),
-                Colors.red);
-            return;
-          } else if (response.statusCode == 200) {
-            if (!response.data.toString().contains('fail')) {
-              file.writeAsString(response.data);
-              Global.isfirstread = true;
-              jpushs().uploadpushid();
+      if (user1)
+        ApiService.noPerceptionLogin().then((value) async {
+          Global.isrefreshcourse = true;
+          late String logininfo;
+          var url;
+          if (user1) {
+            logininfo = await Global().getLoginInfo();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          } else {
+            logininfo = await Global().getLoginInfo2();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          }
 
-              updateScores(await Global().getLoginInfo(), Global.scoreinfos,
-                  '/score.json');
-              showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
-                  Icon(Icons.check), Global.home_currentcolor);
-            } else {
+          getApplicationDocumentsDirectory().then((value) async {
+            //判断响应状态
+            Response response = await dio.get(url);
+            if (response.statusCode == 500) {
               showupdatenotice(
                   context,
                   3,
@@ -759,40 +761,119 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.white,
                   ),
                   Colors.red);
-
               return;
+            } else if (response.statusCode == 200) {
+              if (!response.data.toString().contains('fail')) {
+                file.writeAsString(response.data);
+                Global.isfirstread = true;
+                jpushs().uploadpushid();
+
+                updateScores(logininfo, user1, scoreFile);
+                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
+                    Icon(Icons.check), Global.home_currentcolor);
+              } else {
+                showupdatenotice(
+                    context,
+                    3,
+                    '与教务同步课程失败!',
+                    '请检查你的密码或者教务系统是否正常',
+                    Icon(
+                      Icons.error,
+                      color: Colors.white,
+                    ),
+                    Colors.red);
+
+                return;
+              }
             }
-          }
+          });
         });
-      });
+      if (!user1)
+        ApiService.noPerceptionLogin2().then((value) async {
+          Global.isrefreshcourse = true;
+          late String logininfo;
+          var url;
+          if (user1) {
+            logininfo = await Global().getLoginInfo();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          } else {
+            logininfo = await Global().getLoginInfo2();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          }
+
+          getApplicationDocumentsDirectory().then((value) async {
+            //判断响应状态
+            Response response = await dio.get(url);
+            if (response.statusCode == 500) {
+              showupdatenotice(
+                  context,
+                  3,
+                  '与教务同步课程失败!',
+                  '请检查你的密码或者教务系统是否正常',
+                  Icon(
+                    Icons.error,
+                    color: Colors.white,
+                  ),
+                  Colors.red);
+              return;
+            } else if (response.statusCode == 200) {
+              if (!response.data.toString().contains('fail')) {
+                file.writeAsString(response.data);
+                Global.isfirstread = true;
+                jpushs().uploadpushid();
+
+                updateScores(logininfo, user1, scoreFile);
+                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
+                    Icon(Icons.check), Global.home_currentcolor);
+              } else {
+                showupdatenotice(
+                    context,
+                    3,
+                    '与教务同步课程失败!',
+                    '请检查你的密码或者教务系统是否正常',
+                    Icon(
+                      Icons.error,
+                      color: Colors.white,
+                    ),
+                    Colors.red);
+
+                return;
+              }
+            }
+          });
+        });
     }
   }
 
   //更新成绩
-  void updateScores(
-      String loginInfo, List<dynamic> scoreinfos, String scoreFilePath) {
+  void updateScores(String loginInfo, bool user1, File scoreFile) {
     Dio dio = new Dio();
     var urlscore =
         'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
             loginInfo +
             '&index=' +
-            scoreinfos[scoreinfos.length - 1]['cjdm'].toString();
-    print(urlscore);
+            (user1
+                ? Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm']
+                    .toString()
+                : Global.scoreinfos2[Global.scoreinfos2.length - 1]['cjdm']
+                    .toString());
     getApplicationDocumentsDirectory().then((value) async {
       try {
         Response response = await dio.get(urlscore);
         if (response.statusCode == 200) {
           //获取路径
-          Directory directory = await getApplicationDocumentsDirectory();
-          String path = directory.path + scoreFilePath;
-          //追加文件
-          File file = new File(path);
-          file.readAsString().then((value) {
+
+          scoreFile.readAsString().then((value) {
             value = value.replaceAll(']', '') +
                 ',' +
                 response.data.toString().replaceAll('[', '');
-            file.writeAsString(value);
+            scoreFile.writeAsString(value);
             Global().getlist();
+            Global().getlist2();
           });
           Dialogs.materialDialog(
             color: Colors.white,
@@ -843,7 +924,8 @@ class _HomePageState extends State<HomePage> {
 
   var homecontext;
 
-  void downApkFunction(String loginInfo, String fileName) async {
+  void downApkFunction(
+      String loginInfo, String fileName, String courseFileName) async {
     ProgressDialog pd = ProgressDialog(context: context);
     var dio = Dio();
     pd.show(
@@ -885,7 +967,7 @@ class _HomePageState extends State<HomePage> {
                     loginInfo;
 
             getApplicationDocumentsDirectory().then((value) {
-              dio.download(urlscore, value.path + '/score1.json',
+              dio.download(urlscore, value.path + '/' + courseFileName,
                   onReceiveProgress: (int count, int total) {
                 int progress = (((count / total) * 100).toInt());
                 pd.update(value: progress, msg: '久等了，数据正在下载...');
@@ -899,27 +981,27 @@ class _HomePageState extends State<HomePage> {
                 }
                 //下载完成
                 isdownload = true;
-                hItems(DateTime.now());
+                hItems(DateTime.now(), true);
                 xinshouyindao();
               });
             });
           } else {
             if (fileName == 'course.json') {
-              ApiService.noPerceptionLogin()
-                  .then((value) => downApkFunction(loginInfo, fileName));
+              ApiService.noPerceptionLogin().then((value) =>
+                  downApkFunction(loginInfo, fileName, courseFileName));
             } else if (fileName == 'course1.json') {
-              ApiService.noPerceptionLogin2()
-                  .then((value) => downApkFunction(loginInfo, fileName));
+              ApiService.noPerceptionLogin2().then((value) =>
+                  downApkFunction(loginInfo, fileName, courseFileName));
             }
           }
         }
       } catch (e) {
         if (fileName == 'course.json') {
-          ApiService.noPerceptionLogin()
-              .then((value) => downApkFunction(loginInfo, fileName));
+          ApiService.noPerceptionLogin().then(
+              (value) => downApkFunction(loginInfo, fileName, courseFileName));
         } else if (fileName == 'course1.json') {
-          ApiService.noPerceptionLogin2()
-              .then((value) => downApkFunction(loginInfo, fileName));
+          ApiService.noPerceptionLogin2().then(
+              (value) => downApkFunction(loginInfo, fileName, courseFileName));
         }
         print(e);
         pd.close();
@@ -1319,21 +1401,22 @@ class _HomePageState extends State<HomePage> {
   }
 
 //刷新items
-  hItems(DateTime date) async {
+  hItems(DateTime date, bool isall) async {
     var stackTrace = StackTrace.current;
     print('被调用的行号和文件名：${stackTrace.toString().split('\n')[1]}');
     var stopwatch = Stopwatch()..start(); // 创建 Stopwatch 对象并开始计时
 
-    if (Global.isfirstuser) {
+    if (Global.isfirstuser || isall) {
       print('用户1');
       Global.calendar_current_day = date;
       await Global().loadItems(date);
       loadwidget(date);
       stopwatch.stop(); // 停止计时
       print('执行时间：${stopwatch.elapsedMilliseconds}毫秒');
-    } else {
+    }
+    if (!Global.isfirstuser || isall) {
       print('用户2');
-
+      print(Global.isfirstuser.toString());
       Global.calendar_current_day2 = date;
       await Global().loadItems2(date);
       loadwidget2(date);
@@ -1668,7 +1751,7 @@ class _HomePageState extends State<HomePage> {
                         _controller = SimpleAnimation('行走');
                       });
                     });
-                    hItems(DateTime.now());
+                    hItems(DateTime.now(), false);
                     setState(() {
                       print('回到今天');
                       _calendarAgendaControllerAppBar.goToDay(DateTime.now());
@@ -1752,6 +1835,8 @@ class _HomePageState extends State<HomePage> {
                   if (Global().Decrypt(
                           Global.textEditingController.text, context) ==
                       'success') {
+                    Global.islogin2 = true;
+
                     Global.isfirstuser = !Global.isfirstuser;
 
                     cardKey.currentState!.toggleCard();
@@ -1824,7 +1909,7 @@ class _HomePageState extends State<HomePage> {
         calendarEventColor: Global.home_currentcolor,
         events: isfront ? Global.course_day : Global.course_day2,
         onDateSelected: (date) {
-          hItems(date);
+          hItems(date, false);
         },
       ),
       body: GestureDetector(
@@ -1920,7 +2005,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget getwindow(context) {
     //判断是否是windows
-    if (Platform.isWindows)
+    if (Platform.isWindows && Global.isfirstuser)
       return Container(
         color: Global.home_currentcolor,
         child: WindowTitleBarBox(

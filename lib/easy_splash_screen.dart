@@ -125,22 +125,27 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
     Global.getcalendar();
     Global().home_getcolor();
     Global().getlist();
+    Global().getlist2();
+    Global.get_course_day2();
+    Global.getcalendar2();
+    Global.get_course_day2();
     bool progressorhome = false;
+    getApplicationDocumentsDirectory().then((value) {
+      File file = new File(value.path + '/course.json');
+      file.exists().then((value) {
+        Global.isfirst = !value;
+      });
+    });
     getApplicationDocumentsDirectory().then((value) {
       //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
       File file = new File(value.path + '/first.txt');
       file.exists().then((value) async {
         if (value) {
           progressorhome = true;
-          getApplicationDocumentsDirectory().then((value) {
-            File file = new File(value.path + '/course.json');
-            file.exists().then((value) {
-              Global.isfirst = false;
-            });
-          });
         }
       });
     });
+
     if (widget.futureNavigator == null) {
       Timer(Duration(seconds: widget.durationInSeconds), () {
         getApplicationDocumentsDirectory().then((value) {

@@ -164,12 +164,6 @@ class Global {
       File file = File(value.path + '/islogin2.txt');
       if (file.existsSync()) {
         islogin2 = file.readAsStringSync() == 'true' ? true : false;
-        if (islogin2) {
-          Global.get_course_day2();
-          Global.getcalendar2();
-          Global().getlist2();
-          Global.get_course_day2();
-        }
       }
     });
   }
@@ -1087,6 +1081,7 @@ class Global {
       scoreinfos2 = json.decode(value);
       //反向读取
       for (int i = scoreinfos2.length - 1; i >= 0; i--) {
+        print(scoreinfos2[i]['zcj']);
         //打印分数zcj
         //组件1
 

@@ -296,37 +296,41 @@ class ApiService {
   Future<String> getLoginStatus(String username, String password,
       String verifyCode, setState, context) async {
     Dio dio = Dio();
-    Response response = await dio.get(
-        //设置超时时间
 
-        "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
-        options: Options(),
-        queryParameters: {
-          'account': username,
-          'password': password,
-          'verifycode': verifyCode,
-          'JSESSIONID': Global.jwc_jsessionid,
-          '_webvpn_key': Global.jwc_webvpn_key,
-          'webvpn_username': Global.jwc_webvpn_username
-        });
-    //持久化存储登录信息
-    saveString() {
-      Global().storelogininfo(username, password);
+    try {
+      Response response = await dio.get(
+          //设置超时时间
+
+          "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
+          options: Options(),
+          queryParameters: {
+            'account': username,
+            'password': password,
+            'verifycode': verifyCode,
+            'JSESSIONID': Global.jwc_jsessionid,
+            '_webvpn_key': Global.jwc_webvpn_key,
+            'webvpn_username': Global.jwc_webvpn_username
+          });
+      //持久化存储登录信息
+      saveString() {
+        Global().storelogininfo(username, password);
+      }
+
+      //切换到HomePage页面
+      print(response.data.toString());
+      if (response.data['message'].toString() == '登录成功') {
+        saveString();
+        Global.pureyzmset(true);
+        getVerifyCode(context, setState);
+        setState(() {});
+        return '';
+      } else {
+        setState(() {});
+      }
+      return response.data['message'].toString() + ',请等待新的验证码刷新或手动点击更新';
+    } catch (e) {
+      return '网络错误';
     }
-
-    //切换到HomePage页面
-    print(response.data.toString());
-    if (response.data['message'].toString() == '登录成功') {
-      saveString();
-      Global.pureyzmset(true);
-      getVerifyCode(context, setState);
-      setState(() {});
-      return '';
-    } else {
-      setState(() {});
-    }
-
-    return response.data['message'].toString() + ',请等待新的验证码刷新或手动点击更新';
   }
 
   //提前激活chatgpt接口

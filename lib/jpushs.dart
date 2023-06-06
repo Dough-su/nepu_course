@@ -65,12 +65,14 @@ class jpushs {
     }
     //上传pushid
     Dio dio = new Dio();
-    var url =
-        'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/insertpushid?pushid=' +
-            rid.toString() +
-            '&stuid=' +
-            Global.jwc_xuehao;
-    print(url);
-    dio.get(url);
+    try {
+      var url =
+          'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/insertpushid?pushid=' +
+              rid.toString() +
+              '&stuid=' +
+              Global.jwc_xuehao;
+      print(url);
+      dio.get(url);
+    } catch (e) {}
   }
 }
