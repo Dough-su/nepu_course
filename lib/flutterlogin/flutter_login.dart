@@ -14,7 +14,6 @@ import 'package:muse_nepu_course/flutterlogin/src/models/user_form_field.dart';
 import 'package:muse_nepu_course/flutterlogin/src/providers/auth.dart';
 import 'package:muse_nepu_course/flutterlogin/src/providers/login_messages.dart';
 import 'package:muse_nepu_course/flutterlogin/src/providers/login_theme.dart';
-import 'package:muse_nepu_course/flutterlogin/src/regex.dart';
 import 'package:muse_nepu_course/flutterlogin/src/widgets/cards/auth_card_builder.dart';
 import 'package:muse_nepu_course/flutterlogin/src/widgets/fade_in.dart';
 import 'package:muse_nepu_course/flutterlogin/src/widgets/gradient_box.dart';

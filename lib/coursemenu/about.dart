@@ -6,10 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
-import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/jpushs.dart';
-import 'package:muse_nepu_course/wuziqi/wuziqi.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
@@ -176,47 +174,6 @@ class _aboutState extends State<about> {
                   //复制到剪切板
                   Clipboard.setData(ClipboardData(text: jpushs.rid));
                 }),
-            //彩蛋
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('彩蛋'),
-              subtitle: Text(''),
-              onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      //两个彩蛋可以选择
-                      return AlertDialog(
-                        title: Text('彩蛋'),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            //跳转到彩蛋页面
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              WelcomeScreen()));
-                                },
-                                child: Text('井字棋')),
-                            //跳转到彩蛋页面
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => wuziqi()));
-                                },
-                                child: Text('五子棋')),
-                          ],
-                        ),
-                        actions: [],
-                      );
-                    });
-              },
-            ),
             //修改学号密码
             ListTile(
               leading: Icon(Icons.info),
@@ -248,7 +205,6 @@ class _aboutState extends State<about> {
                           ],
                         ),
                         actions: [
-                          //跳转到彩蛋页面
                           ElevatedButton(
                               onPressed: () {
                                 //修改学号密码
