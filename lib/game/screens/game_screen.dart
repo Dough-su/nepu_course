@@ -184,16 +184,10 @@ class _GameScreenState extends State<GameScreen> {
         // Now checking Winning Condition
         if (game.checkWinningCondition() == "Win") {
           UI.finalResult = "Win";
-          if (UI.muteSound == false) {
-            ui.playWinningSound();
-          }
           // Changing the background of winning letter containers to Green.
           changeWinningLetterColors(UI.ansLetter);
         } else if (game.checkDrawCondition() == "Draw") {
           UI.draws++;
-          if (UI.muteSound == false) {
-            ui.playDrawSound();
-          }
           UI.finalResult = "Draw";
           if (UI.draws == UI.noOfDraws) {
             stopTimer();
@@ -208,7 +202,6 @@ class _GameScreenState extends State<GameScreen> {
             });
           }
         }
-        if (UI.muteSound == false) ui.playLetterSound();
       }
     }
 

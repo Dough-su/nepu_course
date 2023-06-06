@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:muse_nepu_course/diffcult_flutter_refresh/easy_refresh.dart';
@@ -368,11 +369,12 @@ class _scoreState extends State<scorepage> {
                 itemBuilder: (context, index) {
                   return Container(
                     child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: Global.isfirstuser
-                          ? Global.scorelist[index]
-                          : Global.scorelist2[index],
-                    ),
+                        padding: const EdgeInsets.all(18.0),
+                        child: FadeInDown(
+                          child: Global.isfirstuser
+                              ? Global.scorelist[index]
+                              : Global.scorelist2[index],
+                        )),
                   );
                 })
 

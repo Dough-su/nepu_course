@@ -2,16 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:animate_do/animate_do.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flip_card/flip_card.dart' as flip;
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:muse_nepu_course/chatforgpt/chatgpt2.dart';
-import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:muse_nepu_course/global.dart';
@@ -28,7 +26,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:timelines/timelines.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-import 'package:window_manager/window_manager.dart';
 import 'chaoxing/chaoxing.dart';
 import 'coursemenu/about.dart';
 import 'coursemenu/scoredetail.dart';
@@ -40,8 +37,6 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:lottie/lottie.dart';
 import 'package:easy_app_installer/easy_app_installer.dart';
 import 'package:achievement_view/achievement_view.dart';
-
-import 'ins.dart';
 
 List<Widget> dailycourse = [];
 List<Widget> dailycourse2 = [];
@@ -305,6 +300,9 @@ class _HomePageState extends State<HomePage> {
       print(localVersion);
       if (version != Global.version && version != localVersion) {
         await Dialogs.materialDialog(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.white
+              : Colors.black,
           msg: '要下载吗?',
           title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
           lottieBuilder: Lottie.asset(
@@ -385,6 +383,9 @@ class _HomePageState extends State<HomePage> {
         String version = value.data[0]['version'];
         if (version != Global.version) {
           await Dialogs.materialDialog(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
             msg: '要下载吗?',
             title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
             lottieBuilder: Lottie.asset(
@@ -878,6 +879,9 @@ class _HomePageState extends State<HomePage> {
             Global().getlist2();
           });
           Dialogs.materialDialog(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
             msg: '去看看不?',
             title: '有新成绩啦!',
             lottieBuilder: Lottie.asset(
@@ -1013,9 +1017,10 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Container getContainer(String time, int index, String msg, eventcahe,
+  Widget getContainer(String time, int index, String msg, eventcahe,
       bool hasStartConnector, bool hasEndConnector) {
-    return Container(
+    return FadeInLeft(
+        child: Container(
       child: TimelineTile(
         oppositeContents: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -1035,17 +1040,16 @@ class _HomePageState extends State<HomePage> {
                         .toString()
                         .split(' ')[0]
                         .substring(0, 5),
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ),
         ),
         contents: GestureDetector(
           onTap: (() => Dialogs.bottomMaterialDialog(
-                //颜色随着暗黑模式改变
-                color: Global.home_currentcolor,
-
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.white
+                    : Color(0xFF1C1B1F),
                 msg: msg,
                 title: '详细信息',
                 lottieBuilder: Lottie.asset(
@@ -1082,7 +1086,7 @@ class _HomePageState extends State<HomePage> {
               : null,
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildTimeContainer(String time) {
@@ -1122,16 +1126,8 @@ class _HomePageState extends State<HomePage> {
         ),
         contents: Card(
           //透明
-          color: Colors.transparent,
+          // color: Colors.transparent,
           shadowColor: Colors.transparent,
-          child: Container(
-            width: widthx,
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              '',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
         ),
         node: TimelineNode(
           indicator: DotIndicator(
@@ -1542,58 +1538,54 @@ class _HomePageState extends State<HomePage> {
                         showDialog(
                             context: context,
                             builder: (context) {
-                              return MaterialApp(
-                                  theme: ThemeData.light(),
-                                  darkTheme: ThemeData.dark(),
-                                  home: AlertDialog(
-                                    title: Text('选择当前页颜色'),
-                                    content: SingleChildScrollView(
-                                      child: ColorPicker(
-                                        pickerColor: Global.home_currentcolor,
-                                        onColorChanged: changeColor,
-                                        colorPickerWidth: 300.0,
-                                        pickerAreaHeightPercent: 0.7,
-                                        enableAlpha: false,
-                                        displayThumbColor: true,
-                                        showLabel: true,
-                                        paletteType: PaletteType.hsv,
-                                        pickerAreaBorderRadius:
-                                            const BorderRadius.only(
-                                          topLeft: const Radius.circular(2.0),
-                                          topRight: const Radius.circular(2.0),
-                                        ),
-                                      ),
+                              return AlertDialog(
+                                title: Text('选择当前页颜色'),
+                                content: SingleChildScrollView(
+                                  child: ColorPicker(
+                                    pickerColor: Global.home_currentcolor,
+                                    onColorChanged: changeColor,
+                                    colorPickerWidth: 300.0,
+                                    pickerAreaHeightPercent: 0.7,
+                                    enableAlpha: false,
+                                    displayThumbColor: true,
+                                    showLabel: true,
+                                    paletteType: PaletteType.hsv,
+                                    pickerAreaBorderRadius:
+                                        const BorderRadius.only(
+                                      topLeft: const Radius.circular(2.0),
+                                      topRight: const Radius.circular(2.0),
                                     ),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('确定'),
-                                        onPressed: () async {
-                                          setState(() =>
-                                              Global.home_currentcolor =
-                                                  Global.home_pickcolor);
-                                          getApplicationDocumentsDirectory()
-                                              .then((value) {
-                                            File file =
-                                                File(value.path + '/color.txt');
-                                            //判断文件是否存在
-                                            if (file.existsSync()) {
-                                              //存在则写入
-                                              file.writeAsString(Global
-                                                  .home_currentcolor.value
-                                                  .toString());
-                                            } else {
-                                              //不存在则创建文件并写入
-                                              file.createSync();
-                                              file.writeAsString(Global
-                                                  .home_currentcolor.value
-                                                  .toString());
-                                            }
-                                          });
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  ));
+                                  ),
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    child: const Text('确定'),
+                                    onPressed: () async {
+                                      setState(() => Global.home_currentcolor =
+                                          Global.home_pickcolor);
+                                      getApplicationDocumentsDirectory()
+                                          .then((value) {
+                                        File file =
+                                            File(value.path + '/color.txt');
+                                        //判断文件是否存在
+                                        if (file.existsSync()) {
+                                          //存在则写入
+                                          file.writeAsString(Global
+                                              .home_currentcolor.value
+                                              .toString());
+                                        } else {
+                                          //不存在则创建文件并写入
+                                          file.createSync();
+                                          file.writeAsString(Global
+                                              .home_currentcolor.value
+                                              .toString());
+                                        }
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
                             });
                       },
                     ),
@@ -1629,10 +1621,6 @@ class _HomePageState extends State<HomePage> {
                               );
                             }
                           });
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => chaoxinglogin()));
                         }),
                     ListTile(
                       leading: const Icon(Icons.cached,

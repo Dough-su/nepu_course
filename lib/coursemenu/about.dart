@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
-import 'package:muse_nepu_course/black_jack/screens/black_jack_screen.dart';
-import 'package:muse_nepu_course/chess/screens/game_screen.dart';
 import 'package:muse_nepu_course/game/screens/welcome_screen.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/jpushs.dart';
@@ -204,23 +202,6 @@ class _aboutState extends State<about> {
                                 },
                                 child: Text('井字棋')),
                             //跳转到彩蛋页面
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => GameScreen()));
-                                },
-                                child: Text('国际象棋')),
-                            ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              BlackJackScreen()));
-                                },
-                                child: Text('黑杰克')),
                             ElevatedButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -454,7 +435,9 @@ class _aboutState extends State<about> {
                       //截取json中的version
                       String version = value.data[0]['version'];
                       Dialogs.materialDialog(
-                        color: Colors.white,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.white
+                            : Colors.black,
                         msg: '要下载吗?',
                         title: '有新版本啦,版本号是' +
                             version.toString() +
@@ -640,13 +623,7 @@ class _aboutState extends State<about> {
               leading: Icon(Icons.beenhere),
               title: Text('dio'),
               subtitle: Text('https://github.com/flutterchina/dio'),
-            ), //https://github.com/flutter/plugins/tree/main/packages/shared_preferences/shared_preferences
-            ListTile(
-              leading: Icon(Icons.beenhere),
-              title: Text('shared_preferences'),
-              subtitle: Text(
-                  'https://github.com/flutter/plugins/tree/main/packages/shared_preferences/shared_preferences'),
-            ), //
+            ),
             ListTile(
               leading: Icon(Icons.beenhere),
               title: Text('image_picker'),

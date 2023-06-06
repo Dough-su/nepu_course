@@ -1,16 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:muse_nepu_course/jpushs.dart';
 import 'package:muse_nepu_course/progress.dart';
 import 'package:muse_nepu_course/easy_splash_screen.dart';
-import 'package:lunar/lunar.dart';
+import 'package:muse_nepu_course/theme/color_schemes.g.dart';
 import 'package:muse_nepu_course/widget/image_provider.dart';
 import 'package:window_manager/window_manager.dart';
-import 'chess/bloc/app_blocs.dart';
 import 'global.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
@@ -57,7 +54,6 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
-    createAppBlocs();
     Global.getusername2();
     Global().loadItems(DateTime.now());
     Global().loadItems2(DateTime.now());
@@ -67,8 +63,8 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       home: EasySplashScreen(
         logo: Image.asset('images/logo.png'),
         title: Text(

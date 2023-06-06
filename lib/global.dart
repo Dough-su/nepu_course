@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
-import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:card_flip/card_flip.dart';
-import 'package:flutter/foundation.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/coursemenu/scoredetail.dart';
 import 'package:muse_nepu_course/flutterlogin/flutter_login.dart';
@@ -12,11 +9,7 @@ import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/login.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'service/api_service.dart';
-import 'dart:convert';
-import 'dart:math';
-import 'package:flustars/flustars.dart';
 import 'package:encrypt/encrypt.dart' as enc;
 
 class LoginData {
@@ -125,8 +118,6 @@ class Global {
   static bool isrefreshcourse2 = false;
   //自动更新课程
   static bool auto_update_course = true;
-  //消息列表
-  static List<types.Message> messages = [];
   //String类型的消息列表
   static String messages_pure = '';
   //注入消息

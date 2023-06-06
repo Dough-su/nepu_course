@@ -1,7 +1,6 @@
 import 'package:muse_nepu_course/game/Models/TicTacToeLogic.dart';
 import 'package:muse_nepu_course/game/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 enum letter { cardX, cardO }
 
@@ -147,10 +146,6 @@ class UI {
   }
 
   /*playing sounds according to the condition of the game*/
-  void playWinningSound() => AudioCache().play('winner.wav');
-  void playDrawSound() => AudioCache().play('draw.mpeg');
-  void playLetterSound() =>
-      AudioCache().play(UI.character == "X" ? 'note1.wav' : 'note2.wav');
 
   /*Making letter X to make the move*/
   void letterXTurn() {
