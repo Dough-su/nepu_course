@@ -485,6 +485,7 @@ class _aboutState extends State<about> {
                               ProgressDialog pd =
                                   ProgressDialog(context: context);
                               pd.show(
+                                  backgroundColor: Global.home_currentcolor,
                                   max: 100,
                                   msg: '准备下载更新...',
                                   msgMaxLines: 5,

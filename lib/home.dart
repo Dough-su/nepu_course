@@ -302,6 +302,7 @@ class _HomePageState extends State<HomePage> {
       var value = await dio.get(
           'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
       String version = value.data[0]['version'];
+      print(localVersion);
       if (version != Global.version && version != localVersion) {
         await Dialogs.materialDialog(
           msg: '要下载吗?',
@@ -326,6 +327,7 @@ class _HomePageState extends State<HomePage> {
                 if (Platform.isAndroid) {
                   ProgressDialog pd = ProgressDialog(context: context);
                   pd.show(
+                      backgroundColor: Global.home_currentcolor,
                       max: 100,
                       msg: '准备下载更新...',
                       msgMaxLines: 5,
@@ -383,7 +385,6 @@ class _HomePageState extends State<HomePage> {
         String version = value.data[0]['version'];
         if (version != Global.version) {
           await Dialogs.materialDialog(
-            color: Colors.white,
             msg: '要下载吗?',
             title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
             lottieBuilder: Lottie.asset(
@@ -404,6 +405,7 @@ class _HomePageState extends State<HomePage> {
                   if (Platform.isAndroid) {
                     ProgressDialog pd = ProgressDialog(context: context);
                     pd.show(
+                        backgroundColor: Global.home_currentcolor,
                         max: 100,
                         msg: '准备下载更新...',
                         msgMaxLines: 5,
@@ -679,6 +681,9 @@ class _HomePageState extends State<HomePage> {
 
     getcolor();
     initAll(true);
+    updateappx();
+    xinshouyindao();
+    shownotice();
   }
 
   void initAll(bool executeAll) async {
@@ -703,9 +708,6 @@ class _HomePageState extends State<HomePage> {
             return windwosfloat();
           }));
         }
-        updateappx();
-        xinshouyindao();
-        shownotice();
       }
     }
     if (Global.islogin2 || !executeAll) {
@@ -876,7 +878,6 @@ class _HomePageState extends State<HomePage> {
             Global().getlist2();
           });
           Dialogs.materialDialog(
-            color: Colors.white,
             msg: '去看看不?',
             title: '有新成绩啦!',
             lottieBuilder: Lottie.asset(
@@ -888,6 +889,7 @@ class _HomePageState extends State<HomePage> {
               IconButton(
                 onPressed: () {
                   //关闭
+                  Navigator.pop(context);
                 },
                 icon: Icon(Icons.cancel_outlined),
               ),
@@ -929,6 +931,7 @@ class _HomePageState extends State<HomePage> {
     ProgressDialog pd = ProgressDialog(context: context);
     var dio = Dio();
     pd.show(
+      backgroundColor: Global.home_currentcolor,
       max: 100,
       msg: '服务器正在加工你的成绩数据哦，不是卡住了，请稍等...,后续更新可以在成绩页面检查更新，速度更快',
       msgMaxLines: 5,

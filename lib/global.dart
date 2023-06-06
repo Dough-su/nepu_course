@@ -1081,7 +1081,6 @@ class Global {
       scoreinfos2 = json.decode(value);
       //反向读取
       for (int i = scoreinfos2.length - 1; i >= 0; i--) {
-        print(scoreinfos2[i]['zcj']);
         //打印分数zcj
         //组件1
 

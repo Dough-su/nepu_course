@@ -31,6 +31,7 @@ class _chaoxingState extends State<chaoxing> {
       Dio dio = new Dio();
       ProgressDialog pd = ProgressDialog(context: context);
       pd.show(
+          backgroundColor: Global.home_currentcolor,
           max: 100,
           msg: '服务器正在加工你的数据哦，不是卡住了，请稍等...',
           msgMaxLines: 5,
