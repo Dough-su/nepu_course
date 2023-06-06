@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/flutterlogin/src/models/term_of_service.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class TermCheckbox extends StatefulWidget {
   final TermOfService termOfService;
@@ -24,9 +23,7 @@ class _TermCheckboxState extends State<TermCheckbox> {
       initialValue: widget.termOfService.initialValue,
       title: widget.termOfService.linkUrl != null
           ? InkWell(
-              onTap: () {
-                launchUrl(Uri.parse(widget.termOfService.linkUrl!));
-              },
+              onTap: () {},
               child: Row(
                 children: [
                   Flexible(
