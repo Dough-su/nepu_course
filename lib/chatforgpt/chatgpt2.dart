@@ -12,6 +12,7 @@ import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/theme/color_schemes.g.dart';
+import 'package:bottom_bar_with_sheet/bottom_bar_with_sheet.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ var _filteredStringList = [];
 var _stringList = [];
 int _selectedIndex = -1;
 String? _selectedValue;
+
 //从assets/prompts.json中读取数据,并转换为List<Map<String, String>>
 void loadprompts() async {
   String prompt = await rootBundle.loadString('assets/prompts.json');
@@ -35,7 +37,33 @@ class _ChatPageState extends State<ChatPage>
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
-
+  final _bottomBarController = BottomBarWithSheetController(initialIndex: 0);
+  final _selectedTags = <String>[];
+  final _unselectedTags = <String>[
+    '#写一个论文并以docx发回',
+    '#翻译dcox',
+    '#对dcox自定义操作',
+    '#对长对话自定义操作',
+    '#翻译长文章',
+    '#生成图片',
+    '#生成思维导图',
+    '#总结docx内容',
+    '#(难逃法眼)检测文章是否由chatgpt生成',
+    '#提问的智慧',
+    '#文章续写',
+    '#生成流程图',
+    '#生成关系图',
+    '#生成ER图',
+    '#生成实体关系图',
+    '#生成网络拓扑图',
+    '#生成UML图',
+    '#生成时序图',
+    '#生成甘特图',
+    '#生成韦恩图',
+    '#生成树状图',
+    '#生成饼图',
+    '#生成表格',
+  ];
   String xdata = '';
   late AnimationController controller;
 
@@ -234,69 +262,102 @@ class _ChatPageState extends State<ChatPage>
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.delete_sweep_outlined),
-                        color: Global.home_currentcolor,
-                        onPressed: () {
-                          setState(() {
-                            _showAnimation = true;
-                            _messages.clear();
-                            Global.messages_pure = '';
-                          });
-                        },
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          child: TextField(
-                            focusNode: _focusNode,
-                            controller: _controller,
-                            onChanged: (value) {
-                              final lines = value.split('\n').length;
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.delete_sweep_outlined),
+                            color: Global.home_currentcolor,
+                            onPressed: () {
                               setState(() {
-                                _maxLines = lines + 1;
+                                _showAnimation = true;
+                                _messages.clear();
+                                Global.messages_pure = '';
                               });
                             },
-                            maxLines: _maxLines,
-                            // decoration: InputDecoration.collapsed(
-                            //   hintText: '输入消息...',
-                            // ),
                           ),
-                        ),
-                      ),
-                      SizedBox(width: 8.0),
-                      AnimatedBuilder(
-                        // 包裹IconButton的AnimatedBuilder，用于构建进度指示器
-                        animation: controller,
-                        builder: (BuildContext context, Widget? child) {
-                          return IconButton(
-                            icon: _sending
-                                ? SizedBox(
-                                    width: 24.0,
-                                    height: 24.0,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.0,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Global.home_currentcolor),
-                                    ),
-                                  )
-                                : Icon(Icons.send),
-                            color: Global.home_currentcolor,
-                            onPressed: () async {
-                              sendmessage();
+                          Expanded(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 16.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              child: TextField(
+                                focusNode: _focusNode,
+                                controller: _controller,
+                                onChanged: (value) {
+                                  final lines = value.split('\n').length;
+                                  setState(() {
+                                    _maxLines = lines + 1;
+                                  });
+                                },
+                                maxLines: _maxLines,
+                                // decoration: InputDecoration.collapsed(
+                                //   hintText: '输入消息...',
+                                // ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 8.0),
+                          AnimatedBuilder(
+                            // 包裹IconButton的AnimatedBuilder，用于构建进度指示器
+                            animation: controller,
+                            builder: (BuildContext context, Widget? child) {
+                              return IconButton(
+                                icon: _sending
+                                    ? SizedBox(
+                                        width: 24.0,
+                                        height: 24.0,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.0,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Global.home_currentcolor),
+                                        ),
+                                      )
+                                    : Icon(Icons.send),
+                                color: Global.home_currentcolor,
+                                onPressed: () async {
+                                  sendmessage();
+                                },
+                              );
                             },
-                          );
-                        },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                      BottomBarWithSheet(
+                        bottomBarTheme: const BottomBarTheme(
+                          decoration: BoxDecoration(color: Colors.white),
+                          itemIconColor: Colors.grey,
+                        ),
+                        sheetChild: ListView(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Wrap(
+                                spacing: 10,
+                                children: _unselectedTags
+                                    .map((e) => ActionChip(
+                                          label: Text(e),
+                                          onPressed: () {
+                                            setState(() {
+                                              _selectedTags.add(e);
+                                              _unselectedTags.remove(e);
+                                            });
+                                          },
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        items: const [
+                          BottomBarWithSheetItem(icon: Icons.photo),
+                          BottomBarWithSheetItem(icon: Icons.favorite),
+                        ],
+                      ),
+                    ])),
               ],
             ),
           ),

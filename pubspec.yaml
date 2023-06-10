@@ -76,6 +76,7 @@ dependencies:
   pointycastle: ^3.7.3
   encrypt: ^5.0.1
   animated_text_kit: ^4.2.2
+  bottom_bar_with_sheet: ^2.4.0
 
   
 
