@@ -77,6 +77,8 @@ dependencies:
   encrypt: ^5.0.1
   animated_text_kit: ^4.2.2
   bottom_bar_with_sheet: ^2.4.0
+  image_gallery_saver: ^2.0.1
+  file_picker: ^5.2.5
 
   
 

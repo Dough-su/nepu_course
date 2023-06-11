@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
@@ -354,6 +355,53 @@ class ApiService {
         ),
       );
       return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<Response> sendlongtextToServer(String prompt, String content) async {
+    var headers = {'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)'};
+    FormData formData = FormData.fromMap({
+      'content': content,
+      'prompt': prompt,
+    });
+
+    try {
+      Response response = await Dio().post(
+        'https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/longtext',
+        data: formData,
+        options: Options(
+          headers: headers,
+          responseType: ResponseType.stream,
+        ),
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  //生成图接口
+  Future<Uint8List> recpicfromServer(String message, int type) async {
+    FormData formData = FormData.fromMap({
+      'content': message,
+      'type': type,
+    });
+    Uint8List imageData;
+
+    try {
+      Response response = await Dio().post(
+        'https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/mermaid',
+        data: formData,
+        options: Options(
+          responseType: ResponseType.bytes,
+        ),
+      );
+      var responseData = response.data;
+
+      imageData = Uint8List.fromList(responseData);
+      return imageData;
     } catch (e) {
       throw e;
     }
