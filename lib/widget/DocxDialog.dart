@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:muse_nepu_course/chatforgpt/chatgpt2.dart';
 import 'package:muse_nepu_course/global.dart';
@@ -25,35 +24,34 @@ class DocxDialog extends StatefulWidget {
 }
 
 class _DocxDialogState extends State<DocxDialog> {
-  TextEditingController _textEditingController = TextEditingController();
-  StreamController streamController = StreamController();
+  bool _uploading = false;
+  double _uploadProgress = 0.0;
   late File _file;
   String? _fileName;
-  bool _isUploading = false;
-
-  void initState() {
-    super.initState();
-    // 开始接收消息时，关闭弹窗
-    // streamController.stream.listen((event) {
-    //   Navigator.pop(context);
-    // });
-  }
-
+  TextEditingController _textEditingController = TextEditingController();
+  StreamController streamController = StreamController();
+  bool isfirst = true;
   Future<void> _uploadFile() async {
-    if (_isUploading) {
+    if (_uploading) {
       return;
     }
-    _isUploading = true;
+    setState(() {
+      _uploading = true;
+    });
 
     if (_file == null) {
       return;
+    }
+    @override
+    void initState() {
+      super.initState();
+      streamController.stream.listen((event) {});
     }
 
     final formData = FormData.fromMap({
       'file': await MultipartFile.fromFile(_file.path),
       'content': _textEditingController.text,
     });
-    print('需要操作' + _textEditingController.text);
 
     final dio = Dio();
     Response response = await dio.post(
@@ -64,37 +62,10 @@ class _DocxDialogState extends State<DocxDialog> {
       ),
     );
 
-    // 重置状态
-    widget.externalSetState(() {
-      _file = File('');
-      _fileName = null;
-      _textEditingController.text = '';
-      _isUploading = false;
-    });
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('上传成功'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // 传递状态信息给外部
-              widget.onUploadSuccess({
-                'status': 'success',
-                'message': '文件上传成功',
-              });
-            },
-            child: Text('确定'),
-          ),
-        ],
-      ),
-    );
-
     String xdata = '';
     Timer timer;
     bool isTimeout = false;
+
     //500毫秒执行一次
     timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
       if (isTimeout) {
@@ -110,7 +81,34 @@ class _DocxDialogState extends State<DocxDialog> {
       }
       widget.externalSetState(() {});
     });
+
     response.data.stream.listen((value) {
+      if (isfirst) {
+        isfirst = false;
+        setState(() {
+          _uploading = false;
+          Navigator.pop(context);
+        });
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('上传成功'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  // 传递状态信息给外部
+                  widget.onUploadSuccess({
+                    'status': 'success',
+                    'message': '文件上传成功',
+                  });
+                },
+                child: Text('确定'),
+              ),
+            ],
+          ),
+        );
+      }
       if (xdata != '') messagess.removeLast();
 
       xdata += utf8.decode(value);
@@ -131,6 +129,11 @@ class _DocxDialogState extends State<DocxDialog> {
 
       widget.externalSetState(() {});
     });
+
+    response.data.stream.listen((value) {
+      _uploadProgress = (value.length / response.data.contentLength) * 100;
+      setState(() {});
+    }, onDone: () {});
   }
 
   Future<void> _pickFile() async {
@@ -170,102 +173,37 @@ class _DocxDialogState extends State<DocxDialog> {
               hintText: '请输入docx文件的操作',
             ),
           ),
-          // 无限横向条
-          SizedBox(height: 16),
-          Container(
-            height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-            child: AnimatedContainer(
-              duration: Duration(seconds: 1),
-              curve: Curves.linear,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(2),
+          if (_uploading)
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  value: _uploadProgress,
+                  strokeWidth: 3,
+                ),
               ),
             ),
-          ),
         ],
       ),
-      // 当上传按钮被按下时，关闭弹窗
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pop(context);
+            // 传递状态信息给外部
+            widget.onUploadSuccess({
+              'status': 'cancel',
+              'message': '文件上传已取消',
+            });
+          },
           child: Text('取消'),
         ),
         ElevatedButton(
-          onPressed: () {
-            _uploadFile();
-            // Navigator.pop(context);
-          },
-          child: Text('上传'),
+          onPressed: _uploading ? null : _uploadFile,
+          child: _uploading ? Text('上传中...') : Text('上传'),
         ),
       ],
     );
   }
-}
-
-Future<void> uploadFile(
-  BuildContext context,
-  File file,
-  String content,
-  Function onUploadSuccess,
-  Function(void Function()) externalSetState,
-) async {
-  final formData = FormData.fromMap({
-    'file': await MultipartFile.fromFile(file.path),
-    'content': content,
-  });
-
-  final dio = Dio();
-  Response response = await dio.post(
-    'https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/upload',
-    data: formData,
-    options: Options(
-      responseType: ResponseType.stream,
-    ),
-  );
-
-  String xdata = '';
-  Timer timer;
-  bool isTimeout = false;
-  //500毫秒执行一次
-  timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
-    if (isTimeout) {
-      timer.cancel();
-      print('取消定时器');
-      Global.messages_pure += " AI: " + xdata.toString() + ";";
-      externalSetState(() {});
-      xdata = '';
-      externalSetState(() {
-        sending = false;
-      });
-      return;
-    }
-    externalSetState(() {});
-  });
-  response.data.stream.listen((value) {
-    if (xdata != '') messagess.removeLast();
-
-    xdata += utf8.decode(value);
-    xdata = xdata
-        .replaceAll('AI:', '')
-        .replaceAll('AI：', '')
-        .replaceAll('机器人:', '')
-        .replaceAll('机器人：', '')
-        .replaceAll('Bot:', '')
-        .replaceAll('Bot：', '');
-    messagess.add({'sender': 'GPT', 'message': xdata});
-    externalSetState(() {
-      showAnimation = false; // 当有消息时，停止显示动画
-    });
-  }, onDone: () {
-    print('数据接收完毕');
-    isTimeout = true;
-    onUploadSuccess();
-    externalSetState(() {});
-  });
 }

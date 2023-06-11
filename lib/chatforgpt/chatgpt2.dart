@@ -592,9 +592,11 @@ class _ChatPageState extends State<ChatPage>
                                 spacing: 10,
                                 children: _unselectedTags
                                     .map((e) => ActionChip(
-                                          shadowColor: Global.home_currentcolor,
-                                          backgroundColor:
+                                          // shadowColor: Global.home_currentcolor,
+                                          surfaceTintColor:
                                               Global.home_currentcolor,
+                                          // backgroundColor:
+                                          //     Global.home_currentcolor,
                                           label: Text(e),
                                           onPressed: () {
                                             generate(e);
