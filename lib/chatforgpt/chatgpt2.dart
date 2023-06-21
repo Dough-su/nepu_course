@@ -54,14 +54,10 @@ class _ChatPageState extends State<ChatPage>
   final _bottomBarController = BottomBarWithSheetController(initialIndex: 0);
   final _selectedTags = <String>[];
   final _unselectedTags = <String>[
-    // '#写一个论文并发回(暂不可用)',
     '#翻译docx',
     '#对docx自定义操作',
     '#对长文章自定义操作',
     '#翻译长文章',
-    // '#生成图片',
-    '#总结docx内容',
-    '#(难逃法眼)检测文章是否由chatgpt完成',
     '#生成流程图',
     '#生成关系图',
     '#生成ER图',
@@ -101,7 +97,7 @@ class _ChatPageState extends State<ChatPage>
         ),
       );
     }
-    //如果e包含流程图则type为1,关系图为2,ER图为3,实体关系图为4,网络拓扑图为5,UML图为6,时序图为7,甘特图为8,韦恩图为9,树状图为10,饼图为11
+    //如果e包含流程图则type为1,关系图为2, ER图为3, 实体关系图为4, 网络拓扑图为5, UML图为6, 时序图为7, 甘特图为8, 韦恩图为9, 树状图为10, 饼图为11
     if (e.contains('#生成')) {
       e = e.replaceAll('#生成', '');
       showDialog(
@@ -205,12 +201,12 @@ class _ChatPageState extends State<ChatPage>
               await ApiService().sendlongtextToServer(text1, text2);
           Timer timer;
           bool isTimeout = false;
-          //500毫秒执行一次
+          // 500毫秒执行一次
           timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
             if (isTimeout) {
               timer.cancel();
               print('取消定时器');
-              Global.messages_pure += " AI: " + xdata.toString() + ";";
+              Global.messages_pure += "  " + xdata.toString() + ";";
               setState(() {});
               xdata = '';
               setState(() {
@@ -226,12 +222,12 @@ class _ChatPageState extends State<ChatPage>
 
             xdata += utf8.decode(value);
             xdata = xdata
-                .replaceAll('AI:', '')
-                .replaceAll('AI：', '')
-                .replaceAll('机器人:', '')
-                .replaceAll('机器人：', '')
-                .replaceAll('Bot:', '')
-                .replaceAll('Bot：', '');
+                .replaceAll('', '')
+                .replaceAll('', '')
+                .replaceAll('', '')
+                .replaceAll('', '')
+                .replaceAll('', '')
+                .replaceAll('', '');
             messagess.add({'sender': 'GPT', 'message': xdata});
             setState(() {
               if (_isAtBottom) {
@@ -258,7 +254,7 @@ class _ChatPageState extends State<ChatPage>
 
   void addImageToMessages(Uint8List imageData) {
     setState(() {
-      messagess.add({'sender': '机器人', 'image': imageData});
+      messagess.add({'sender': 'GPT', 'image': imageData});
       _textEditingController.clear();
     });
   }
@@ -268,7 +264,7 @@ class _ChatPageState extends State<ChatPage>
   }
   void addLoadingToMessages() {
     setState(() {
-      messagess.add({'sender': '机器人', 'loading': true});
+      messagess.add({'sender': 'GPT', 'loading': true});
     });
   }
 
@@ -326,72 +322,72 @@ class _ChatPageState extends State<ChatPage>
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
-        darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-        home: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Global.home_currentcolor,
-            title: Text(
-              '双击消息复制,长按保存图片',
-              maxLines: 3,
-              style: TextStyle(color: Colors.white),
-            ),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
+      theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+      darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Global.home_currentcolor,
+          title: Text(
+            '双击消息复制,长按保存图片',
+            maxLines: 3,
+            style: TextStyle(color: Colors.white),
+          ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.settings),
               onPressed: () {
-                // Navigator.push(
-                //     context, MaterialPageRoute(builder: (context) => HomePage()));
-                //回到上一级
-                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return Scaffold(
+                      appBar: AppBar(
+                        backgroundColor: Global.home_currentcolor,
+                        title: Text('自动注入消息'),
+                      ),
+                      body: ListView.builder(
+                        itemCount: _filteredStringList.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          String act = _filteredStringList[index]["act"]!;
+                          String prompt = _filteredStringList[index]["prompt"]!;
+                          return RadioListTile(
+                            title: Text("行为: $act"),
+                            subtitle: Text("语句: $prompt"),
+                            value: index,
+                            groupValue: _selectedIndex,
+                            onChanged: (int? value) {
+                              setState(() {
+                                _selectedIndex = value!;
+                                _selectedValue =
+                                    _filteredStringList[_selectedIndex]["act"];
+                                //发送消息
+                                _controller.text =
+                                    _filteredStringList[_selectedIndex]
+                                        ["prompt"];
+                                //返回主页面
+                                Navigator.pop(context);
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
               },
             ),
-            actions: [
-              IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Scaffold(
-                            appBar: AppBar(
-                              backgroundColor: Global.home_currentcolor,
-                              title: Text('自动注入消息'),
-                            ),
-                            body: ListView.builder(
-                              itemCount: _filteredStringList.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                String act = _filteredStringList[index]["act"]!;
-                                String prompt =
-                                    _filteredStringList[index]["prompt"]!;
-                                return RadioListTile(
-                                  title: Text("行为: $act"),
-                                  subtitle: Text("语句: $prompt"),
-                                  value: index,
-                                  groupValue: _selectedIndex,
-                                  onChanged: (int? value) {
-                                    setState(() {
-                                      _selectedIndex = value!;
-                                      _selectedValue =
-                                          _filteredStringList[_selectedIndex]
-                                              ["act"];
-                                      //发送消息
-
-                                      _controller.text =
-                                          _filteredStringList[_selectedIndex]
-                                              ["prompt"];
-                                      //返回主页面
-                                      Navigator.pop(context);
-                                    });
-                                  },
-                                );
-                              },
-                            ));
-                      });
-                },
-              ),
-            ],
-          ),
-          body: Container(
+          ],
+        ),
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+          },
+          child: Container(
             child: Column(
               children: [
                 Expanded(
@@ -400,32 +396,33 @@ class _ChatPageState extends State<ChatPage>
                     child: messagess.isEmpty
                         ? FadeInUp(
                             child: AnimatedOpacity(
-                            opacity: showAnimation ? 1.0 : 0.0,
-                            duration: Duration(milliseconds: 500),
-                            child: Center(
-                              child: DefaultTextStyle(
-                                style: TextStyle(
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                child: AnimatedTextKit(
-                                  animatedTexts: [
-                                    ColorizeAnimatedText(
-                                      'chatgpt',
-                                      colors: [
-                                        Colors.purple,
-                                        Colors.blue,
-                                        Colors.yellow,
-                                        Colors.red,
-                                      ],
-                                      textStyle: TextStyle(fontSize: 50.0),
-                                    ),
-                                  ],
-                                  isRepeatingAnimation: true,
+                              opacity: showAnimation ? 1.0 : 0.0,
+                              duration: Duration(milliseconds: 500),
+                              child: Center(
+                                child: DefaultTextStyle(
+                                  style: TextStyle(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  child: AnimatedTextKit(
+                                    animatedTexts: [
+                                      ColorizeAnimatedText(
+                                        'chatgpt',
+                                        colors: [
+                                          Colors.purple,
+                                          Colors.blue,
+                                          Colors.yellow,
+                                          Colors.red,
+                                        ],
+                                        textStyle: TextStyle(fontSize: 50.0),
+                                      ),
+                                    ],
+                                    isRepeatingAnimation: true,
+                                  ),
                                 ),
                               ),
                             ),
-                          ))
+                          )
                         : ListView.builder(
                             controller: _scrollController,
                             itemCount: messagess.length,
@@ -434,7 +431,6 @@ class _ChatPageState extends State<ChatPage>
                               String? message = messagess[index]['message'];
                               Uint8List? image = messagess[index]['image'];
                               bool? loading = messagess[index]['loading'];
-                              print(image);
                               if (loading != null && loading) {
                                 return FadeInUp(
                                   child: Padding(
@@ -444,7 +440,7 @@ class _ChatPageState extends State<ChatPage>
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        //一个圆形的进度条
+                                        // 一个圆形的进度条
                                         CircularProgressIndicator(),
                                       ],
                                     ),
@@ -453,71 +449,139 @@ class _ChatPageState extends State<ChatPage>
                               } else if (image != null) {
                                 return FadeInUp(
                                   child: GestureDetector(
-                                    onLongPress: () async {
-                                      // 长按保存图片
-                                      await saveImageToGallery(image);
-                                    },
-                                    child: Image.memory(image),
-                                  ),
+                                      onLongPress: () async {
+                                        // 长按保存图片
+                                        await saveImageToGallery(image);
+                                      },
+                                      child: Row(children: [
+                                        Image.memory(
+                                          image,
+                                          //屏幕宽度-左右边距-图片左右边距
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete),
+                                          onPressed: () {
+                                            setState(() {
+                                              messagess.removeAt(index);
+                                              print(messagess);
+                                            });
+                                          },
+                                        ),
+                                      ])),
                                 );
                               } else {
                                 return FadeInUp(
-                                    child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 4.0),
-                                  child: GestureDetector(
-                                    onDoubleTap: () {
-                                      Clipboard.setData(
-                                          ClipboardData(text: message));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text('已复制到剪贴板'),
-                                          duration: Duration(seconds: 1),
-                                        ),
-                                      );
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment: sender == '我'
-                                          ? MainAxisAlignment.end
-                                          : MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (sender != '我') SizedBox(width: 8.0),
-                                        Flexible(
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 16.0,
-                                                vertical: 8.0),
-                                            decoration: BoxDecoration(
-                                              color: sender == '我'
-                                                  ? Global.home_currentcolor
-                                                  : Theme.of(context)
-                                                              .brightness ==
-                                                          Brightness.light
-                                                      ? Colors.grey[200]
-                                                      : Colors.grey[800],
-                                              borderRadius:
-                                                  BorderRadius.circular(20.0),
-                                            ),
-                                            child: MarkdownBody(
-                                              data: message!,
-                                            ),
+                                  child: Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 4.0),
+                                    child: GestureDetector(
+                                      onDoubleTap: () {
+                                        Clipboard.setData(
+                                            ClipboardData(text: message));
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text('已复制到剪贴板'),
+                                            duration: Duration(seconds: 1),
                                           ),
-                                        ),
-                                        if (sender == '我') SizedBox(width: 8.0),
-                                      ],
+                                        );
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: sender == '我'
+                                            ? MainAxisAlignment.end
+                                            : MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (sender != '我')
+                                            SizedBox(width: 8.0),
+                                          Flexible(
+                                              child: Column(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 16.0,
+                                                    vertical: 8.0),
+                                                decoration: BoxDecoration(
+                                                  color: sender == '我'
+                                                      ? Global.home_currentcolor
+                                                      : Theme.of(context)
+                                                                  .brightness ==
+                                                              Brightness.light
+                                                          ? Colors.grey[200]
+                                                          : Colors.grey[800],
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
+                                                ),
+                                                child: MarkdownBody(
+                                                  selectable: true,
+                                                  data: message!,
+                                                ),
+                                              ),
+                                              if (messagess.indexOf(
+                                                          messagess[index]) ==
+                                                      messagess.length - 1 &&
+                                                  messagess[index]['sender'] !=
+                                                      '我' &&
+                                                  messagess[index]['image'] ==
+                                                      null &&
+                                                  messagess[index]['loading'] ==
+                                                      null)
+                                                Row(children: [
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        _controller.text = '继续';
+                                                        sendmessage();
+                                                      },
+                                                      child: Text('继续')),
+                                                  TextButton(
+                                                      onPressed: () {
+                                                        messagess.remove(
+                                                            messagess[index]);
+
+                                                        _controller.text =
+                                                            messagess[index - 1]
+                                                                ['message'];
+                                                        messagess.remove(
+                                                            messagess[
+                                                                index - 1]);
+                                                        sendmessage();
+                                                      },
+                                                      child: Text('重新生成')),
+                                                  Text('当前字数' +
+                                                      messagess[index]
+                                                              ['message']
+                                                          .length
+                                                          .toString()),
+                                                ]),
+                                            ],
+                                          )),
+                                          if (sender == '我')
+                                            SizedBox(width: 8.0),
+                                          IconButton(
+                                            icon: Icon(Icons.delete),
+                                            onPressed: () {
+                                              setState(() {
+                                                messagess.removeAt(index);
+                                                print(messagess);
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ));
+                                );
                               }
                             },
                           ),
                   ),
                 ),
                 Container(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(children: [
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
                       Row(
                         children: [
                           IconButton(
@@ -543,7 +607,10 @@ class _ChatPageState extends State<ChatPage>
                                 onChanged: (value) {
                                   final lines = value.split('\n').length;
                                   setState(() {
-                                    _maxLines = lines + 1;
+                                    if (lines <= 4) {
+                                      _maxLines = lines + 1;
+                                    } else
+                                      _maxLines = 4;
                                   });
                                 },
                                 maxLines: _maxLines,
@@ -609,11 +676,15 @@ class _ChatPageState extends State<ChatPage>
                         ),
                         items: const [],
                       ),
-                    ])),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   void _scrollToBottom() {
@@ -633,20 +704,27 @@ class _ChatPageState extends State<ChatPage>
 
   Future<void> sendmessage() async {
     String message = _controller.text.trim();
-    if (message.isEmpty) return;
 
+    if (message.isEmpty) return;
+    if (message == '继续') {
+      xdata = messagess[messagess.length - 1]['message'];
+    }
     setState(() {
       sending = true;
     });
     controller.repeat();
 
     _controller.clear();
-
-    setState(() {
+    if (message != '继续') {
+      setState(() {
+        _controller.clear();
+        messagess.add({'sender': '我', 'message': message});
+      });
+    } else {
       _controller.clear();
+
       messagess.add({'sender': '我', 'message': message});
-      Global.messages_pure += " Me: " + message + ";";
-    });
+    }
     if (_isAtBottom) {
       WidgetsBinding.instance!.addPostFrameCallback((_) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -654,15 +732,17 @@ class _ChatPageState extends State<ChatPage>
     }
 
     try {
-      Response response = await ApiService().sendToServer(message);
+      Response response = await ApiService().sendToServer(messagess);
+      if (message == '继续') {
+        messagess.removeLast();
+      }
       Timer timer;
       bool isTimeout = false;
-      //500毫秒执行一次
+      // 500毫秒执行一次
       timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
         if (isTimeout) {
           timer.cancel();
           print('取消定时器');
-          Global.messages_pure += " AI: " + xdata.toString() + ";";
           setState(() {});
           xdata = '';
           setState(() {
@@ -678,12 +758,11 @@ class _ChatPageState extends State<ChatPage>
 
         xdata += utf8.decode(value);
         xdata = xdata
+            .replaceAll('GPT:', '')
+            .replaceAll('AI: ', '')
+            .replaceAll('GPT: ', '')
             .replaceAll('AI:', '')
-            .replaceAll('AI：', '')
-            .replaceAll('机器人:', '')
-            .replaceAll('机器人：', '')
-            .replaceAll('Bot:', '')
-            .replaceAll('Bot：', '');
+            .replaceAll('GPT:', '');
         messagess.add({'sender': 'GPT', 'message': xdata});
         setState(() {
           if (_isAtBottom) {
@@ -698,9 +777,7 @@ class _ChatPageState extends State<ChatPage>
         print('数据接收完毕');
         isTimeout = true;
       });
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 }
 
@@ -717,13 +794,14 @@ Future<File> saveUint8ListToDesktop(Uint8List bytes) async {
 
 void showupdatenotice(BuildContext context, int second, String title,
     String subtitle, Icon icon, Color color) {
-  AchievementView(context,
-      title: title,
-      subTitle: subtitle,
-      icon: icon,
-      color: color,
-      duration: Duration(seconds: second),
-      isCircle: true,
-      listener: (status) {})
-    ..show();
+  AchievementView(
+    context,
+    title: title,
+    subTitle: subtitle,
+    icon: icon,
+    color: color,
+    duration: Duration(seconds: second),
+    isCircle: true,
+    listener: (status) {},
+  ).show();
 }

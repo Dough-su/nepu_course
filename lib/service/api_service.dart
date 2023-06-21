@@ -339,10 +339,16 @@ class ApiService {
     dio.get('https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/');
   }
 
-  Future<Response> sendToServer(String message) async {
+  Future<Response> sendToServer(List<Map<String, dynamic>> message) async {
     var headers = {'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)'};
+    //      messagess.add({'sender': '机器人', 'image': imageData});
+    //提取出所有的message
+    String messages = '';
+    for (var item in message) {
+      messages = messages + item['sender'] + ':' + item['message'] + '\n';
+    }
     FormData formData = FormData.fromMap({
-      'content': Global.messages_pure,
+      'content': messages,
     });
 
     try {
@@ -387,6 +393,7 @@ class ApiService {
     FormData formData = FormData.fromMap({
       'content': message,
       'type': type,
+      'xuehao': Global.jwc_xuehao,
     });
     Uint8List imageData;
 
