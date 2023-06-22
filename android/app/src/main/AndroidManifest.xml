@@ -8,6 +8,8 @@
     <!-- Install/delete permissions, only granted to system apps -->
 <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
 <uses-permission android:name="android.permission.DELETE_PACKAGES" />
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+
    <application
    
         android:label="东油课表"

@@ -366,6 +366,24 @@ class ApiService {
     }
   }
 
+  //发送语音到服务器
+  Future<String> sendvoiceToServer(String path) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(path),
+    });
+    print('发送语音到服务器');
+    try {
+      Response response = await Dio().post(
+        'https://chatgpt-chatgpt-lswirmtbkx.us-east-1.fcapp.run/voice',
+        data: formData,
+        options: Options(),
+      );
+      return response.data.toString();
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<Response> sendlongtextToServer(String prompt, String content) async {
     var headers = {'User-Agent': 'Apifox/1.0.0 (https://www.apifox.cn)'};
     FormData formData = FormData.fromMap({

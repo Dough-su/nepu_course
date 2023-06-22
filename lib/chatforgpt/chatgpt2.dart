@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'dart:ui' as ui;
 import 'package:achievement_view/achievement_view.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -21,6 +21,7 @@ import 'package:muse_nepu_course/widget/CustomDialog.dart';
 import 'package:muse_nepu_course/widget/DocxDialog.dart';
 import 'package:muse_nepu_course/widget/MyDialog.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:audio_waveforms/audio_waveforms.dart';
 
 class ChatPage extends StatefulWidget {
   @override
@@ -45,9 +46,18 @@ final BottomBarWithSheetController _bottomBarController =
     BottomBarWithSheetController(initialIndex: 0);
 final List<Map<String, dynamic>> messagess = [];
 bool showAnimation = true;
+RecorderController recorderController = RecorderController(); // Initialise
 
 class _ChatPageState extends State<ChatPage>
     with TickerProviderStateMixin, WidgetsBindingObserver {
+  late final RecorderController recorderController;
+
+  String? path;
+  String? musicFile;
+  bool isRecording = false;
+  bool isRecordingCompleted = false;
+  bool isLoading = true;
+  late Directory appDirectory;
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
@@ -72,6 +82,59 @@ class _ChatPageState extends State<ChatPage>
     '#生成用例图',
     '#生成思维导图',
   ];
+  void _initialiseControllers() {
+    recorderController = RecorderController()
+      ..androidEncoder = AndroidEncoder.aac
+      ..androidOutputFormat = AndroidOutputFormat.mpeg4
+      ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
+      ..sampleRate = 44100;
+  }
+
+  void _getDir() async {
+    appDirectory = await getApplicationDocumentsDirectory();
+    path = "${appDirectory.path}/${DateTime.now().millisecondsSinceEpoch}.m4a";
+    isLoading = false;
+    setState(() {});
+  }
+
+  void _startOrStopRecording() async {
+    print('startOrStopRecording');
+    _getDir();
+
+    try {
+      if (isRecording) {
+        recorderController.reset();
+
+        final path = await recorderController.stop(false); //停止录音
+        print('path: $path');
+        if (path != null) {
+          addLoadingToMessages();
+          isRecordingCompleted = true;
+          debugPrint(path);
+          debugPrint("Recorded file size: ${File(path).lengthSync()}");
+          ApiService().sendvoiceToServer(path).then((value) => {
+                messagess.removeLast(),
+                print(value),
+                _controller.text = value,
+                sendmessage()
+              });
+        }
+      } else {
+        await recorderController.record(path: path!);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      setState(() {
+        isRecording = !isRecording;
+      });
+    }
+  }
+
+  void _refreshWave() {
+    if (isRecording) recorderController.refresh();
+  }
+
   Future<void> generate(e) async {
     print(e);
     if (e.contains('docx')) {
@@ -97,6 +160,7 @@ class _ChatPageState extends State<ChatPage>
         ),
       );
     }
+
     //如果e包含流程图则type为1,关系图为2, ER图为3, 实体关系图为4, 网络拓扑图为5, UML图为6, 时序图为7, 甘特图为8, 韦恩图为9, 树状图为10, 饼图为11
     if (e.contains('#生成')) {
       e = e.replaceAll('#生成', '');
@@ -278,6 +342,10 @@ class _ChatPageState extends State<ChatPage>
   @override
   void initState() {
     super.initState();
+    _getDir();
+
+    _initialiseControllers();
+
     Global.bottombarheight = 60;
     messagess.clear();
     Global.messages_pure = '';
@@ -449,25 +517,26 @@ class _ChatPageState extends State<ChatPage>
                               } else if (image != null) {
                                 return FadeInUp(
                                   child: GestureDetector(
-                                      onLongPress: () async {
-                                        // 长按保存图片
-                                        await saveImageToGallery(image);
-                                      },
-                                      child: Row(children: [
-                                        Image.memory(
-                                          image,
-                                          //屏幕宽度-左右边距-图片左右边距
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.delete),
-                                          onPressed: () {
-                                            setState(() {
-                                              messagess.removeAt(index);
-                                              print(messagess);
-                                            });
-                                          },
-                                        ),
-                                      ])),
+                                    onLongPress: () async {
+                                      // 长按保存图片
+                                      await saveImageToGallery(image);
+                                    },
+                                    child: Row(children: [
+                                      Image.memory(
+                                        image,
+                                        //屏幕宽度-左右边距-图片左右边距
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.delete),
+                                        onPressed: () {
+                                          setState(() {
+                                            messagess.removeAt(index);
+                                            print(messagess);
+                                          });
+                                        },
+                                      ),
+                                    ]),
+                                  ),
                                 );
                               } else {
                                 return FadeInUp(
@@ -496,67 +565,72 @@ class _ChatPageState extends State<ChatPage>
                                           if (sender != '我')
                                             SizedBox(width: 8.0),
                                           Flexible(
-                                              child: Column(
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 16.0,
-                                                    vertical: 8.0),
-                                                decoration: BoxDecoration(
-                                                  color: sender == '我'
-                                                      ? Global.home_currentcolor
-                                                      : Theme.of(context)
-                                                                  .brightness ==
-                                                              Brightness.light
-                                                          ? Colors.grey[200]
-                                                          : Colors.grey[800],
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0),
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 16.0,
+                                                      vertical: 8.0),
+                                                  decoration: BoxDecoration(
+                                                    color: sender == '我'
+                                                        ? Global
+                                                            .home_currentcolor
+                                                        : Theme.of(context)
+                                                                    .brightness ==
+                                                                Brightness.light
+                                                            ? Colors.grey[200]
+                                                            : Colors.grey[800],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  child: MarkdownBody(
+                                                    selectable: true,
+                                                    data: message!,
+                                                  ),
                                                 ),
-                                                child: MarkdownBody(
-                                                  selectable: true,
-                                                  data: message!,
-                                                ),
-                                              ),
-                                              if (messagess.indexOf(
-                                                          messagess[index]) ==
-                                                      messagess.length - 1 &&
-                                                  messagess[index]['sender'] !=
-                                                      '我' &&
-                                                  messagess[index]['image'] ==
-                                                      null &&
-                                                  messagess[index]['loading'] ==
-                                                      null)
-                                                Row(children: [
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        _controller.text = '继续';
-                                                        sendmessage();
-                                                      },
-                                                      child: Text('继续')),
-                                                  TextButton(
-                                                      onPressed: () {
-                                                        messagess.remove(
-                                                            messagess[index]);
+                                                if (messagess.indexOf(
+                                                            messagess[index]) ==
+                                                        messagess.length - 1 &&
+                                                    messagess[index]
+                                                            ['sender'] !=
+                                                        '我' &&
+                                                    messagess[index]['image'] ==
+                                                        null &&
+                                                    messagess[index]
+                                                            ['loading'] ==
+                                                        null)
+                                                  Row(children: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          _controller.text =
+                                                              '继续';
+                                                          sendmessage();
+                                                        },
+                                                        child: Text('继续')),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          messagess.remove(
+                                                              messagess[index]);
 
-                                                        _controller.text =
-                                                            messagess[index - 1]
-                                                                ['message'];
-                                                        messagess.remove(
-                                                            messagess[
-                                                                index - 1]);
-                                                        sendmessage();
-                                                      },
-                                                      child: Text('重新生成')),
-                                                  Text('当前字数' +
-                                                      messagess[index]
-                                                              ['message']
-                                                          .length
-                                                          .toString()),
-                                                ]),
-                                            ],
-                                          )),
+                                                          _controller.text =
+                                                              messagess[index -
+                                                                  1]['message'];
+                                                          messagess.remove(
+                                                              messagess[
+                                                                  index - 1]);
+                                                          sendmessage();
+                                                        },
+                                                        child: Text('重新生成')),
+                                                    Text('当前字数' +
+                                                        messagess[index]
+                                                                ['message']
+                                                            .length
+                                                            .toString()),
+                                                  ]),
+                                              ],
+                                            ),
+                                          ),
                                           if (sender == '我')
                                             SizedBox(width: 8.0),
                                           IconButton(
@@ -595,29 +669,82 @@ class _ChatPageState extends State<ChatPage>
                               });
                             },
                           ),
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                              ),
-                              child: TextField(
-                                focusNode: _focusNode,
-                                controller: _controller,
-                                onChanged: (value) {
-                                  final lines = value.split('\n').length;
-                                  setState(() {
-                                    if (lines <= 4) {
-                                      _maxLines = lines + 1;
-                                    } else
-                                      _maxLines = 4;
-                                  });
-                                },
-                                maxLines: _maxLines,
-                              ),
-                            ),
+                          // Expanded(
+                          //   child: Container(
+                          //     padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          //     decoration: BoxDecoration(
+                          //       borderRadius: BorderRadius.circular(20.0),
+                          //     ),
+                          //     child: TextField(
+                          // focusNode: _focusNode,
+                          // controller: _controller,
+                          // onChanged: (value) {
+                          //   final lines = value.split('\n').length;
+                          //   setState(() {
+                          //     if (lines <= 4) {
+                          //       _maxLines = lines + 1;
+                          //     } else
+                          //       _maxLines = 4;
+                          //   });
+                          // },
+                          // maxLines: _maxLines,
+                          //     ),
+                          //   ),
+                          // ),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: isRecording
+                                ? AudioWaveforms(
+                                    enableGesture: true,
+                                    size: Size(
+                                        MediaQuery.of(context).size.width / 2,
+                                        50),
+                                    recorderController: recorderController,
+                                    waveStyle: const WaveStyle(
+                                      waveColor: Colors.white,
+                                      extendWaveform: true,
+                                      showMiddleLine: false,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      color: Global.home_currentcolor,
+                                    ),
+                                    // padding: const EdgeInsets.only(left: 18),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 15),
+                                  )
+                                : Container(
+                                    width:
+                                        MediaQuery.of(context).size.width / 1.8,
+                                    decoration: BoxDecoration(
+                                      color: Global.home_currentcolor,
+                                      borderRadius: BorderRadius.circular(12.0),
+                                    ),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 15),
+                                    child: TextField(
+                                      focusNode: _focusNode,
+                                      controller: _controller,
+                                      onChanged: (value) {
+                                        final lines = value.split('\n').length;
+                                        setState(() {
+                                          if (lines <= 4) {
+                                            _maxLines = lines + 1;
+                                          } else
+                                            _maxLines = 4;
+                                        });
+                                      },
+                                      maxLines: _maxLines,
+                                      decoration: InputDecoration(
+                                        hintStyle: const TextStyle(
+                                            color: Colors.white54),
+                                        contentPadding:
+                                            const EdgeInsets.only(top: 16),
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                  ),
                           ),
-                          SizedBox(width: 8.0),
                           AnimatedBuilder(
                             // 包裹IconButton的AnimatedBuilder，用于构建进度指示器
                             animation: controller,
@@ -641,6 +768,13 @@ class _ChatPageState extends State<ChatPage>
                                 },
                               );
                             },
+                          ),
+                          const SizedBox(width: 16),
+                          IconButton(
+                            onPressed: _startOrStopRecording,
+                            icon: Icon(isRecording ? Icons.stop : Icons.mic),
+                            color: Global.home_currentcolor,
+                            iconSize: 28,
                           ),
                         ],
                       ),
@@ -698,6 +832,8 @@ class _ChatPageState extends State<ChatPage>
   @override
   void dispose() {
     controller.dispose();
+    recorderController.dispose();
+
     WidgetsBinding.instance!.removeObserver(this);
     super.dispose();
   }
