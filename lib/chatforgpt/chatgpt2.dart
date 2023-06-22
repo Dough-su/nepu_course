@@ -669,112 +669,100 @@ class _ChatPageState extends State<ChatPage>
                               });
                             },
                           ),
-                          // Expanded(
-                          //   child: Container(
-                          //     padding: EdgeInsets.symmetric(horizontal: 16.0),
-                          //     decoration: BoxDecoration(
-                          //       borderRadius: BorderRadius.circular(20.0),
-                          //     ),
-                          //     child: TextField(
-                          // focusNode: _focusNode,
-                          // controller: _controller,
-                          // onChanged: (value) {
-                          //   final lines = value.split('\n').length;
-                          //   setState(() {
-                          //     if (lines <= 4) {
-                          //       _maxLines = lines + 1;
-                          //     } else
-                          //       _maxLines = 4;
-                          //   });
-                          // },
-                          // maxLines: _maxLines,
-                          //     ),
-                          //   ),
-                          // ),
-                          AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 200),
-                            child: isRecording
-                                ? AudioWaveforms(
-                                    enableGesture: true,
-                                    size: Size(
-                                        MediaQuery.of(context).size.width / 2,
-                                        50),
-                                    recorderController: recorderController,
-                                    waveStyle: const WaveStyle(
-                                      waveColor: Colors.white,
-                                      extendWaveform: true,
-                                      showMiddleLine: false,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12.0),
-                                      color: Global.home_currentcolor,
-                                    ),
-                                    // padding: const EdgeInsets.only(left: 18),
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 15),
-                                  )
-                                : Container(
-                                    width:
-                                        MediaQuery.of(context).size.width / 1.8,
-                                    decoration: BoxDecoration(
-                                      color: Global.home_currentcolor,
-                                      borderRadius: BorderRadius.circular(12.0),
-                                    ),
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 15),
-                                    child: TextField(
-                                      focusNode: _focusNode,
-                                      controller: _controller,
-                                      onChanged: (value) {
-                                        final lines = value.split('\n').length;
-                                        setState(() {
-                                          if (lines <= 4) {
-                                            _maxLines = lines + 1;
-                                          } else
-                                            _maxLines = 4;
-                                        });
-                                      },
-                                      maxLines: _maxLines,
-                                      decoration: InputDecoration(
-                                        hintStyle: const TextStyle(
-                                            color: Colors.white54),
-                                        contentPadding:
-                                            const EdgeInsets.only(top: 16),
-                                        border: InputBorder.none,
+                          Expanded(
+                            child: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              child: isRecording
+                                  ? AudioWaveforms(
+                                      enableGesture: true,
+                                      size: Size(
+                                          MediaQuery.of(context).size.width / 4,
+                                          50),
+                                      recorderController: recorderController,
+                                      waveStyle: const WaveStyle(
+                                        waveColor: Colors.white,
+                                        extendWaveform: true,
+                                        showMiddleLine: false,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        color: Global.home_currentcolor,
+                                      ),
+                                      // padding: const EdgeInsets.only(left: 18),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 15),
+                                    )
+                                  : Container(
+                                      width:
+                                          MediaQuery.of(context).size.width / 2,
+                                      decoration: BoxDecoration(
+                                        color: Global.home_currentcolor,
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                      ),
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 15),
+                                      child: TextField(
+                                        focusNode: _focusNode,
+                                        controller: _controller,
+                                        onChanged: (value) {
+                                          final lines =
+                                              value.split('\n').length;
+                                          setState(() {
+                                            if (lines <= 4) {
+                                              _maxLines = lines + 1;
+                                            } else
+                                              _maxLines = 4;
+                                          });
+                                        },
+                                        maxLines: _maxLines,
+                                        decoration: InputDecoration(
+                                          hintStyle: const TextStyle(
+                                              color: Colors.white54),
+                                          contentPadding:
+                                              const EdgeInsets.only(top: 16),
+                                          border: InputBorder.none,
+                                        ),
                                       ),
                                     ),
-                                  ),
+                            ),
                           ),
-                          AnimatedBuilder(
-                            // 包裹IconButton的AnimatedBuilder，用于构建进度指示器
-                            animation: controller,
-                            builder: (BuildContext context, Widget? child) {
-                              return IconButton(
-                                icon: sending
-                                    ? SizedBox(
-                                        width: 24.0,
-                                        height: 24.0,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2.0,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                  Global.home_currentcolor),
-                                        ),
-                                      )
-                                    : Icon(Icons.send),
-                                color: Global.home_currentcolor,
-                                onPressed: () async {
-                                  sendmessage();
+                          Row(
+                            children: [
+                              AnimatedBuilder(
+                                // 包裹IconButton的AnimatedBuilder，用于构建进度指示器
+                                animation: controller,
+                                builder: (BuildContext context, Widget? child) {
+                                  return IconButton(
+                                    icon: sending
+                                        ? SizedBox(
+                                            width: 24.0,
+                                            height: 24.0,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.0,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation<Color>(
+                                                      Global.home_currentcolor),
+                                            ),
+                                          )
+                                        : Icon(Icons.send),
+                                    color: Global.home_currentcolor,
+                                    onPressed: () async {
+                                      sendmessage();
+                                    },
+                                  );
                                 },
-                              );
-                            },
-                          ),
-                          const SizedBox(width: 16),
-                          IconButton(
-                            onPressed: _startOrStopRecording,
-                            icon: Icon(isRecording ? Icons.stop : Icons.mic),
-                            color: Global.home_currentcolor,
-                            iconSize: 28,
+                              ),
+                              const SizedBox(width: 16),
+                              IconButton(
+                                onPressed: _startOrStopRecording,
+                                icon:
+                                    Icon(isRecording ? Icons.stop : Icons.mic),
+                                color: Global.home_currentcolor,
+                                iconSize: 28,
+                              ),
+                            ],
                           ),
                         ],
                       ),
