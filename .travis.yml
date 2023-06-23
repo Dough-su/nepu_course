@@ -1,13 +1,28 @@
-os: osx
-osx_image: xcode12.5
+os:
+  - linux
+  - osx
+
+dist: trusty  # for Linux builds
+
 language: generic
+
 cache:
   directories:
     - ~/.pub-cache
     - ~/Library/Caches/flutter
+
 install:
-  - git clone https://github.com/flutter/flutter.git -b stable
+  - git clone https://github.com/flutter/flutter.git -b 3.7.12
   - export PATH="$PATH:`pwd`/flutter/bin"
   - flutter precache
+
 script:
-  - flutter build macos
+  # Build Linux version
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+      flutter build linux;
+    fi
+
+  # Build macOS version
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      flutter build macos;
+    fi
