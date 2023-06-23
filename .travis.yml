@@ -1,0 +1,13 @@
+os: osx
+osx_image: xcode12.5
+language: generic
+cache:
+  directories:
+    - ~/.pub-cache
+    - ~/Library/Caches/flutter
+install:
+  - git clone https://github.com/flutter/flutter.git -b stable
+  - export PATH="$PATH:`pwd`/flutter/bin"
+  - flutter precache
+script:
+  - flutter build macos
