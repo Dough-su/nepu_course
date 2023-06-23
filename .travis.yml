@@ -2,7 +2,7 @@ os:
   - osx
 language: generic
 
-osx_image: xcode14.2	
+osx_image: xcode14.2
 
 cache:
   directories:
@@ -16,3 +16,14 @@ install:
 
 script:
   - flutter build macos
+
+before_deploy:
+  - cd build/macos/Build/Products/Release
+  - zip -r 东油课表.zip 东油课表.app
+  - cd -
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file: build/macos/Build/Products/Release/东油课表.zip
+  skip_cleanup: true
