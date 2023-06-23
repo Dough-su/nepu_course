@@ -1,10 +1,8 @@
 os:
-  - linux
   - osx
-
-dist: trusty  # for Linux builds
-
 language: generic
+
+osx_image: xcode14.2	
 
 cache:
   directories:
@@ -17,12 +15,4 @@ install:
   - flutter precache
 
 script:
-  # Build Linux version
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      flutter build linux;
-    fi
-
-  # Build macOS version
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      flutter build macos;
-    fi
+  - flutter build macos
