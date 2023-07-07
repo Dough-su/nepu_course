@@ -22,7 +22,7 @@ import 'package:muse_nepu_course/widget/DocxDialog.dart';
 import 'package:muse_nepu_course/widget/MyDialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:audio_waveforms/audio_waveforms.dart';
-
+import 'package:image/image.dart' as img;
 class ChatPage extends StatefulWidget {
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -380,13 +380,18 @@ class _ChatPageState extends State<ChatPage>
           duration: Duration(seconds: 1),
         ),
       );
-    } else if (Platform.isWindows || Platform.isMacOS) {
-      final file = saveUint8ListToDesktop(imageBytes);
-      showupdatenotice(
-          context, 2, '图片已保存到桌面', '成功', Icon(Icons.check), Colors.green);
-    }
+    } 
+else if (Platform.isMacOS) {
+  try {
+    await saveImageToGallery(imageBytes);
+    showupdatenotice(
+        context, 2, '图片已添加到照片库', '成功', Icon(Icons.check), Colors.green);
+  } catch (e) {
+    showupdatenotice(
+        context, 2, '添加图片到照片库失败', '失败', Icon(Icons.error), Colors.red);
   }
-
+}
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -928,4 +933,22 @@ void showupdatenotice(BuildContext context, int second, String title,
     isCircle: true,
     listener: (status) {},
   ).show();
+}
+
+  
+Future<void> saveImageToMacGallery(List<int> imageBytes) async {
+  final image = img.decodeImage(imageBytes);
+  if (image == null) return; // 图片解码失败
+
+  final tempDir = await Directory.systemTemp.createTemp();
+  final imagePath = '${tempDir.path}/image.png';
+  final file = await File(imagePath).writeAsBytes(imageBytes);
+  final result = await Process.run('osascript', [
+    '-e',
+    'tell application "Photos" to add POSIX file "${file.path}"'
+  ]);
+  if (result.exitCode != 0) {
+    // 向照片库添加失败
+    throw Exception('Failed to save image to gallery');
+  }
 }

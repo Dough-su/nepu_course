@@ -80,8 +80,8 @@ dependencies:
   image_gallery_saver: ^2.0.1
   file_picker: ^5.2.5
   audio_waveforms: ^1.0.4
+  image: ^3.0.2
 
-  
 
 
 dev_dependencies:

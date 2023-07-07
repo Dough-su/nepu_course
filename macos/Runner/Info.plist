@@ -26,6 +26,14 @@
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+<string>App需要访问您的照片库以保存图片</string>
+<key>NSDesktopFolderUsageDescription</key>
+<string>App需要访问您的桌面以保存图片</string>
+<key>com.apple.security.files.user-selected.read-write</key>
+<array>
+    <string>/Users/username/Desktop</string>
+</array>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>com.apple.security.files.user-selected.read-write</key>

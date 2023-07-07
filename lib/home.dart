@@ -1260,7 +1260,7 @@ class _HomePageState extends State<HomePage> {
       if (qssj.substring(0, 2) == '15') {
         dailycourse[5] = getContainer('7,8节', i, msg, eventcahe, true, false);
       }
-      if (qssj.substring(0, 2) == '17') {
+      if (jssj.substring(0, 2) == '17') {
         dailycourse[5] = getContainer('7,8节', i, msg, eventcahe, false, true);
       }
       if (qssj.substring(0, 2) == '18') {
@@ -1385,7 +1385,7 @@ class _HomePageState extends State<HomePage> {
       if (qssj.substring(0, 2) == '15') {
         dailycourse2[5] = getContainer('7,8节', i, msg, eventcahe, true, false);
       }
-      if (qssj.substring(0, 2) == '17') {
+      if (jssj.substring(0, 2) == '17') {
         dailycourse2[5] = getContainer('7,8节', i, msg, eventcahe, false, true);
       }
       if (qssj.substring(0, 2) == '18') {
@@ -1953,7 +1953,8 @@ class _HomePageState extends State<HomePage> {
         child: Column(children: [
       getwindow(context),
       Expanded(
-          child: Scaffold(
+          child: 
+          Scaffold(
               bottomNavigationBar: Container(
                   //圆角
                   width: MediaQuery.of(context).size.width / 2,
@@ -1971,7 +1972,6 @@ class _HomePageState extends State<HomePage> {
                           // setState(() => _currentIndex = i);
                         },
                         items: [
-                          /// Home
                           SalomonBottomBarItem(
                             icon: Icon(Icons.home),
                             title: Text("此处上滑显示图书馆二维码"),
@@ -1990,7 +1990,8 @@ class _HomePageState extends State<HomePage> {
                             .CardSide.FRONT, // The side to initially display.
                         front: flipContainer(true),
                         back: flipContainer(false),
-                      )))))
+                      ))))
+                      )
     ]));
   }
 
