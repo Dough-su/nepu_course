@@ -12,6 +12,7 @@ class jpushs {
   //判断是否ios
   static bool isIOS = Platform.isIOS;
   static String rid = '';
+
   void addlistenerandinit() {
     JPush jpush = new JPush();
     jpush.addEventHandler(
@@ -52,15 +53,19 @@ class jpushs {
       production: false,
       debug: true, // 设置是否打印 debug 日志
     );
-    jpush.getRegistrationID().then((rid) {
-      print("通知id" + rid.toString());
-      jpushs.rid = rid.toString();
-    });
-    uploadpushid();
+    try {
+      jpush.getRegistrationID().then((rid) {
+        print("通知id" + rid.toString());
+        jpushs.rid = rid.toString();
+        uploadpushid();
+      });
+    } catch (e) {
+      print("Failed to get registration ID: $e");
+    }
   }
 
   void uploadpushid() {
-    if (isIOS) {
+    if (isIOS || rid == null || rid.isEmpty) {
       return;
     }
     //上传pushid
@@ -73,6 +78,8 @@ class jpushs {
               Global.jwc_xuehao;
       print(url);
       dio.get(url);
-    } catch (e) {}
+    } catch (e) {
+      print("Failed to upload push ID: $e");
+    }
   }
 }

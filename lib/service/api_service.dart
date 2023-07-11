@@ -4,107 +4,228 @@ import 'dart:typed_data';
 
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
+import 'package:easy_app_installer/easy_app_installer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
+import 'package:material_dialogs/dialogs.dart';
 import 'package:muse_nepu_course/global.dart';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:sn_progress_dialog/options/completed.dart';
+import 'package:sn_progress_dialog/progress_dialog.dart';
+import 'package:achievement_view/achievement_view.dart';
 class ApiService {
   Dio dio = Dio();
-  //获取一卡通余额
-  void getbalance(xuehao) async {
-    print(xuehao);
-    Dio dio = new Dio();
-    dio.post('https://wxy.hrbxyz.cn/api/Apixyk/getcardinfo', queryParameters: {
-      'account': xuehao,
-      'schoolname': '东北石油大学'
-    }).then((value) {
-      //获取余额
-      Global.yikatong_balance =
-          (value.data['data']['obj']['cardbalance'] / 100 +
-                  value.data['data']['obj']['tmpbalance'] / 100)
-              .toString();
-    });
-  }
-
-  //获取一卡通近期流水
-  Future<List> getRecentlyTransactions(String jwc_xuehao) async {
-    String starttime = await DateTime.now()
-        .add(Duration(days: -30))
-        .toString()
-        .substring(0, 10)
-        .replaceAll('-', '')
-        .toString();
-    String endtime = await DateTime.now()
-        .toString()
-        .substring(0, 10)
-        .replaceAll('-', '')
-        .toString();
-    Response response = await dio.post(
-        'http://wxy.hrbxyz.cn/api/Apixyk/gethistorytrjn?account=' +
-            jwc_xuehao.toString() +
-            '&schoolname=%E4%B8%9C%E5%8C%97%E7%9F%B3%E6%B2%B9%E5%A4%A7%E5%AD%A6&starttime=' +
-            starttime.toString() +
-            '&endtime=' +
-            endtime.toString());
-    for (int i = 0; i < response.data['data']['obj'].length; i++) {
-      Global.yikatong_recent.add({
-        'Effective_time': response.data['data']['obj'][i]['effectdate'],
-        'Trading_time': response.data['data']['obj'][i]['JnDateTime'],
-        'Transaction_amount':
-            (response.data['data']['obj'][i]['TranAmt'] / 100).toString(),
-        'TranName': response.data['data']['obj'][i]['TranName'],
-      });
-    }
-    return Global.yikatong_recent;
-  }
-
-  //获取一卡通的accno
-  Future<String> getAccno() async {
-    if (Global.account == '') {
-      try {
-        print('获取accno为空');
-        Response response = await Dio().post(
-            'http://wxy.hrbxyz.cn/api/Apixyk/getcardinfo?schoolname=东北石油大学&account=' +
-                Global.jwc_xuehao +
-                '&password=112233');
-        //转为json
-        var data = json.decode(response.toString());
-        Global.account = data['data']['obj']['AccNo'];
-        Response response2 = await Dio().post(
-            'https://pushcourse-pushcourse-bvlnfogvvc.cn-hongkong.fcapp.run/pw?stuid=' +
-                Global.jwc_xuehao);
-        Global.password = response2.data;
-        Global.saveaccount();
-        return "ok";
-      } catch (e) {}
-    }
-    return "ok";
-  }
-
-  //获取一卡通的二维码
-  Future<String> getQr() async {
-    String jwc_xuehao = Global.jwc_xuehao;
-    print('学号是' + jwc_xuehao);
-    await getAccno().then((value) async {
-      Response response = await dio.post(
-          'http://wxy.hrbxyz.cn/api/Apixyk/getval?schoolname=东北石油大学&account=' +
-              jwc_xuehao +
-              '&accno=' +
-              Global.account +
-              '&password=' +
-              Global.password.substring(
-                  Global.password.length - 6, Global.password.length));
-      var data = json.decode(response.toString());
-      try {
-        Global.qrcode = data['data'];
-        print("二维码是" + Global.qrcode);
-        return data['data'];
-      } catch (e) {
-        Global.qrcode = '一卡通系统错误';
-        return '一卡通系统错误';
+    void showAchievementView(
+      BuildContext context, String version, String notice, File file) {
+    AchievementView(context,
+        title: "新通知!",
+        subTitle: notice,
+        color: Global.home_currentcolor,
+        duration: Duration(seconds: 10),
+        isCircle: true, listener: (status) {
+      if (status.toString() == 'AchievementState.closed') {
+        file.writeAsString(version);
       }
-    });
-    return '一卡通系统错误';
+    })
+      ..show();
   }
+  void shownotice(context) async {
+    final dio = Dio();
+    final response = await dio.get(
+        'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/notice');
+    final version = response.data[0]['version'].toString();
+    final notice = response.data[0]['notice'].toString();
+    final documentsDir = await getApplicationDocumentsDirectory();
+    final file = File('${documentsDir.path}/notice.txt');
+    final exists = await file.exists();
+    if (exists) {
+      final currentVersion = await file.readAsString();
+      if (version != currentVersion) {
+        await file.writeAsString(version);
+        showAchievementView(context, version, notice, file);
+      }
+    } else {
+      await file.writeAsString(version);
+      showAchievementView(context, version, notice, file);
+    }
+  }
+  void updateappx(context,_cancelTag) async {
+    var value = await getApplicationDocumentsDirectory();
+    var pathx = value.path;
+    File file = File('$pathx/version.txt');
+    if (await file.exists()) {
+      String localVersion = await file.readAsString();
+      var dio = Dio();
+      var value = await dio.get(
+          'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
+      String version = value.data[0]['version'];
+      print(localVersion);
+      if (version != Global.version && version != localVersion) {
+        await Dialogs.materialDialog(
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.white
+              : Colors.black,
+          msg: '要下载吗?',
+          title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
+          lottieBuilder: Lottie.asset(
+            'assets/rockert-new.json',
+            fit: BoxFit.contain,
+          ),
+          context: context,
+          actions: [
+            IconButton(
+              onPressed: () {
+                file.writeAsString(version);
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.cancel_outlined),
+            ),
+            IconButton(
+              onPressed: () async {
+                file.writeAsString(version);
+                Navigator.pop(context);
+                if (Platform.isAndroid) {
+                  ProgressDialog pd = ProgressDialog(context: context);
+                  pd.show(
+                      backgroundColor: Global.home_currentcolor,
+                      max: 100,
+                      msg: '准备下载更新...',
+                      msgMaxLines: 5,
+                      completed: Completed(
+                        completedMsg: "下载完成!",
+                        completedImage: AssetImage("assets/completed.gif"),
+                        completionDelay: 2500,
+                      ));
+                  await EasyAppInstaller.instance.downloadAndInstallApk(
+                    fileUrl: value.data[0]['link'],
+                    fileDirectory: "updateApk",
+                    fileName: "newApk.apk",
+                    explainContent: "快去开启权限！！！",
+                    onDownloadingListener: (progress) {
+                      if (progress < 100) {
+                        pd.update(value: progress.toInt(), msg: '安装包正在下载...');
+                      } else {
+                        pd.update(value: progress.toInt(), msg: '安装包下载完成...');
+                      }
+                    },
+                    onCancelTagListener: (cancelTag) {
+                      _cancelTag = cancelTag;
+                    },
+                  );
+                } else {
+                  Clipboard.setData(ClipboardData(
+                      text:
+                      'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                  AchievementView(context,
+                      title: "复制成功",
+                      subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
+                      icon: Icon(
+                        Icons.insert_emoticon,
+                        color: Colors.white,
+                      ),
+                      color: Colors.green,
+                      duration: Duration(seconds: 15),
+                      isCircle: true, listener: (status) {
+                        print(status);
+                      })
+                    ..show();
+                }
+              },
+              icon: Icon(Icons.check),
+            ),
+          ],
+        );
+      }
+    } else {
+      await file.create();
+      if (await file.exists()) {
+        var dio = Dio();
+        var value = await dio.get(
+            'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
+        String version = value.data[0]['version'];
+        if (version != Global.version) {
+          await Dialogs.materialDialog(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
+            msg: '要下载吗?',
+            title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
+            lottieBuilder: Lottie.asset(
+              'assets/rockert-new.json',
+              fit: BoxFit.contain,
+            ),
+            context: context,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  file.writeAsString(version);
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.cancel_outlined),
+              ),
+              IconButton(
+                onPressed: () async {
+                  if (Platform.isAndroid) {
+                    ProgressDialog pd = ProgressDialog(context: context);
+                    pd.show(
+                        backgroundColor: Global.home_currentcolor,
+                        max: 100,
+                        msg: '准备下载更新...',
+                        msgMaxLines: 5,
+                        completed: Completed(
+                          completedMsg: "下载完成!",
+                          completedImage: AssetImage("assets/completed.gif"),
+                          completionDelay: 2500,
+                        ));
+                    await EasyAppInstaller.instance.downloadAndInstallApk(
+                      fileUrl: value.data[0]['link'],
+                      fileDirectory: "updateApk",
+                      fileName: "newApk.apk",
+                      explainContent: "快去开启权限！！！",
+                      onDownloadingListener: (progress) {
+                        if (progress < 100) {
+                          pd.update(value: progress.toInt(), msg: '安装包正在下载...');
+                        } else {
+                          pd.update(value: progress.toInt(), msg: '安装包下载完成...');
+                        }
+                      },
+                      onCancelTagListener: (cancelTag) {
+                        _cancelTag = cancelTag;
+                      },
+                    );
+                  } else {
+                    Clipboard.setData(ClipboardData(
+                        text:
+                        'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                    AchievementView(context,
+                        title: "复制成功",
+                        subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
+                        icon: Icon(
+                          Icons.insert_emoticon,
+                          color: Colors.white,
+                        ),
+                        color: Colors.green,
+                        duration: Duration(seconds: 15),
+                        isCircle: true, listener: (status) {
+                          print(status);
+                        })
+                      ..show();
+                  }
+                },
+                icon: Icon(Icons.check),
+              ),
+            ],
+          );
+        }
+      }
+    }
+  }
+
+
+
+
+ 
 
   Future<Widget> getVerifyCode(context, setState) async {
     print(Global.pureyzmgetter().toString());

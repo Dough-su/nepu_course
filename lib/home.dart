@@ -15,7 +15,6 @@ import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:muse_nepu_course/global.dart';
 import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
 import 'package:muse_nepu_course/qingjia/qingjia.dart';
-import 'package:muse_nepu_course/qrcode/qrcode.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/service/io_service.dart';
 import 'package:muse_nepu_course/windowsfloat.dart';
@@ -286,178 +285,6 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void updateappx() async {
-    var value = await getApplicationDocumentsDirectory();
-    var pathx = value.path;
-    File file = File('$pathx/version.txt');
-    if (await file.exists()) {
-      String localVersion = await file.readAsString();
-      var dio = Dio();
-
-      var value = await dio.get(
-          'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
-      String version = value.data[0]['version'];
-      print(localVersion);
-      if (version != Global.version && version != localVersion) {
-        await Dialogs.materialDialog(
-          color: Theme.of(context).brightness == Brightness.light
-              ? Colors.white
-              : Colors.black,
-          msg: '要下载吗?',
-          title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
-          lottieBuilder: Lottie.asset(
-            'assets/rockert-new.json',
-            fit: BoxFit.contain,
-          ),
-          context: context,
-          actions: [
-            IconButton(
-              onPressed: () {
-                file.writeAsString(version);
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.cancel_outlined),
-            ),
-            IconButton(
-              onPressed: () async {
-                file.writeAsString(version);
-                Navigator.pop(context);
-                if (Platform.isAndroid) {
-                  ProgressDialog pd = ProgressDialog(context: context);
-                  pd.show(
-                      backgroundColor: Global.home_currentcolor,
-                      max: 100,
-                      msg: '准备下载更新...',
-                      msgMaxLines: 5,
-                      completed: Completed(
-                        completedMsg: "下载完成!",
-                        completedImage: AssetImage("assets/completed.gif"),
-                        completionDelay: 2500,
-                      ));
-                  await EasyAppInstaller.instance.downloadAndInstallApk(
-                    fileUrl: value.data[0]['link'],
-                    fileDirectory: "updateApk",
-                    fileName: "newApk.apk",
-                    explainContent: "快去开启权限！！！",
-                    onDownloadingListener: (progress) {
-                      if (progress < 100) {
-                        pd.update(value: progress.toInt(), msg: '安装包正在下载...');
-                      } else {
-                        pd.update(value: progress.toInt(), msg: '安装包下载完成...');
-                      }
-                    },
-                    onCancelTagListener: (cancelTag) {
-                      _cancelTag = cancelTag;
-                    },
-                  );
-                } else {
-                  Clipboard.setData(ClipboardData(
-                      text:
-                          'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
-                  AchievementView(context,
-                      title: "复制成功",
-                      subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
-                      icon: Icon(
-                        Icons.insert_emoticon,
-                        color: Colors.white,
-                      ),
-                      color: Colors.green,
-                      duration: Duration(seconds: 15),
-                      isCircle: true, listener: (status) {
-                    print(status);
-                  })
-                    ..show();
-                }
-              },
-              icon: Icon(Icons.check),
-            ),
-          ],
-        );
-      }
-    } else {
-      await file.create();
-      if (await file.exists()) {
-        var dio = Dio();
-        var value = await dio.get(
-            'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
-        String version = value.data[0]['version'];
-        if (version != Global.version) {
-          await Dialogs.materialDialog(
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.white
-                : Colors.black,
-            msg: '要下载吗?',
-            title: '有新版本啦,版本号是$version\n${value.data[0]['descrption']}',
-            lottieBuilder: Lottie.asset(
-              'assets/rockert-new.json',
-              fit: BoxFit.contain,
-            ),
-            context: context,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  file.writeAsString(version);
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.cancel_outlined),
-              ),
-              IconButton(
-                onPressed: () async {
-                  if (Platform.isAndroid) {
-                    ProgressDialog pd = ProgressDialog(context: context);
-                    pd.show(
-                        backgroundColor: Global.home_currentcolor,
-                        max: 100,
-                        msg: '准备下载更新...',
-                        msgMaxLines: 5,
-                        completed: Completed(
-                          completedMsg: "下载完成!",
-                          completedImage: AssetImage("assets/completed.gif"),
-                          completionDelay: 2500,
-                        ));
-                    await EasyAppInstaller.instance.downloadAndInstallApk(
-                      fileUrl: value.data[0]['link'],
-                      fileDirectory: "updateApk",
-                      fileName: "newApk.apk",
-                      explainContent: "快去开启权限！！！",
-                      onDownloadingListener: (progress) {
-                        if (progress < 100) {
-                          pd.update(value: progress.toInt(), msg: '安装包正在下载...');
-                        } else {
-                          pd.update(value: progress.toInt(), msg: '安装包下载完成...');
-                        }
-                      },
-                      onCancelTagListener: (cancelTag) {
-                        _cancelTag = cancelTag;
-                      },
-                    );
-                  } else {
-                    Clipboard.setData(ClipboardData(
-                        text:
-                            'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
-                    AchievementView(context,
-                        title: "复制成功",
-                        subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
-                        icon: Icon(
-                          Icons.insert_emoticon,
-                          color: Colors.white,
-                        ),
-                        color: Colors.green,
-                        duration: Duration(seconds: 15),
-                        isCircle: true, listener: (status) {
-                      print(status);
-                    })
-                      ..show();
-                  }
-                },
-                icon: Icon(Icons.check),
-              ),
-            ],
-          );
-        }
-      }
-    }
-  }
 
   bool isOpened = false;
   bool isdownload = true;
@@ -491,26 +318,7 @@ class _HomePageState extends State<HomePage> {
     setState(() => Global.home_pickcolor = color);
   }
 
-  void shownotice() async {
-    final dio = Dio();
-    final response = await dio.get(
-        'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/notice');
-    final version = response.data[0]['version'].toString();
-    final notice = response.data[0]['notice'].toString();
-    final documentsDir = await getApplicationDocumentsDirectory();
-    final file = File('${documentsDir.path}/notice.txt');
-    final exists = await file.exists();
-    if (exists) {
-      final currentVersion = await file.readAsString();
-      if (version != currentVersion) {
-        await file.writeAsString(version);
-        showAchievementView(context, version, notice, file);
-      }
-    } else {
-      await file.writeAsString(version);
-      showAchievementView(context, version, notice, file);
-    }
-  }
+
 
   void showAchievementView(
       BuildContext context, String version, String notice, File file) {
@@ -567,7 +375,7 @@ class _HomePageState extends State<HomePage> {
   String shijian() {
     //判断上午下午晚上
     var hour = DateTime.now().hour;
-    if (Global.yikatong_balance == '') {
+  
       if (hour >= 0 && hour < 6) {
         return '凌晨了，怎么不睡呢';
       } else if (hour >= 6 && hour < 9) {
@@ -581,8 +389,6 @@ class _HomePageState extends State<HomePage> {
       } else {
         return '晚上好，今天过得怎么样';
       }
-    } else
-      return '你的一卡通总余额：' + Global.yikatong_balance + '元(点击查看近期流水)';
   }
 
   DateTime _selectedIndex = DateTime.now();
@@ -656,7 +462,6 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       Navigator.of(context).popUntil((route) => route.isFirst);
     });
-    ApiService().getbalance(Global.jwc_xuehao);
 
     Global.pureyzmset(false);
     // Global().getxuehao();
@@ -682,9 +487,10 @@ class _HomePageState extends State<HomePage> {
 
     getcolor();
     initAll(true);
-    updateappx();
+    ApiService().updateappx(context,_cancelTag);
     xinshouyindao();
-    shownotice();
+        ApiService().shownotice(context);
+
   }
 
   void initAll(bool executeAll) async {
@@ -1449,13 +1255,11 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 16.0),
-                          TextButton(
-                            onPressed: () => Global().getrecently(context),
-                            child: Text(
+                          Text(
                               shijian(),
                               style: TextStyle(color: Colors.white),
                             ),
-                          ),
+
                           SizedBox(height: 20.0),
                         ],
                       ),
@@ -1958,28 +1762,8 @@ class _HomePageState extends State<HomePage> {
               bottomNavigationBar: Container(
                   //圆角
                   width: MediaQuery.of(context).size.width / 2,
-                  child: BottomSheetBar(
-                      controller: bottomSheetBarController,
-                      isDismissable: false,
-                      locked: false,
-                      height: Global.bottombarheight,
-                      expandedBuilder: (scrollController) {
-                        return QRCode();
-                      },
-                      collapsed: SalomonBottomBar(
-                        currentIndex: 0,
-                        onTap: (i) {
-                          // setState(() => _currentIndex = i);
-                        },
-                        items: [
-                          SalomonBottomBarItem(
-                            icon: Icon(Icons.home),
-                            title: Text("此处上滑显示图书馆二维码"),
-                            selectedColor: Global.home_currentcolor,
-                          ),
-                        ],
-                      ),
-                      body: flip.FlipCard(
+                  child: 
+                  flip.FlipCard(
                         key: cardKey,
                         flipOnTouch: false,
 
@@ -1990,9 +1774,7 @@ class _HomePageState extends State<HomePage> {
                             .CardSide.FRONT, // The side to initially display.
                         front: flipContainer(true),
                         back: flipContainer(false),
-                      ))))
-                      )
-    ]));
+                  ))))]));
   }
 
   Widget getwindow(context) {

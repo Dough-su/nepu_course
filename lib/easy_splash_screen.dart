@@ -114,7 +114,6 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
     _countdownTimer();
 
     super.initState();
-    Global().getaccount();
     Global().getusername();
     //获取主页和成绩页面的成绩信息
     Global.get_course_day();

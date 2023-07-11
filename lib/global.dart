@@ -53,7 +53,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "138";
+  static String version = "139";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
@@ -298,19 +298,6 @@ class Global {
     });
   }
 
-  //从文件中读取账号密码
-  void getaccount() async {
-    await getApplicationDocumentsDirectory().then((value) {
-      File file = File(value.path + '/account.txt');
-      if (file.existsSync()) {
-        account = file.readAsStringSync().split(' ')[0];
-        password = file.readAsStringSync().split(' ')[1];
-        print("账号密码" + account + password);
-      } else
-        getaccno();
-    });
-  }
-
 //保存
   //保存自动更新课程状态到文件
   static void saveauto_update_course() async {
@@ -337,8 +324,7 @@ class Global {
 
   //上滑锁定
   static bool locked = false;
-  //一卡通余额
-  static String yikatong_balance = '';
+
   //成绩组件列表
   static List<Widget> scorelist = [];
   //用户2成绩组件列表
@@ -349,8 +335,6 @@ class Global {
   static var scoreinfos2 = [];
   //底栏高度
   static double bottombarheight = 60;
-  //一卡通近期流水
-  static List yikatong_recent = [];
   //桌面平台的高度
   static double desktopheight = 400;
   //桌面平台的宽度
@@ -624,7 +608,8 @@ class Global {
 
   //加载用户2课程到内存
   loadItems2(DateTime date) async {
-    if (isfirstread2 == true) {
+    try {
+         if (isfirstread2 == true) {
       getCourseInfo2().then((value) async {
         courseInfox2 = json.decode(value);
         isfirstread2 = false;
@@ -682,6 +667,10 @@ class Global {
         }
       });
     }
+    } catch (e) {
+      print('用户2课程'+e.toString());
+    }
+ 
   }
 
   //读取下载的json
@@ -1329,85 +1318,9 @@ class Global {
     });
   }
 
-  //获取一卡通近期流水
-  void getrecently(context) async {
-    yikatong_recent.clear();
-    apiService.getRecentlyTransactions(jwc_xuehao).then((value) {
-      //创建流水表格
-      Widget yikatong_recently = DataTable(
-        columns: <DataColumn>[
-          DataColumn(
-            label: Container(
-              //屏幕适配
-              width: MediaQuery.of(context).size.width * 0.1,
+ 
 
-              child: Text(
-                '时间',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Container(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: Text(
-                '类型',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          ),
-          DataColumn(
-            label: Container(
-              width: MediaQuery.of(context).size.width * 0.1,
-              child: Text(
-                '金额',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-            ),
-          )
-        ],
-        rows: yikatong_recent
-            .map(
-              (recent) => DataRow(
-                cells: <DataCell>[
-                  DataCell(Text(recent['Trading_time'])),
-                  DataCell(Text(recent['TranName'])),
-                  DataCell(Text(recent['Transaction_amount'])),
-                ],
-              ),
-            )
-            .toList(),
-      );
-      //弹出流水窗口
-      showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('一卡通近30天流水'),
-              content: yikatong_recently,
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('关闭'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
-    });
-  }
 
-  //获取一卡通的accno
-  Future<String> getaccno() async {
-    if (Global.account == '') {
-      apiService.getAccno().then((value) {
-        saveaccount();
-        return "ok";
-      });
-    }
-    return "ok";
-  }
 
   static Map<String, dynamic> _globalData = {};
 
