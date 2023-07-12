@@ -60,48 +60,13 @@ class _qingjiaState extends State<qingjia> {
     return qingjiaInfo;
   }
 
-  void downApkFunction() async {
-    var dio = Dio();
-
-    //下载评教
-    getApplicationDocumentsDirectory().then((value) async {
-      var urlqingjia =
-          'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getqingjia' +
-              await Global().getLoginInfo();
-      print(urlqingjia);
-      //如果状态码为500，则弹窗提示
-      var response = await dio.get(urlqingjia);
-      if (response.statusCode == 500) {
-        AchievementView(context,
-            title: "hi!出错了，请点击左上角回到主页面，并且重新进来",
-            subTitle: response.data.toString(),
-            //onTab: _onTabAchievement,
-            icon: Icon(
-              Icons.emoji_emotions,
-              color: Colors.white,
-            ),
-            color: Colors.green,
-            duration: Duration(seconds: 3),
-            isCircle: true, listener: (status) {
-          print(status);
-        })
-          ..show();
-      }
-      getApplicationDocumentsDirectory().then((value) {
-        File file = new File(value.path + '/qingjia.json');
-        file.writeAsString(response.data.toString()).then((value) async {
-          loadqingjia();
-        });
-      });
-    });
-  }
 
   void initState() {
     Global.pureyzmset(false);
     Global.bottombarheight = 60;
 
     ApiService.noPerceptionLogin().then((value) async {
-      downApkFunction();
+      ApiService().qinajia(context,loadqingjia);
     });
   }
 

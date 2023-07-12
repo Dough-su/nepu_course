@@ -17,9 +17,10 @@ import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
 import 'package:muse_nepu_course/qingjia/qingjia.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/service/io_service.dart';
+import 'package:muse_nepu_course/widget/Course.dart';
+import 'package:muse_nepu_course/widget/SideMenuBar.dart';
 import 'package:muse_nepu_course/windowsfloat.dart';
 import 'package:rive/rive.dart';
-import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:calendar_agenda/calendar_agenda.dart';
@@ -34,7 +35,6 @@ import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:lottie/lottie.dart';
-import 'package:easy_app_installer/easy_app_installer.dart';
 import 'package:achievement_view/achievement_view.dart';
 
 List<Widget> dailycourse = [];
@@ -45,121 +45,6 @@ GlobalKey<flip.FlipCardState> cardKey = GlobalKey<flip.FlipCardState>();
 
 //上滑控制器
 BottomSheetBarController bottomSheetBarController = BottomSheetBarController();
-List<TargetFocus> targets = [
-  TargetFocus(
-      identify: "日期选择器",
-      targetPosition: TargetPosition(Size(100, 100), Offset(330, 30)),
-      contents: [
-        TargetContent(
-            align: ContentAlign.bottom,
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "日期选择器",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 20.0),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "在这里不光可以快速跳转到对应日期，更可以快速回溯到以往学期。很赞吧",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-            ))
-      ]),
-  TargetFocus(identify: "成绩菜单", keyTarget: scoredetailbtn, contents: [
-    TargetContent(
-        align: ContentAlign.bottom,
-        child: Container(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "成绩菜单",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 20.0),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: Text(
-                  "可以轻松查看每科课程的排名，以及详细的平时成绩和考试成绩",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            ],
-          ),
-        ))
-  ]),
-  TargetFocus(
-      identify: "当前日期",
-      targetPosition: TargetPosition(Size(100, 100), Offset(0, 100)),
-      contents: [
-        TargetContent(
-            align: ContentAlign.bottom,
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "课程日期",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 20.0),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "在这行左右滑动即可，快速查看附近日期的课程，平时也可以用来解压哦",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-            ))
-      ]),
-  TargetFocus(
-      identify: "课表菜单",
-      targetPosition: TargetPosition(Size(100, 100), Offset(0, 140)),
-      contents: [
-        TargetContent(
-            align: ContentAlign.bottom,
-            child: Container(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "课表菜单",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 20.0),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10.0),
-                    child: Text(
-                      "里面可以查看学习通考完但未发布的成绩，左右滑动就可以快速评教，可以调整当前页面主题色，包括在设置中调整logo以及头像，话不多说，来试试吧",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
-              ),
-            ))
-      ])
-];
 //侧边栏控制器
 GlobalKey<SideMenuState> _sideMenuKey =
     GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
@@ -167,10 +52,7 @@ GlobalKey<SideMenuState> _sideMenuKey2 =
     GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
 GlobalKey<SideMenuState> _endSideMenuKey =
     GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
-GlobalKey<SideMenuState> _endSideMenuKey2 =
-    GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
 String title = '今日课程';
-String title2 = '今日课程';
 
 var date;
 var widthx;
@@ -337,7 +219,7 @@ class _HomePageState extends State<HomePage> {
 
   void showTutorial() {
     TutorialCoachMark tutorial = TutorialCoachMark(
-        targets: targets, // List<TargetFocus>
+        targets: Global().targets, // List<TargetFocus>
         colorShadow: Colors.red, // DEFAULT Colors.black
         onFinish: () {
           getApplicationDocumentsDirectory().then((value) {
@@ -500,15 +382,16 @@ class _HomePageState extends State<HomePage> {
       final courseFile = File('${dir.path}/course.json');
       final scoreFile = File('${dir.path}/score.json');
       if (!courseFile.existsSync()) {
-        downApkFunction(
+        firstdownload(
             await Global().getLoginInfo(), 'course.json', 'score.json');
       } else {
-        await updateCourseFromJW(
+        await ApiService().updateCourseFromJW(
           dio,
           courseFile,
           context,
           true,
           scoreFile,
+          hItems
         );
         if (Platform.isWindows) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -525,200 +408,16 @@ class _HomePageState extends State<HomePage> {
       Global.isfirstread2 = true;
       if (!course1File.existsSync()) {
         await ApiService.noPerceptionLogin2();
-        downApkFunction(
+        firstdownload(
             await Global().getLoginInfo2(), 'course1.json', 'score1.json');
       } else {
-        await updateCourseFromJW(dio, course1File, context, false, scorre1File);
+        await ApiService().updateCourseFromJW(dio, course1File, context, false, scorre1File,hItems);
         hItems(DateTime.now(), false);
       }
     }
   }
 
-  //更新课程
-  Future<void> updateCourseFromJW(Dio dio, File file, BuildContext context,
-      bool user1, File scoreFile) async {
-    hItems(DateTime.now(), true);
-    if (Global.auto_update_course && !Global.isrefreshcourse) {
-      if (user1)
-        ApiService.noPerceptionLogin().then((value) async {
-          Global.isrefreshcourse = true;
-          late String logininfo;
-          var url;
-          if (user1) {
-            logininfo = await Global().getLoginInfo();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          } else {
-            logininfo = await Global().getLoginInfo2();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          }
 
-          getApplicationDocumentsDirectory().then((value) async {
-            //判断响应状态
-            Response response = await dio.get(url);
-            if (response.statusCode == 500) {
-              showupdatenotice(
-                  context,
-                  3,
-                  '与教务同步课程失败!',
-                  '请检查你的密码或者教务系统是否正常',
-                  Icon(
-                    Icons.error,
-                    color: Colors.white,
-                  ),
-                  Colors.red);
-              return;
-            } else if (response.statusCode == 200) {
-              if (!response.data.toString().contains('fail')) {
-                file.writeAsString(response.data);
-                Global.isfirstread = true;
-                jpushs().uploadpushid();
-
-                updateScores(logininfo, user1, scoreFile);
-                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
-                    Icon(Icons.check), Global.home_currentcolor);
-              } else {
-                showupdatenotice(
-                    context,
-                    3,
-                    '与教务同步课程失败!',
-                    '请检查你的密码或者教务系统是否正常',
-                    Icon(
-                      Icons.error,
-                      color: Colors.white,
-                    ),
-                    Colors.red);
-
-                return;
-              }
-            }
-          });
-        });
-      if (!user1)
-        ApiService.noPerceptionLogin2().then((value) async {
-          Global.isrefreshcourse = true;
-          late String logininfo;
-          var url;
-          if (user1) {
-            logininfo = await Global().getLoginInfo();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          } else {
-            logininfo = await Global().getLoginInfo2();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          }
-
-          getApplicationDocumentsDirectory().then((value) async {
-            //判断响应状态
-            Response response = await dio.get(url);
-            if (response.statusCode == 500) {
-              showupdatenotice(
-                  context,
-                  3,
-                  '与教务同步课程失败!',
-                  '请检查你的密码或者教务系统是否正常',
-                  Icon(
-                    Icons.error,
-                    color: Colors.white,
-                  ),
-                  Colors.red);
-              return;
-            } else if (response.statusCode == 200) {
-              if (!response.data.toString().contains('fail')) {
-                file.writeAsString(response.data);
-                Global.isfirstread = true;
-                jpushs().uploadpushid();
-
-                updateScores(logininfo, user1, scoreFile);
-                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
-                    Icon(Icons.check), Global.home_currentcolor);
-              } else {
-                showupdatenotice(
-                    context,
-                    3,
-                    '与教务同步课程失败!',
-                    '请检查你的密码或者教务系统是否正常',
-                    Icon(
-                      Icons.error,
-                      color: Colors.white,
-                    ),
-                    Colors.red);
-
-                return;
-              }
-            }
-          });
-        });
-    }
-  }
-
-  //更新成绩
-  void updateScores(String loginInfo, bool user1, File scoreFile) {
-    Dio dio = new Dio();
-    var urlscore =
-        'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
-            loginInfo +
-            '&index=' +
-            (user1
-                ? Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm']
-                    .toString()
-                : Global.scoreinfos2[Global.scoreinfos2.length - 1]['cjdm']
-                    .toString());
-    getApplicationDocumentsDirectory().then((value) async {
-      try {
-        Response response = await dio.get(urlscore);
-        if (response.statusCode == 200) {
-          //获取路径
-
-          scoreFile.readAsString().then((value) {
-            value = value.replaceAll(']', '') +
-                ',' +
-                response.data.toString().replaceAll('[', '');
-            scoreFile.writeAsString(value);
-            Global().getlist();
-            Global().getlist2();
-          });
-          Dialogs.materialDialog(
-            color: Theme.of(context).brightness == Brightness.light
-                ? Colors.white
-                : Colors.black,
-            msg: '去看看不?',
-            title: '有新成绩啦!',
-            lottieBuilder: Lottie.asset(
-              'assets/rockert-new.json',
-              fit: BoxFit.contain,
-            ),
-            context: context,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  //关闭
-                  Navigator.pop(context);
-                },
-                icon: Icon(Icons.cancel_outlined),
-              ),
-              IconButton(
-                onPressed: () async {
-                  //跳转到score页面
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => scorepage()));
-                },
-                icon: Icon(Icons.check),
-              ),
-            ],
-          );
-        }
-      } catch (e) {
-        print(e);
-      }
-    });
-  }
 
   //展示通知
   void showupdatenotice(BuildContext context, int second, String title,
@@ -736,7 +435,7 @@ class _HomePageState extends State<HomePage> {
 
   var homecontext;
 
-  void downApkFunction(
+  void firstdownload(
       String loginInfo, String fileName, String courseFileName) async {
     ProgressDialog pd = ProgressDialog(context: context);
     var dio = Dio();
@@ -801,20 +500,20 @@ class _HomePageState extends State<HomePage> {
           } else {
             if (fileName == 'course.json') {
               ApiService.noPerceptionLogin().then((value) =>
-                  downApkFunction(loginInfo, fileName, courseFileName));
+                  firstdownload(loginInfo, fileName, courseFileName));
             } else if (fileName == 'course1.json') {
               ApiService.noPerceptionLogin2().then((value) =>
-                  downApkFunction(loginInfo, fileName, courseFileName));
+                  firstdownload(loginInfo, fileName, courseFileName));
             }
           }
         }
       } catch (e) {
         if (fileName == 'course.json') {
           ApiService.noPerceptionLogin().then(
-              (value) => downApkFunction(loginInfo, fileName, courseFileName));
+              (value) => firstdownload(loginInfo, fileName, courseFileName));
         } else if (fileName == 'course1.json') {
           ApiService.noPerceptionLogin2().then(
-              (value) => downApkFunction(loginInfo, fileName, courseFileName));
+              (value) => firstdownload(loginInfo, fileName, courseFileName));
         }
         print(e);
         pd.close();
@@ -823,77 +522,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Widget getContainer(String time, int index, String msg, eventcahe,
-      bool hasStartConnector, bool hasEndConnector) {
-    return FadeInLeft(
-        child: Container(
-      child: TimelineTile(
-        oppositeContents: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Card(
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                time +
-                    '\n' +
-                    eventcahe[index]['qssj']
-                        .toString()
-                        .split(' ')[0]
-                        .substring(0, 5) +
-                    ' - ' +
-                    eventcahe[index]['jssj']
-                        .toString()
-                        .split(' ')[0]
-                        .substring(0, 5),
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ),
-        contents: GestureDetector(
-          onTap: (() => Dialogs.bottomMaterialDialog(
-                color: Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : Color(0xFF1C1B1F),
-                msg: msg,
-                title: '详细信息',
-                lottieBuilder: Lottie.asset(
-                  'assets/course.json',
-                  fit: BoxFit.contain,
-                ),
-                context: context,
-              )),
-          child: Card(
-            color: Global.home_currentcolor,
-            child: Container(
-              width: widthx,
-              padding: EdgeInsets.all(8.0),
-              child: Text(
-                eventcahe[index]['kcmc'] + '\n' + eventcahe[index]['jxcdmc'],
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ),
-        ),
-        node: TimelineNode(
-          indicator: DotIndicator(
-            color: Global.home_currentcolor,
-          ),
-          startConnector: hasStartConnector
-              ? SolidLineConnector(
-                  color: Global.home_currentcolor,
-                )
-              : null,
-          endConnector: hasEndConnector
-              ? SolidLineConnector(
-                  color: Global.home_currentcolor,
-                )
-              : null,
-        ),
-      ),
-    ));
-  }
 
   Widget _buildTimeContainer(String time) {
     return Container(
@@ -1052,28 +680,28 @@ class _HomePageState extends State<HomePage> {
       //判断课程时间段，替换对应的Container
       //08,09,11,13,15,17,18,21
       if (qssj.substring(0, 2) == '08') {
-        dailycourse[1] = getContainer('1,2节', i, msg, eventcahe, false, true);
+        dailycourse[1] = Course.coursedetail('1,2节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (qssj.substring(0, 2) == '09') {
-        dailycourse[2] = getContainer('3,4节', i, msg, eventcahe, true, false);
+        dailycourse[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (jssj.substring(0, 2) == '11') {
-        dailycourse[2] = getContainer('3,4节', i, msg, eventcahe, true, false);
+        dailycourse[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (qssj.substring(0, 2) == '13') {
-        dailycourse[4] = getContainer('5,6节', i, msg, eventcahe, false, true);
+        dailycourse[4] = Course.coursedetail('5,6节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (qssj.substring(0, 2) == '15') {
-        dailycourse[5] = getContainer('7,8节', i, msg, eventcahe, true, false);
+        dailycourse[5] = Course.coursedetail('7,8节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (jssj.substring(0, 2) == '17') {
-        dailycourse[5] = getContainer('7,8节', i, msg, eventcahe, false, true);
+        dailycourse[5] = Course.coursedetail('7,8节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (qssj.substring(0, 2) == '18') {
-        dailycourse[7] = getContainer('9,10节', i, msg, eventcahe, false, true);
+        dailycourse[7] = Course.coursedetail('9,10节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (jssj.substring(0, 2) == '21') {
-        dailycourse[8] = getContainer('11,12节', i, msg, eventcahe, true, false);
+        dailycourse[8] = Course.coursedetail('11,12节', i, msg, eventcahe, true, false,widthx,context);
       }
     }
     setState(() {});
@@ -1084,9 +712,9 @@ class _HomePageState extends State<HomePage> {
     //如果date不是今天则修改title2为非本日课程
     if (date.toString().substring(0, 10) !=
         DateTime.now().toString().substring(0, 10)) {
-      title2 = '非本日课程';
+      title = '非本日课程';
     } else {
-      title2 = '今日课程';
+      title = '今日课程';
     }
     var cacheindex = 0;
     var pos = 0;
@@ -1125,12 +753,12 @@ class _HomePageState extends State<HomePage> {
         zc = Global.courseInfox2[pos]['zc'] + //向上取整
             ((difference / 7).ceil());
       if (difference < 28)
-        title2 = '第' + zc.toString() + '周' + '当天没课哦';
+        title = '第' + zc.toString() + '周' + '当天没课哦';
       else
-        title2 = '假期中。。。';
+        title = '假期中。。。';
     } else {
       setState(() {
-        title2 = '第' + eventcahe[0]['zc'].toString() + '周' + title2;
+        title = '第' + eventcahe[0]['zc'].toString() + '周' + title;
       });
     }
     //对eventcahe进行排序
@@ -1177,29 +805,29 @@ class _HomePageState extends State<HomePage> {
       //判断课程时间段，替换对应的Container
       //08,09,11,13,15,17,18,21
       if (qssj.substring(0, 2) == '08') {
-        dailycourse2[1] = getContainer('1,2节', i, msg, eventcahe, false, true);
+        dailycourse2[1] = Course.coursedetail('1,2节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (qssj.substring(0, 2) == '09') {
-        dailycourse2[2] = getContainer('3,4节', i, msg, eventcahe, true, false);
+        dailycourse2[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (jssj.substring(0, 2) == '11') {
-        dailycourse2[2] = getContainer('3,4节', i, msg, eventcahe, true, false);
+        dailycourse2[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (qssj.substring(0, 2) == '13') {
-        dailycourse2[4] = getContainer('5,6节', i, msg, eventcahe, false, true);
+        dailycourse2[4] = Course.coursedetail('5,6节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (qssj.substring(0, 2) == '15') {
-        dailycourse2[5] = getContainer('7,8节', i, msg, eventcahe, true, false);
+        dailycourse2[5] = Course.coursedetail('7,8节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (jssj.substring(0, 2) == '17') {
-        dailycourse2[5] = getContainer('7,8节', i, msg, eventcahe, false, true);
+        dailycourse2[5] = Course.coursedetail('7,8节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (qssj.substring(0, 2) == '18') {
-        dailycourse2[7] = getContainer('9,10节', i, msg, eventcahe, false, true);
+        dailycourse2[7] = Course.coursedetail('9,10节', i, msg, eventcahe, false, true,widthx,context);
       }
       if (jssj.substring(0, 2) == '21') {
         dailycourse2[8] =
-            getContainer('11,12节', i, msg, eventcahe, true, false);
+            Course.coursedetail('11,12节', i, msg, eventcahe, true, false,widthx,context);
       }
     }
     setState(() {});
@@ -1228,365 +856,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-//侧边
-  Widget side(bool isfront) {
-    return SideMenu(
-        background: Global.home_currentcolor,
-        key: isfront ? _sideMenuKey : _sideMenuKey2,
-        menu: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 50.0),
-            child: Stack(
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height / 1.6,
-                  child: RiveAnimation.asset(
-                    'assets/cat.riv',
-                    //缩小
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(padding: EdgeInsets.only(top: 20.0)),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 16.0),
-                          Text(
-                              shijian(),
-                              style: TextStyle(color: Colors.white),
-                            ),
-
-                          SizedBox(height: 20.0),
-                        ],
-                      ),
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.cached,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '查看成绩',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => scorepage(),
-                        ),
-                      ),
-                    ),
-                    ListTile(
-                        leading: const Icon(Icons.score_outlined,
-                            size: 20.0, color: Colors.white),
-                        title: Text(
-                          'chatgpt',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ChatPage()));
-                        }),
-                    ListTile(
-                      leading: const Icon(Icons.book_online,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '一键评教',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => pingjiao()));
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.book_online,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '请假历史',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => qingjia()));
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.colorize,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '调个色',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: Text('选择当前页颜色'),
-                                content: SingleChildScrollView(
-                                  child: ColorPicker(
-                                    pickerColor: Global.home_currentcolor,
-                                    onColorChanged: changeColor,
-                                    colorPickerWidth: 300.0,
-                                    pickerAreaHeightPercent: 0.7,
-                                    enableAlpha: false,
-                                    displayThumbColor: true,
-                                    showLabel: true,
-                                    paletteType: PaletteType.hsv,
-                                    pickerAreaBorderRadius:
-                                        const BorderRadius.only(
-                                      topLeft: const Radius.circular(2.0),
-                                      topRight: const Radius.circular(2.0),
-                                    ),
-                                  ),
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: const Text('确定'),
-                                    onPressed: () async {
-                                      setState(() => Global.home_currentcolor =
-                                          Global.home_pickcolor);
-                                      getApplicationDocumentsDirectory()
-                                          .then((value) {
-                                        File file =
-                                            File(value.path + '/color.txt');
-                                        //判断文件是否存在
-                                        if (file.existsSync()) {
-                                          //存在则写入
-                                          file.writeAsString(Global
-                                              .home_currentcolor.value
-                                              .toString());
-                                        } else {
-                                          //不存在则创建文件并写入
-                                          file.createSync();
-                                          file.writeAsString(Global
-                                              .home_currentcolor.value
-                                              .toString());
-                                        }
-                                      });
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ],
-                              );
-                            });
-                      },
-                    ),
-                    ListTile(
-                        leading: const Icon(Icons.score_outlined,
-                            size: 20.0, color: Colors.white),
-                        title: Text(
-                          '查看学习通考试成绩',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        onTap: () {
-                          getApplicationDocumentsDirectory()
-                              .then((value) async {
-                            //读取chaoxing.txt
-                            var file =
-                                await new File(value.path + "/chaoxing.txt");
-                            //如果文件存在，就跳转到成绩页面
-                            if (file.existsSync()) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => chaoxing()),
-                              );
-                            } else {
-                              //如果文件不存在，就跳转到登录页面
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => chaoxinglogin()),
-                              );
-                            }
-                          });
-                        }),
-                    ListTile(
-                      leading: const Icon(Icons.cached,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '重新登入',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {
-                        io_service().deleteFiles();
-                        AchievementView(context,
-                            title: "成功!",
-                            subTitle: "已清除课程和成绩缓存，请退出app重新登录",
-                            //onTab: _onTabAchievement,
-                            icon: Icon(
-                              Icons.insert_emoticon,
-                              color: Colors.white,
-                            ),
-                            //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
-                            //borderRadius: 5.0,
-                            color: Colors.green,
-                            //textStyleTitle: TextStyle(),
-                            //textStyleSubTitle: TextStyle(),
-                            //alignment: Alignment.topCenter,
-                            duration: Duration(seconds: 3),
-                            isCircle: true, listener: (status) {
-                          print(status);
-                        })
-                          ..show();
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.settings,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '关于&设置',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => about()),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            )),
-        type: SideMenuType.slideNRotate,
-        onChange: (_isOpened) {
-          if (isOpened) {
-            Global.bottombarheight = 60;
-          } else {
-            Global.bottombarheight = 0;
-          }
-          setState(() => isOpened = _isOpened);
-        },
-        child: IgnorePointer(
-            ignoring: isOpened,
-            child: Scaffold(
-              appBar: AppBar(
-                  backgroundColor: Global.home_currentcolor,
-                  title: Text(title),
-                  centerTitle: true,
-                  leading: isfront
-                      ? IconButton(
-                          icon: const Icon(Icons.menu),
-                          onPressed: () {
-                            toggleMenu();
-                          },
-                        )
-                      : Container(),
-                  actions: [
-                    IconButton(
-                      key: isfront ? scoredetailbtn : scoredetailbtn2,
-                      icon: Icon(Icons.score),
-                      onPressed: () {
-                        if (isdownload) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => scorepage()),
-                          );
-                        } else {
-                          AchievementView(context,
-                              title: "出错啦!",
-                              subTitle: '请确认现在是否学校在抢课或其他原因导致成绩下载超时',
-                              //onTab: _onTabAchievement,
-                              icon: Icon(
-                                Icons.error,
-                                color: Colors.white,
-                              ),
-                              color: Colors.red,
-                              duration: Duration(seconds: 3),
-                              isCircle: true, listener: (status) {
-                            print(status);
-                          })
-                            ..show();
-                        }
-                      },
-                    ),
-                  ]),
-              body: home_body(isfront),
-              floatingActionButton: Stack(children: [
-                MaterialButton(
-                  onPressed: () {
-                    _controller = SimpleAnimation('起飞');
-                    Future.delayed(Duration(seconds: 2), () {
-                      _controller = SimpleAnimation('保持飞翔');
-                      _controller = SimpleAnimation('降落');
-                      Future.delayed(Duration(seconds: 2), () {
-                        _controller = SimpleAnimation('行走');
-                      });
-                    });
-                    hItems(DateTime.now(), false);
-                    setState(() {
-                      print('回到今天');
-                      _calendarAgendaControllerAppBar.goToDay(DateTime.now());
-                    });
-                  },
-                  child: Text(
-                    '回到今天',
-                  ),
-                  shape: StadiumBorder(),
-                  textColor: Colors.white,
-                  color: Global.home_currentcolor,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    _controller = SimpleAnimation('起飞');
-                    Future.delayed(Duration(seconds: 2), () {
-                      _controller = SimpleAnimation('保持飞翔');
-                      _controller = SimpleAnimation('降落');
-                      Future.delayed(Duration(seconds: 2), () {
-                        _controller = SimpleAnimation('行走');
-                      });
-                    });
-                    setState(() {
-                      print('回到今天');
-                      _calendarAgendaControllerAppBar.goToDay(DateTime.now());
-                    });
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.17,
-                    height: MediaQuery.of(context).size.width * 0.17,
-                    child: RiveAnimation.asset(
-                      'assets/birds.riv',
-                      controllers: [_controller],
-                      animations: ['行走', '起飞', '保持飞翔', '降落'],
-                    ),
-                  ),
-                ),
-              ]),
-            )));
-  }
 
 //可切换的主页组件
   Widget flipContainer(bool isfront) {
@@ -1746,7 +1015,7 @@ class _HomePageState extends State<HomePage> {
             _isVerticalDrag = false;
             _dragStartPos = Offset.zero;
           },
-          child: side(isfront)),
+          child: SideMenuBar.side(isfront,context, _sideMenuKey, _sideMenuKey2,changeColor,shijian,setState,toggleMenu,isOpened,scoredetailbtn,scoredetailbtn2,hItems,_controller,_calendarAgendaControllerAppBar,home_body,title,isdownload))
     );
   }
 

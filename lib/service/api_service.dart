@@ -14,6 +14,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sn_progress_dialog/options/completed.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
 import 'package:achievement_view/achievement_view.dart';
+
+import '../chatforgpt/chatgpt2.dart';
+import '../coursemenu/scoredetail.dart';
+import '../jpushs.dart';
 class ApiService {
   Dio dio = Dio();
     void showAchievementView(
@@ -50,6 +54,7 @@ class ApiService {
       showAchievementView(context, version, notice, file);
     }
   }
+
   void updateappx(context,_cancelTag) async {
     var value = await getApplicationDocumentsDirectory();
     var pathx = value.path;
@@ -222,6 +227,226 @@ class ApiService {
     }
   }
 
+  //更新课程
+  Future<void> updateCourseFromJW(Dio dio, File file, BuildContext context,
+      bool user1, File scoreFile,hItems) async {
+    hItems(DateTime.now(), true);
+    if (Global.auto_update_course && !Global.isrefreshcourse) {
+      if (user1)
+        ApiService.noPerceptionLogin().then((value) async {
+          Global.isrefreshcourse = true;
+          late String logininfo;
+          var url;
+          if (user1) {
+            logininfo = await Global().getLoginInfo();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          } else {
+            logininfo = await Global().getLoginInfo2();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          }
+
+          getApplicationDocumentsDirectory().then((value) async {
+            //判断响应状态
+            Response response = await dio.get(url);
+            if (response.statusCode == 500) {
+              showupdatenotice(
+                  context,
+                  3,
+                  '与教务同步课程失败!',
+                  '请检查你的密码或者教务系统是否正常',
+                  Icon(
+                    Icons.error,
+                    color: Colors.white,
+                  ),
+                  Colors.red);
+              return;
+            } else if (response.statusCode == 200) {
+              if (!response.data.toString().contains('fail')) {
+                file.writeAsString(response.data);
+                Global.isfirstread = true;
+                jpushs().uploadpushid();
+
+                updateScores(logininfo, user1, scoreFile,context);
+                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
+                    Icon(Icons.check), Global.home_currentcolor);
+              } else {
+                showupdatenotice(
+                    context,
+                    3,
+                    '与教务同步课程失败!',
+                    '请检查你的密码或者教务系统是否正常',
+                    Icon(
+                      Icons.error,
+                      color: Colors.white,
+                    ),
+                    Colors.red);
+
+                return;
+              }
+            }
+          });
+        });
+      if (!user1)
+        ApiService.noPerceptionLogin2().then((value) async {
+          Global.isrefreshcourse = true;
+          late String logininfo;
+          var url;
+          if (user1) {
+            logininfo = await Global().getLoginInfo();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          } else {
+            logininfo = await Global().getLoginInfo2();
+            url =
+                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                    logininfo;
+          }
+
+          getApplicationDocumentsDirectory().then((value) async {
+            //判断响应状态
+            Response response = await dio.get(url);
+            if (response.statusCode == 500) {
+              showupdatenotice(
+                  context,
+                  3,
+                  '与教务同步课程失败!',
+                  '请检查你的密码或者教务系统是否正常',
+                  Icon(
+                    Icons.error,
+                    color: Colors.white,
+                  ),
+                  Colors.red);
+              return;
+            } else if (response.statusCode == 200) {
+              if (!response.data.toString().contains('fail')) {
+                file.writeAsString(response.data);
+                Global.isfirstread = true;
+                jpushs().uploadpushid();
+
+                updateScores(logininfo, user1, scoreFile,context);
+                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
+                    Icon(Icons.check), Global.home_currentcolor);
+              } else {
+                showupdatenotice(
+                    context,
+                    3,
+                    '与教务同步课程失败!',
+                    '请检查你的密码或者教务系统是否正常',
+                    Icon(
+                      Icons.error,
+                      color: Colors.white,
+                    ),
+                    Colors.red);
+
+                return;
+              }
+            }
+          });
+        });
+    }
+  }
+  //更新成绩
+  void updateScores(String loginInfo, bool user1, File scoreFile,context) {
+    Dio dio = new Dio();
+    var urlscore =
+        'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
+            loginInfo +
+            '&index=' +
+            (user1
+                ? Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm']
+                .toString()
+                : Global.scoreinfos2[Global.scoreinfos2.length - 1]['cjdm']
+                .toString());
+    getApplicationDocumentsDirectory().then((value) async {
+      try {
+        Response response = await dio.get(urlscore);
+        if (response.statusCode == 200) {
+          //获取路径
+
+          scoreFile.readAsString().then((value) {
+            value = value.replaceAll(']', '') +
+                ',' +
+                response.data.toString().replaceAll('[', '');
+            scoreFile.writeAsString(value);
+            Global().getlist();
+            Global().getlist2();
+          });
+          Dialogs.materialDialog(
+            color: Theme.of(context).brightness == Brightness.light
+                ? Colors.white
+                : Colors.black,
+            msg: '去看看不?',
+            title: '有新成绩啦!',
+            lottieBuilder: Lottie.asset(
+              'assets/rockert-new.json',
+              fit: BoxFit.contain,
+            ),
+            context: context,
+            actions: [
+              IconButton(
+                onPressed: () {
+                  //关闭
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.cancel_outlined),
+              ),
+              IconButton(
+                onPressed: () async {
+                  //跳转到score页面
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => scorepage()));
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.check),
+              ),
+            ],
+          );
+        }
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
+  void qinajia(context,loadqingjia) async {
+    var dio = Dio();
+
+    //下载评教
+    getApplicationDocumentsDirectory().then((value) async {
+      var urlqingjia =
+          'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getqingjia' +
+              await Global().getLoginInfo();
+      print(urlqingjia);
+      //如果状态码为500，则弹窗提示
+      var response = await dio.get(urlqingjia);
+      if (response.statusCode == 500) {
+        AchievementView(context,
+            title: "hi!出错了，请点击左上角回到主页面，并且重新进来",
+            subTitle: response.data.toString(),
+            //onTab: _onTabAchievement,
+            icon: Icon(
+              Icons.emoji_emotions,
+              color: Colors.white,
+            ),
+            color: Colors.green,
+            duration: Duration(seconds: 3),
+            isCircle: true, listener: (status) {
+              print(status);
+            })
+          ..show();
+      }
+      getApplicationDocumentsDirectory().then((value) {
+        File file = new File(value.path + '/qingjia.json');
+        file.writeAsString(response.data.toString()).then((value) async {
+          loadqingjia();
+        });
+      });
+    });
+  }
 
 
 
