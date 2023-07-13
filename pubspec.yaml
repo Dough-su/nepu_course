@@ -32,7 +32,9 @@ dependencies:
   dio: ^4.0.6
   flutter:
     sdk: flutter
-  calendar_agenda: ^0.0.2+3
+  calendar_agenda:
+    git:
+      url: https://github.com/Dough-su/calendar_agenda.git
   path_provider: ^2.0.0
   card_flip: ^0.0.5
   flutter_colorpicker: ^1.0.3
