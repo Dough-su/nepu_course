@@ -397,6 +397,11 @@ class Global {
       if (file.existsSync()) {
         calendar_first_day =
             DateTime.parse(file.readAsStringSync().split('\n')[1]);
+            if(DateTime.now().isAfter(DateTime.parse(file.readAsStringSync().split('\n')[0]))){
+              //如果当前日期大于最后一天，则将明天设为最后一天
+              calendar_last_day = DateTime.now().add(Duration(days: 1));
+              
+            }else
         calendar_last_day =
             DateTime.parse(file.readAsStringSync().split('\n')[0]);
       }

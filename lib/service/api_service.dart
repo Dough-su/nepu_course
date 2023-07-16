@@ -751,6 +751,17 @@ class ApiService {
       throw e;
     }
   }
+  //开屏广告
+  Future<Response> getad() async {
+    try {
+      Response response = await Dio().get(
+        'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/advertisement',
+      );
+      return response;
+    } catch (e) {
+      throw e;
+    }
+  }
 
   //生成图接口
   Future<Uint8List> recpicfromServer(String message, int type) async {
