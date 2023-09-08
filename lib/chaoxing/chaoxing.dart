@@ -139,7 +139,7 @@ class _chaoxingState extends State<chaoxing> {
           TextButton(
             child: Text(
               "重新登陆",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
             ),
             onPressed: () {
               //删除chaoxing.txt

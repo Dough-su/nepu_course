@@ -695,7 +695,7 @@ class _HomePageState extends State<HomePage> {
         dailycourse[5] = Course.coursedetail('7,8节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (jssj.substring(0, 2) == '17') {
-        dailycourse[5] = Course.coursedetail('7,8节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse[5] = Course.coursedetail('7,8节', i, msg, eventcahe, true, false,widthx,context);
       }
       if (qssj.substring(0, 2) == '18') {
         dailycourse[7] = Course.coursedetail('9,10节', i, msg, eventcahe, false, true,widthx,context);

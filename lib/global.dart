@@ -54,7 +54,7 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "139";
+  static String version = "140";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
