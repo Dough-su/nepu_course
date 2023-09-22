@@ -1,22 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:math';
-
-import 'package:animate_do/animate_do.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flip_card/flip_card.dart' as flip;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:muse_nepu_course/chatforgpt/chatgpt2.dart';
 import 'package:muse_nepu_course/jpushs.dart';
-import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/pingjiao/pingjiao.dart';
-import 'package:muse_nepu_course/qingjia/qingjia.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
-import 'package:muse_nepu_course/service/io_service.dart';
 import 'package:muse_nepu_course/widget/Course.dart';
 import 'package:muse_nepu_course/widget/SideMenuBar.dart';
 import 'package:muse_nepu_course/windowsfloat.dart';
@@ -26,15 +18,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:calendar_agenda/calendar_agenda.dart';
 import 'package:timelines/timelines.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-import 'chaoxing/chaoxing.dart';
-import 'coursemenu/about.dart';
-import 'coursemenu/scoredetail.dart';
 import 'dart:io';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
-import 'package:material_dialogs/material_dialogs.dart';
-import 'package:lottie/lottie.dart';
 import 'package:achievement_view/achievement_view.dart';
 
 List<Widget> dailycourse = [];
@@ -167,7 +153,6 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-
   bool isOpened = false;
   bool isdownload = true;
   bool isDarkModeEnabled = false;
@@ -195,12 +180,9 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  @override
   void changeColor(Color color) {
     setState(() => Global.home_pickcolor = color);
   }
-
-
 
   void showAchievementView(
       BuildContext context, String version, String notice, File file) {
@@ -257,20 +239,20 @@ class _HomePageState extends State<HomePage> {
   String shijian() {
     //判断上午下午晚上
     var hour = DateTime.now().hour;
-  
-      if (hour >= 0 && hour < 6) {
-        return '凌晨了，怎么不睡呢';
-      } else if (hour >= 6 && hour < 9) {
-        return '早上好,今天要有个好心情哦';
-      } else if (hour >= 9 && hour < 12) {
-        return '上午好，快要吃午饭了';
-      } else if (hour >= 12 && hour < 14) {
-        return '中午好，午休时间到了';
-      } else if (hour >= 14 && hour < 18) {
-        return '下午好哦';
-      } else {
-        return '晚上好，今天过得怎么样';
-      }
+
+    if (hour >= 0 && hour < 6) {
+      return '凌晨了，怎么不睡呢';
+    } else if (hour >= 6 && hour < 9) {
+      return '早上好,今天要有个好心情哦';
+    } else if (hour >= 9 && hour < 12) {
+      return '上午好，快要吃午饭了';
+    } else if (hour >= 12 && hour < 14) {
+      return '中午好，午休时间到了';
+    } else if (hour >= 14 && hour < 18) {
+      return '下午好哦';
+    } else {
+      return '晚上好，今天过得怎么样';
+    }
   }
 
   DateTime _selectedIndex = DateTime.now();
@@ -278,7 +260,6 @@ class _HomePageState extends State<HomePage> {
       CalendarAgendaController();
   CalendarAgendaController _calendarAgendaControllerAppBar2 =
       CalendarAgendaController();
-  @override
   Future<void> getcolor() async {
     getApplicationDocumentsDirectory().then((value) {
       File file = File(value.path + '/color.txt');
@@ -341,6 +322,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initState() {
+    super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       Navigator.of(context).popUntil((route) => route.isFirst);
     });
@@ -369,10 +351,9 @@ class _HomePageState extends State<HomePage> {
 
     getcolor();
     initAll(true);
-    ApiService().updateappx(context,_cancelTag);
+    ApiService().updateappx(context, _cancelTag);
     xinshouyindao();
-        ApiService().shownotice(context);
-
+    ApiService().shownotice(context);
   }
 
   void initAll(bool executeAll) async {
@@ -386,13 +367,7 @@ class _HomePageState extends State<HomePage> {
             await Global().getLoginInfo(), 'course.json', 'score.json');
       } else {
         await ApiService().updateCourseFromJW(
-          dio,
-          courseFile,
-          context,
-          true,
-          scoreFile,
-          hItems
-        );
+            dio, courseFile, context, true, scoreFile, hItems);
         if (Platform.isWindows) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return windwosfloat();
@@ -411,13 +386,12 @@ class _HomePageState extends State<HomePage> {
         firstdownload(
             await Global().getLoginInfo2(), 'course1.json', 'score1.json');
       } else {
-        await ApiService().updateCourseFromJW(dio, course1File, context, false, scorre1File,hItems);
+        await ApiService().updateCourseFromJW(
+            dio, course1File, context, false, scorre1File, hItems);
         hItems(DateTime.now(), false);
       }
     }
   }
-
-
 
   //展示通知
   void showupdatenotice(BuildContext context, int second, String title,
@@ -521,7 +495,6 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
-
 
   Widget _buildTimeContainer(String time) {
     return Container(
@@ -680,28 +653,36 @@ class _HomePageState extends State<HomePage> {
       //判断课程时间段，替换对应的Container
       //08,09,11,13,15,17,18,21
       if (qssj.substring(0, 2) == '08') {
-        dailycourse[1] = Course.coursedetail('1,2节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse[1] = Course.coursedetail(
+            '1,2节', i, msg, eventcahe, false, true, widthx, context);
       }
       if (qssj.substring(0, 2) == '09') {
-        dailycourse[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse[2] = Course.coursedetail(
+            '3,4节', i, msg, eventcahe, true, false, widthx, context);
       }
       if (jssj.substring(0, 2) == '11') {
-        dailycourse[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse[2] = Course.coursedetail(
+            '3,4节', i, msg, eventcahe, true, false, widthx, context);
       }
       if (qssj.substring(0, 2) == '13') {
-        dailycourse[4] = Course.coursedetail('5,6节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse[4] = Course.coursedetail(
+            '5,6节', i, msg, eventcahe, false, true, widthx, context);
       }
       if (qssj.substring(0, 2) == '15') {
-        dailycourse[5] = Course.coursedetail('7,8节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse[5] = Course.coursedetail(
+            '7,8节', i, msg, eventcahe, true, false, widthx, context);
       }
       if (jssj.substring(0, 2) == '17') {
-        dailycourse[5] = Course.coursedetail('7,8节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse[5] = Course.coursedetail(
+            '7,8节', i, msg, eventcahe, true, false, widthx, context);
       }
       if (qssj.substring(0, 2) == '18') {
-        dailycourse[7] = Course.coursedetail('9,10节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse[7] = Course.coursedetail(
+            '9,10节', i, msg, eventcahe, false, true, widthx, context);
       }
       if (jssj.substring(0, 2) == '21') {
-        dailycourse[8] = Course.coursedetail('11,12节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse[8] = Course.coursedetail(
+            '11,12节', i, msg, eventcahe, true, false, widthx, context);
       }
     }
     setState(() {});
@@ -805,29 +786,36 @@ class _HomePageState extends State<HomePage> {
       //判断课程时间段，替换对应的Container
       //08,09,11,13,15,17,18,21
       if (qssj.substring(0, 2) == '08') {
-        dailycourse2[1] = Course.coursedetail('1,2节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse2[1] = Course.coursedetail(
+            '1,2节', i, msg, eventcahe, false, true, widthx, context);
       }
       if (qssj.substring(0, 2) == '09') {
-        dailycourse2[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse2[2] = Course.coursedetail(
+            '3,4节', i, msg, eventcahe, true, false, widthx, context);
       }
       if (jssj.substring(0, 2) == '11') {
-        dailycourse2[2] = Course.coursedetail('3,4节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse2[2] = Course.coursedetail(
+            '3,4节', i, msg, eventcahe, true, false, widthx, context);
       }
       if (qssj.substring(0, 2) == '13') {
-        dailycourse2[4] = Course.coursedetail('5,6节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse2[4] = Course.coursedetail(
+            '5,6节', i, msg, eventcahe, false, true, widthx, context);
       }
       if (qssj.substring(0, 2) == '15') {
-        dailycourse2[5] = Course.coursedetail('7,8节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse2[5] = Course.coursedetail(
+            '7,8节', i, msg, eventcahe, true, false, widthx, context);
       }
       if (jssj.substring(0, 2) == '17') {
-        dailycourse2[5] = Course.coursedetail('7,8节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse2[5] = Course.coursedetail(
+            '7,8节', i, msg, eventcahe, false, true, widthx, context);
       }
       if (qssj.substring(0, 2) == '18') {
-        dailycourse2[7] = Course.coursedetail('9,10节', i, msg, eventcahe, false, true,widthx,context);
+        dailycourse2[7] = Course.coursedetail(
+            '9,10节', i, msg, eventcahe, false, true, widthx, context);
       }
       if (jssj.substring(0, 2) == '21') {
-        dailycourse2[8] =
-            Course.coursedetail('11,12节', i, msg, eventcahe, true, false,widthx,context);
+        dailycourse2[8] = Course.coursedetail(
+            '11,12节', i, msg, eventcahe, true, false, widthx, context);
       }
     }
     setState(() {});
@@ -855,7 +843,6 @@ class _HomePageState extends State<HomePage> {
       loadwidget2(date);
     }
   }
-
 
 //可切换的主页组件
   Widget flipContainer(bool isfront) {
@@ -944,79 +931,97 @@ class _HomePageState extends State<HomePage> {
       );
     }
     return Scaffold(
-      appBar: CalendarAgenda(
-        leading: IconButton(
-          icon: Icon(Icons.swap_horizontal_circle_outlined),
-          color: Colors.white,
-          onPressed: () {
-            Global.isfirstuser = !Global.isfirstuser;
+        appBar: CalendarAgenda(
+          leading: IconButton(
+            icon: Icon(Icons.swap_horizontal_circle_outlined),
+            color: Colors.white,
+            onPressed: () {
+              Global.isfirstuser = !Global.isfirstuser;
 
-            cardKey.currentState!.toggleCard();
+              cardKey.currentState!.toggleCard();
+            },
+          ),
+          controller: isfront
+              ? _calendarAgendaControllerAppBar
+              : _calendarAgendaControllerAppBar2,
+          initialDate: DateTime.now(),
+          appbar: true,
+          calendarLogo: getcalanderlogopngx(),
+          selectedDayLogo:
+              getlogopngx(), //使用ImageProvider<Object>加载IMage类型的logopic
+          backgroundColor: Global.home_currentcolor,
+          firstDate: Global.calendar_first_day,
+          lastDate: Global.calendar_last_day,
+          locale: 'zh_CN',
+          selectedDateColor: Colors.green.shade900,
+          fullCalendarScroll: FullCalendarScroll.vertical,
+          fullCalendarDay: WeekDay.long,
+          dateColor: Colors.white,
+          calendarEventColor: Global.home_currentcolor,
+          events: isfront ? Global.course_day : Global.course_day2,
+          onDateSelected: (date) {
+            hItems(date, false);
           },
         ),
-        controller: isfront
-            ? _calendarAgendaControllerAppBar
-            : _calendarAgendaControllerAppBar2,
-        initialDate: DateTime.now(),
-        appbar: true,
-        calendarLogo: getcalanderlogopngx(),
-        selectedDayLogo:
-            getlogopngx(), //使用ImageProvider<Object>加载IMage类型的logopic
-        backgroundColor: Global.home_currentcolor,
-        firstDate: Global.calendar_first_day,
-        lastDate: Global.calendar_last_day,
-        locale: 'zh_CN',
-        selectedDateColor: Colors.green.shade900,
-        fullCalendarScroll: FullCalendarScroll.vertical,
-        fullCalendarDay: WeekDay.long,
-        dateColor: Colors.white,
-        calendarEventColor: Global.home_currentcolor,
-        events: isfront ? Global.course_day : Global.course_day2,
-        onDateSelected: (date) {
-          hItems(date, false);
-        },
-      ),
-      body: GestureDetector(
-          onHorizontalDragEnd: (details) {
-            if (!_isVerticalDrag) {
-              if (details.velocity.pixelsPerSecond.dx < 0) {
-                if (isfront) {
-                  _calendarAgendaControllerAppBar.goToDay(
-                      Global.calendar_current_day.add(Duration(days: 1)));
-                } else {
-                  _calendarAgendaControllerAppBar2.goToDay(
-                      Global.calendar_current_day2.add(Duration(days: 1)));
-                }
-              } else if (details.velocity.pixelsPerSecond.dx > 0) {
-                if (isfront) {
-                  _calendarAgendaControllerAppBar.goToDay(
-                      Global.calendar_current_day.subtract(Duration(days: 1)));
-                } else {
-                  _calendarAgendaControllerAppBar2.goToDay(
-                      Global.calendar_current_day2.subtract(Duration(days: 1)));
+        body: GestureDetector(
+            onHorizontalDragEnd: (details) {
+              if (!_isVerticalDrag) {
+                if (details.velocity.pixelsPerSecond.dx < 0) {
+                  if (isfront) {
+                    _calendarAgendaControllerAppBar.goToDay(
+                        Global.calendar_current_day.add(Duration(days: 1)));
+                  } else {
+                    _calendarAgendaControllerAppBar2.goToDay(
+                        Global.calendar_current_day2.add(Duration(days: 1)));
+                  }
+                } else if (details.velocity.pixelsPerSecond.dx > 0) {
+                  if (isfront) {
+                    _calendarAgendaControllerAppBar.goToDay(Global
+                        .calendar_current_day
+                        .subtract(Duration(days: 1)));
+                  } else {
+                    _calendarAgendaControllerAppBar2.goToDay(Global
+                        .calendar_current_day2
+                        .subtract(Duration(days: 1)));
+                  }
                 }
               }
-            }
-          },
-          onVerticalDragStart: (details) {
-            _isVerticalDrag = true;
-            _dragStartPos = details.globalPosition;
-          },
-          onVerticalDragUpdate: (details) {
-            if (_isVerticalDrag) {
-              double dy = details.globalPosition.dy - _dragStartPos.dy;
-              if (dy.abs() > 50) {
-                // 阈值设为50
-                _isVerticalDrag = false;
+            },
+            onVerticalDragStart: (details) {
+              _isVerticalDrag = true;
+              _dragStartPos = details.globalPosition;
+            },
+            onVerticalDragUpdate: (details) {
+              if (_isVerticalDrag) {
+                double dy = details.globalPosition.dy - _dragStartPos.dy;
+                if (dy.abs() > 50) {
+                  // 阈值设为50
+                  _isVerticalDrag = false;
+                }
               }
-            }
-          },
-          onVerticalDragEnd: (details) {
-            _isVerticalDrag = false;
-            _dragStartPos = Offset.zero;
-          },
-          child: SideMenuBar.side(isfront,context, _sideMenuKey, _sideMenuKey2,changeColor,shijian,setState,toggleMenu,isOpened,scoredetailbtn,scoredetailbtn2,hItems,_controller,_calendarAgendaControllerAppBar,home_body,title,isdownload))
-    );
+            },
+            onVerticalDragEnd: (details) {
+              _isVerticalDrag = false;
+              _dragStartPos = Offset.zero;
+            },
+            child: SideMenuBar.side(
+                isfront,
+                context,
+                _sideMenuKey,
+                _sideMenuKey2,
+                changeColor,
+                shijian,
+                setState,
+                toggleMenu,
+                isOpened,
+                scoredetailbtn,
+                scoredetailbtn2,
+                hItems,
+                _controller,
+                _calendarAgendaControllerAppBar,
+                home_body,
+                title,
+                isdownload)));
   }
 
   Widget build(BuildContext context) {
@@ -1026,24 +1031,22 @@ class _HomePageState extends State<HomePage> {
         child: Column(children: [
       getwindow(context),
       Expanded(
-          child: 
-          Scaffold(
+          child: Scaffold(
               bottomNavigationBar: Container(
                   //圆角
                   width: MediaQuery.of(context).size.width / 2,
-                  child: 
-                  flip.FlipCard(
-                        key: cardKey,
-                        flipOnTouch: false,
+                  child: flip.FlipCard(
+                    key: cardKey,
+                    flipOnTouch: false,
 
-                        fill: flip.Fill
-                            .fillBack, // Fill the back side of the card to make in the same size as the front.
-                        direction: flip.FlipDirection.HORIZONTAL, // default
-                        side: flip
-                            .CardSide.FRONT, // The side to initially display.
-                        front: flipContainer(true),
-                        back: flipContainer(false),
-                  ))))]));
+                    fill: flip.Fill
+                        .fillBack, // Fill the back side of the card to make in the same size as the front.
+                    direction: flip.FlipDirection.HORIZONTAL, // default
+                    side: flip.CardSide.FRONT, // The side to initially display.
+                    front: flipContainer(true),
+                    back: flipContainer(false),
+                  ))))
+    ]));
   }
 
   Widget getwindow(context) {

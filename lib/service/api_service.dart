@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -13,14 +12,14 @@ import 'package:muse_nepu_course/global.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sn_progress_dialog/options/completed.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
-import 'package:achievement_view/achievement_view.dart';
 
-import '../chatforgpt/chatgpt2.dart';
+import '../page/ChatgptPage.dart';
 import '../coursemenu/scoredetail.dart';
 import '../jpushs.dart';
+
 class ApiService {
   Dio dio = Dio();
-    void showAchievementView(
+  void showAchievementView(
       BuildContext context, String version, String notice, File file) {
     AchievementView(context,
         title: "新通知!",
@@ -34,6 +33,7 @@ class ApiService {
     })
       ..show();
   }
+
   void shownotice(context) async {
     final dio = Dio();
     final response = await dio.get(
@@ -55,7 +55,7 @@ class ApiService {
     }
   }
 
-  void updateappx(context,_cancelTag) async {
+  void updateappx(context, _cancelTag) async {
     var value = await getApplicationDocumentsDirectory();
     var pathx = value.path;
     File file = File('$pathx/version.txt');
@@ -121,7 +121,7 @@ class ApiService {
                 } else {
                   Clipboard.setData(ClipboardData(
                       text:
-                      'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                          'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
                   AchievementView(context,
                       title: "复制成功",
                       subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
@@ -132,8 +132,8 @@ class ApiService {
                       color: Colors.green,
                       duration: Duration(seconds: 15),
                       isCircle: true, listener: (status) {
-                        print(status);
-                      })
+                    print(status);
+                  })
                     ..show();
                 }
               },
@@ -202,7 +202,7 @@ class ApiService {
                   } else {
                     Clipboard.setData(ClipboardData(
                         text:
-                        'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                            'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
                     AchievementView(context,
                         title: "复制成功",
                         subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
@@ -213,8 +213,8 @@ class ApiService {
                         color: Colors.green,
                         duration: Duration(seconds: 15),
                         isCircle: true, listener: (status) {
-                          print(status);
-                        })
+                      print(status);
+                    })
                       ..show();
                   }
                 },
@@ -229,7 +229,7 @@ class ApiService {
 
   //更新课程
   Future<void> updateCourseFromJW(Dio dio, File file, BuildContext context,
-      bool user1, File scoreFile,hItems) async {
+      bool user1, File scoreFile, hItems) async {
     hItems(DateTime.now(), true);
     if (Global.auto_update_course && !Global.isrefreshcourse) {
       if (user1)
@@ -270,7 +270,7 @@ class ApiService {
                 Global.isfirstread = true;
                 jpushs().uploadpushid();
 
-                updateScores(logininfo, user1, scoreFile,context);
+                updateScores(logininfo, user1, scoreFile, context);
                 showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
                     Icon(Icons.check), Global.home_currentcolor);
               } else {
@@ -328,7 +328,7 @@ class ApiService {
                 Global.isfirstread = true;
                 jpushs().uploadpushid();
 
-                updateScores(logininfo, user1, scoreFile,context);
+                updateScores(logininfo, user1, scoreFile, context);
                 showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
                     Icon(Icons.check), Global.home_currentcolor);
               } else {
@@ -350,8 +350,9 @@ class ApiService {
         });
     }
   }
+
   //更新成绩
-  void updateScores(String loginInfo, bool user1, File scoreFile,context) {
+  void updateScores(String loginInfo, bool user1, File scoreFile, context) {
     Dio dio = new Dio();
     var urlscore =
         'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
@@ -359,9 +360,9 @@ class ApiService {
             '&index=' +
             (user1
                 ? Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm']
-                .toString()
+                    .toString()
                 : Global.scoreinfos2[Global.scoreinfos2.length - 1]['cjdm']
-                .toString());
+                    .toString());
     getApplicationDocumentsDirectory().then((value) async {
       try {
         Response response = await dio.get(urlscore);
@@ -412,7 +413,8 @@ class ApiService {
       }
     });
   }
-  void qinajia(context,loadqingjia) async {
+
+  void qinajia(context, loadqingjia) async {
     var dio = Dio();
 
     //下载评教
@@ -435,8 +437,8 @@ class ApiService {
             color: Colors.green,
             duration: Duration(seconds: 3),
             isCircle: true, listener: (status) {
-              print(status);
-            })
+          print(status);
+        })
           ..show();
       }
       getApplicationDocumentsDirectory().then((value) {
@@ -447,10 +449,6 @@ class ApiService {
       });
     });
   }
-
-
-
- 
 
   Future<Widget> getVerifyCode(context, setState) async {
     print(Global.pureyzmgetter().toString());
@@ -514,7 +512,7 @@ class ApiService {
   //无感知登录
   static Future<void> noPerceptionLogin() async {
     Dio dio = Dio();
-    Response response = await dio
+    await dio
         .get(
             "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
             options: Options(responseType: ResponseType.bytes))
@@ -544,7 +542,7 @@ class ApiService {
           noPerceptionLogin();
         }
       }
-      Response response1 = await dio.get(
+      await dio.get(
           //设置超时时间
 
           "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
@@ -578,7 +576,7 @@ class ApiService {
   //无感知登录
   static Future<void> noPerceptionLogin2() async {
     Dio dio = Dio();
-    Response response = await dio
+    await dio
         .get(
             "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
             options: Options(responseType: ResponseType.bytes))
@@ -608,7 +606,7 @@ class ApiService {
           noPerceptionLogin2();
         }
       }
-      Response response1 = await dio.get(
+      await dio.get(
           //设置超时时间
 
           "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
@@ -751,6 +749,7 @@ class ApiService {
       throw e;
     }
   }
+
   //开屏广告
   Future<Response> getad() async {
     try {

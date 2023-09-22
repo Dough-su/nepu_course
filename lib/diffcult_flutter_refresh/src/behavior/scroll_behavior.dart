@@ -12,7 +12,6 @@ class ERScrollBehavior extends ScrollBehavior {
     return _physics ?? super.getScrollPhysics(context);
   }
 
-  @override
   Widget buildViewportChrome(
       BuildContext context, Widget child, AxisDirection axisDirection) {
     return child;

@@ -34,7 +34,7 @@ Future<void> main() async {
     Global.getdesktopinfo();
   }
   Global.getauto_update_course();
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(SplashPage());
   doWhenWindowReady(() {
     const initialSize = Size(600, 700);

@@ -3,13 +3,9 @@ library easy_splash_screen;
 import 'dart:async';
 import 'dart:core';
 import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/login/login.dart';
 import 'package:muse_nepu_course/progress.dart';
-import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 class EasySplashScreen extends StatefulWidget {

@@ -8,14 +8,14 @@ import 'package:rive/rive.dart';
 
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
-import '../chaoxing/chaoxing.dart';
-import '../chatforgpt/chatgpt2.dart';
+import '../page/ChaoxingPage.dart';
+import '../page/ChatgptPage.dart';
 import '../coursemenu/about.dart';
 import '../coursemenu/scoredetail.dart';
 import '../global.dart';
 import '../login/chaoxinglogin.dart';
-import '../pingjiao/pingjiao.dart';
-import '../qingjia/qingjia.dart';
+import '../page/PingjiaoPage.dart';
+import '../page/QingjiaPage.dart';
 import '../service/io_service.dart';
 class SideMenuBar{
   //侧边

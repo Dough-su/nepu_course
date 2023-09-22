@@ -6,7 +6,6 @@ import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
 import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/login/chaoxinglogin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
@@ -19,7 +18,6 @@ class chaoxing extends StatefulWidget {
 class _chaoxingState extends State<chaoxing> {
   List<Widget> listx = [];
 
-  @override
   scorelist() {
     //创建一个list
     getApplicationDocumentsDirectory().then((value) async {
@@ -40,8 +38,7 @@ class _chaoxingState extends State<chaoxing> {
                 ("assets/completed.gif"),
             completionDelay: 2500,
           ));
-      var response;
-      response = await dio.get(
+      await dio.get(
           "https://chaoxingpython-chaoxingpython-ystzjjdcxp.ap-southeast-1.fcapp.run/course?cookies=" +
               file.toString(), onReceiveProgress: (int count, int total) {
         int progress = (((count / total) * 100).toInt());
@@ -142,7 +139,6 @@ class _chaoxingState extends State<chaoxing> {
               style: TextStyle(color: Colors.black),
             ),
             onPressed: () {
-              //删除chaoxing.txt
               getApplicationDocumentsDirectory().then((value) async {
                 var file = await new File(value.path + "/chaoxing.txt");
                 file.delete();

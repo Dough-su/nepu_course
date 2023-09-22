@@ -65,7 +65,7 @@ class jpushs {
   }
 
   void uploadpushid() {
-    if (isIOS || rid == null || rid.isEmpty) {
+    if (isIOS || rid.isEmpty) {
       return;
     }
     //上传pushid

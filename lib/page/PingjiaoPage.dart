@@ -77,6 +77,7 @@ class _pingjiaoState extends State<pingjiao> {
   }
 
   void initState() {
+    super.initState();
     Global.pureyzmset(false);
     Global.bottombarheight = 60;
 

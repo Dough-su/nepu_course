@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:muse_nepu_course/chatforgpt/chatgpt2.dart';
+import 'package:muse_nepu_course/page/ChatgptPage.dart';
 import 'package:muse_nepu_course/global.dart';
 
 class DocxDialog extends StatefulWidget {

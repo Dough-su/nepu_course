@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/home.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:card_loading/card_loading.dart';
@@ -62,6 +60,7 @@ class _qingjiaState extends State<qingjia> {
 
 
   void initState() {
+    super.initState();
     Global.pureyzmset(false);
     Global.bottombarheight = 60;
 
