@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:material_dialogs/shared/types.dart';
-import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/login/chaoxinglogin.dart';
+import 'package:muse_nepu_course/util/global.dart';
+import 'package:muse_nepu_course/page/ChaoxingLoginPage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 
@@ -19,6 +19,8 @@ class _chaoxingState extends State<chaoxing> {
   List<Widget> listx = [];
 
   scorelist() {
+    Global.bottombarheight = 60;
+
     //创建一个list
     getApplicationDocumentsDirectory().then((value) async {
       //读取chaoxing.txt
@@ -88,7 +90,7 @@ class _chaoxingState extends State<chaoxing> {
 
                 ListTile(
                     onTap: (() => Dialogs.materialDialog(
-                          color: Global.home_currentcolor,
+                          color: Colors.white,
                           msg: allexam,
                           customViewPosition: CustomViewPosition.BEFORE_MESSAGE,
                           title: '详细信息',
@@ -116,8 +118,6 @@ class _chaoxingState extends State<chaoxing> {
 
   void initState() {
     super.initState();
-    Global.bottombarheight = 60;
-
     //等待页面加载完成
     scorelist();
   }
@@ -136,9 +136,10 @@ class _chaoxingState extends State<chaoxing> {
           TextButton(
             child: Text(
               "重新登陆",
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
+              //删除chaoxing.txt
               getApplicationDocumentsDirectory().then((value) async {
                 var file = await new File(value.path + "/chaoxing.txt");
                 file.delete();

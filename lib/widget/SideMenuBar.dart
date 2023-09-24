@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:achievement_view/achievement_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:muse_nepu_course/page/ChaoxingPage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rive/rive.dart';
 
@@ -10,10 +11,10 @@ import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 
 import '../page/ChaoxingPage.dart';
 import '../page/ChatgptPage.dart';
-import '../coursemenu/about.dart';
-import '../coursemenu/scoredetail.dart';
-import '../global.dart';
-import '../login/chaoxinglogin.dart';
+import '../page/AboutPage.dart';
+import '../page/ScorePage.dart';
+import '../util/global.dart';
+import '../page/ChaoxingLoginPage.dart';
 import '../page/PingjiaoPage.dart';
 import '../page/QingjiaPage.dart';
 import '../service/io_service.dart';

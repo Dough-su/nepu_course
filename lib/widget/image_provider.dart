@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lunar/calendar/LunarYear.dart';
 import 'package:lunar/calendar/Solar.dart';
-import 'package:muse_nepu_course/global.dart';
+import 'package:muse_nepu_course/util/global.dart';
 import 'package:muse_nepu_course/service/io_service.dart';
 
 class image_provider {

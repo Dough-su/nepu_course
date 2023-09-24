@@ -1,16 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui' as ui;
 import 'package:achievement_view/achievement_view.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:muse_nepu_course/global.dart';
+import 'package:muse_nepu_course/util/global.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/theme/color_schemes.g.dart';
 import 'package:bottom_bar_with_sheet/bottom_bar_with_sheet.dart';
@@ -60,7 +58,6 @@ class _ChatPageState extends State<ChatPage>
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
   final _bottomBarController = BottomBarWithSheetController(initialIndex: 0);
-  final _selectedTags = <String>[];
   final _unselectedTags = <String>[
     '#翻译docx',
     '#对docx自定义操作',
@@ -356,14 +353,14 @@ class _ChatPageState extends State<ChatPage>
 
     loadprompts(); // 加载提示语句
 
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
     if (_isAtBottom) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       });
     }
@@ -371,7 +368,7 @@ class _ChatPageState extends State<ChatPage>
 
   Future<void> saveImageToGallery(Uint8List imageBytes) async {
     if (Platform.isAndroid || Platform.isIOS) {
-      final result = await ImageGallerySaver.saveImage(imageBytes);
+      await ImageGallerySaver.saveImage(imageBytes);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('已保存到相册'),
@@ -825,7 +822,7 @@ else if (Platform.isMacOS) {
     controller.dispose();
     recorderController.dispose();
 
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -866,7 +863,7 @@ else if (Platform.isMacOS) {
       Timer timer;
       bool isTimeout = false;
       // 500毫秒执行一次
-      timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
+      Timer.periodic(Duration(milliseconds: 100), (timer) {
         if (isTimeout) {
           timer.cancel();
           print('取消定时器');
@@ -893,7 +890,7 @@ else if (Platform.isMacOS) {
         messagess.add({'sender': 'GPT', 'message': xdata});
         setState(() {
           if (_isAtBottom) {
-            WidgetsBinding.instance!.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               _scrollController
                   .jumpTo(_scrollController.position.maxScrollExtent);
             });
@@ -934,19 +931,3 @@ void showupdatenotice(BuildContext context, int second, String title,
 }
 
   
-Future<void> saveImageToMacGallery(List<int> imageBytes) async {
-  final image = img.decodeImage(imageBytes);
-  if (image == null) return; // 图片解码失败
-
-  final tempDir = await Directory.systemTemp.createTemp();
-  final imagePath = '${tempDir.path}/image.png';
-  final file = await File(imagePath).writeAsBytes(imageBytes);
-  final result = await Process.run('osascript', [
-    '-e',
-    'tell application "Photos" to add POSIX file "${file.path}"'
-  ]);
-  if (result.exitCode != 0) {
-    // 向照片库添加失败
-    throw Exception('Failed to save image to gallery');
-  }
-}

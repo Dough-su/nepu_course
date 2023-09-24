@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/global.dart';
+import 'package:muse_nepu_course/util/global.dart';
 import 'package:path_provider/path_provider.dart';
 
 class io_service {
@@ -93,11 +93,8 @@ class io_service {
       'calanderagenda.txt',
       'calanderagenda1.txt',
       'account.txt',
-      'course1.json',
       'logininfo1.txt',
-      'score1.json',
       'hascourse.json',
-      'hascourse1.json',
     ];
 
     for (final filename in filesToDelete) {

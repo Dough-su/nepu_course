@@ -2,18 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
-import 'package:muse_nepu_course/jpushs.dart';
-import 'package:muse_nepu_course/progress.dart';
-import 'package:muse_nepu_course/easy_splash_screen.dart';
+import 'package:muse_nepu_course/util/jpushs.dart';
+import 'package:muse_nepu_course/page/ProgressPage.dart';
+import 'package:muse_nepu_course/page/SplashPage.dart';
 import 'package:muse_nepu_course/theme/color_schemes.g.dart';
 import 'package:muse_nepu_course/widget/image_provider.dart';
 import 'package:window_manager/window_manager.dart';
-import 'global.dart';
+import 'util/global.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 
 Future<void> main() async {
-  if (Platform.isWindows) {
+  if (Platform.isWindows||Platform.isMacOS) {
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();
     WindowOptions windowOptions = WindowOptions(
@@ -54,9 +54,9 @@ class SplashPage extends StatefulWidget {
 class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
-    Global.getusername2();
     Global().loadItems(DateTime.now());
-    Global().loadItems2(DateTime.now());
+    //只有安卓才会初始化极光推送
+    if(Platform.isAndroid)
     jpushs().addlistenerandinit();
   }
 

@@ -4,7 +4,7 @@ import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
 import 'package:timelines/timelines.dart';
 
-import '../global.dart';
+import '../util/global.dart';
 class Course{
  static Widget coursedetail(String time, int index, String msg, eventcahe,
       bool hasStartConnector, bool hasEndConnector,widthx,context) {

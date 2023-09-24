@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/home.dart';
+import 'package:muse_nepu_course/page/HomePage.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 class Guide {

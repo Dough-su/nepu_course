@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/global.dart';
-import 'package:muse_nepu_course/windowsfloat.dart';
+import 'package:muse_nepu_course/util/global.dart';
+import 'package:muse_nepu_course/page/WindowsfloatPage.dart';
 
 class windows {
   Widget getwindow(context) {

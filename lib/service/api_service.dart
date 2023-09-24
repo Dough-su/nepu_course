@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_app_installer/easy_app_installer.dart';
@@ -8,14 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
-import 'package:muse_nepu_course/global.dart';
+import 'package:muse_nepu_course/util/global.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sn_progress_dialog/options/completed.dart';
 import 'package:sn_progress_dialog/progress_dialog.dart';
-
 import '../page/ChatgptPage.dart';
-import '../coursemenu/scoredetail.dart';
-import '../jpushs.dart';
+import '../page/ScorePage.dart';
+import '../util/jpushs.dart';
 
 class ApiService {
   Dio dio = Dio();
@@ -230,83 +227,17 @@ class ApiService {
   //更新课程
   Future<void> updateCourseFromJW(Dio dio, File file, BuildContext context,
       bool user1, File scoreFile, hItems) async {
-    hItems(DateTime.now(), true);
+    hItems(DateTime.now());
     if (Global.auto_update_course && !Global.isrefreshcourse) {
       if (user1)
         ApiService.noPerceptionLogin().then((value) async {
           Global.isrefreshcourse = true;
           late String logininfo;
           var url;
-          if (user1) {
-            logininfo = await Global().getLoginInfo();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          } else {
-            logininfo = await Global().getLoginInfo2();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          }
-
-          getApplicationDocumentsDirectory().then((value) async {
-            //判断响应状态
-            Response response = await dio.get(url);
-            if (response.statusCode == 500) {
-              showupdatenotice(
-                  context,
-                  3,
-                  '与教务同步课程失败!',
-                  '请检查你的密码或者教务系统是否正常',
-                  Icon(
-                    Icons.error,
-                    color: Colors.white,
-                  ),
-                  Colors.red);
-              return;
-            } else if (response.statusCode == 200) {
-              if (!response.data.toString().contains('fail')) {
-                file.writeAsString(response.data);
-                Global.isfirstread = true;
-                jpushs().uploadpushid();
-
-                updateScores(logininfo, user1, scoreFile, context);
-                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
-                    Icon(Icons.check), Global.home_currentcolor);
-              } else {
-                showupdatenotice(
-                    context,
-                    3,
-                    '与教务同步课程失败!',
-                    '请检查你的密码或者教务系统是否正常',
-                    Icon(
-                      Icons.error,
-                      color: Colors.white,
-                    ),
-                    Colors.red);
-
-                return;
-              }
-            }
-          });
-        });
-      if (!user1)
-        ApiService.noPerceptionLogin2().then((value) async {
-          Global.isrefreshcourse = true;
-          late String logininfo;
-          var url;
-          if (user1) {
-            logininfo = await Global().getLoginInfo();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          } else {
-            logininfo = await Global().getLoginInfo2();
-            url =
-                'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                    logininfo;
-          }
-
+          logininfo = await Global().getLoginInfo();
+          url =
+              'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+                  logininfo;
           getApplicationDocumentsDirectory().then((value) async {
             //判断响应状态
             Response response = await dio.get(url);
@@ -375,7 +306,6 @@ class ApiService {
                 response.data.toString().replaceAll('[', '');
             scoreFile.writeAsString(value);
             Global().getlist();
-            Global().getlist2();
           });
           Dialogs.materialDialog(
             color: Theme.of(context).brightness == Brightness.light
@@ -409,7 +339,7 @@ class ApiService {
           );
         }
       } catch (e) {
-        print(e);
+        print('没有新的成绩');
       }
     });
   }
@@ -554,70 +484,6 @@ class ApiService {
             'JSESSIONID': Global.jwc_jsessionid,
             '_webvpn_key': Global.jwc_webvpn_key,
             'webvpn_username': Global.jwc_webvpn_username
-          }).then((value1) async {
-        if (value1.data['message'].toString() == '登录成功') {
-          Global.login_retry = 0;
-          print('无感登陆成功了');
-          print(await Global().getLoginInfo());
-        } else {
-          Global.login_retry++;
-          if (Global.login_retry < 2) {
-            noPerceptionLogin();
-          }
-        }
-        return value1;
-      });
-
-      return value;
-    });
-  }
-
-  //用户2无感登陆
-  //无感知登录
-  static Future<void> noPerceptionLogin2() async {
-    Dio dio = Dio();
-    await dio
-        .get(
-            "https://nepuback-nepu-restart-xbbhhovrls.cn-beijing.fcapp.run/jwc_login",
-            options: Options(responseType: ResponseType.bytes))
-        .then((value) async {
-      //如果分割后的字符串长度为32则为jessonid
-      for (var item in value.headers
-          .value('Set-Cookie')
-          .toString()
-          .replaceAll('{', '')
-          .replaceAll('}', '')
-          .replaceAll("'", '')
-          .replaceAll(' ', '')
-          .split(',')) {
-        if (item.length < 50 && item.length > 10) {
-          Global.jwc_jsessionid2 = item;
-        }
-        if (item.length > 100) {
-          Global.jwc_webvpn_key2 = item;
-        }
-        if (item.length > 50 && item.length < 100) {
-          Global.jwc_webvpn_username2 = item;
-        }
-        if (item.length == 4) {
-          Global.jwc_verifycode2 = item;
-        }
-        if (item.length == 5) {
-          noPerceptionLogin2();
-        }
-      }
-      await dio.get(
-          //设置超时时间
-
-          "https://nepu-node-login-nepu-restart-togqejjknk.cn-beijing.fcapp.run/course",
-          options: Options(),
-          queryParameters: {
-            'account': Global.jwc_xuehao2,
-            'password': Global.jwc_password2,
-            'verifycode': Global.jwc_verifycode2,
-            'JSESSIONID': Global.jwc_jsessionid2,
-            '_webvpn_key': Global.jwc_webvpn_key2,
-            'webvpn_username': Global.jwc_webvpn_username2
           }).then((value1) async {
         if (value1.data['message'].toString() == '登录成功') {
           Global.login_retry = 0;
