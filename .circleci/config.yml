@@ -8,6 +8,9 @@ executors:
 
 jobs:
   build:
+    macos:
+      xcode: "14.2.0"
+
     executor: flutter-executor
     working_directory: ~/app
     steps:
@@ -26,10 +29,6 @@ jobs:
           key: flutter-packages-{{ checksum "pubspec.yaml" }}
           paths:
             - ~/.pub-cache
-
-      - run:
-          name: Build Android APK
-          command: flutter build apk
 
       - run:
           name: Build iOS app
