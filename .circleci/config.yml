@@ -1,0 +1,54 @@
+# .circleci/config.yml
+
+version: 2.1
+executors:
+  flutter-executor:
+    docker:
+      - image: cirrusci/flutter
+
+jobs:
+  build:
+    executor: flutter-executor
+    working_directory: ~/app
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - flutter-packages-{{ checksum "pubspec.yaml" }}
+            - flutter-packages-
+
+      - run:
+          name: Install dependencies
+          command: flutter pub get
+
+      - save_cache:
+          key: flutter-packages-{{ checksum "pubspec.yaml" }}
+          paths:
+            - ~/.pub-cache
+
+      - run:
+          name: Run tests
+          command: flutter test
+
+      - run:
+          name: Build Android APK
+          command: flutter build apk
+
+      - run:
+          name: Build iOS app
+          command: flutter build ios
+
+      - run:
+          name: Build macOS app
+          command: flutter build macos
+
+      - run:
+          name: Build Windows app
+          command: flutter build windows
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
