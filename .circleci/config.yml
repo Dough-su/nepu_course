@@ -1,0 +1,54 @@
+version: 2.1
+executors:
+  flutter-executor:
+    macos:
+      xcode: "14.2.0"
+    windows:
+      machine:
+        image: 'windows-server-2019-vs2019:stable'
+jobs:
+  build:
+    parameters:
+      os:
+        type: string
+        default: "macos"
+    executor:
+      name: << parameters.os >>-executor
+    working_directory: ~/app
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - flutter-packages-{{ checksum "pubspec.yaml" }}
+            - flutter-packages-
+
+      - run:
+          name: Install dependencies
+          command: flutter pub get
+
+      - save_cache:
+          key: flutter-packages-{{ checksum "pubspec.yaml" }}
+          paths:
+            - ~/.pub-cache
+
+      - run:
+          name: Build app
+          command: |
+            if [ "<< parameters.os >>" == "macos" ]; then
+              flutter build ios
+              flutter build macos
+            elif [ "<< parameters.os >>" == "windows" ]; then
+              flutter build windows
+            else
+              echo "Unsupported OS"
+            fi
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          matrix:
+            parameters:
+              os: ["macos", "windows", "linux"]
