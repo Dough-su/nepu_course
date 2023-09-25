@@ -1,0 +1,28 @@
+name: Build Flutter Windows
+
+on:
+  push:
+    branches:
+      - main  # 更改为你的主分支名称
+  pull_request:
+    branches:
+      - main  # 更改为你的主分支名称
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Windows
+        run: flutter build windows
