@@ -1,17 +1,14 @@
-# .circleci/config.yml
-
 version: 2.1
 executors:
   flutter-executor:
-    docker:
-      - image: cirrusci/flutter
-
-jobs:
-  build:
     macos:
       xcode: "14.2.0"
 
-    executor: flutter-executor
+jobs:
+  build:
+    executor:
+      name: flutter-executor
+
     working_directory: ~/app
     steps:
       - checkout
