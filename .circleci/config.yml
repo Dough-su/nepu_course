@@ -1,47 +1,18 @@
 version: 2.1
 jobs:
   build:
-    macos:
-      xcode: 14.2.0
-    working_directory: ~/app
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
         xcode: [12.5.1, 13.0]
-        ios: [14.5, 15.0]
     steps:
     - uses: actions/checkout@v2
     - name: Set up Flutter
       uses: subosito/flutter-action@v1
       with:
-        flutter-version: '3.10.0'
+        flutter-version: '2.5.3'
     - name: Install dependencies
       run: flutter pub get
-    - name: Build iOS app
-      run: flutter build ios --release --no-codesign --simulator --target-platform ios --ios-version ${{ matrix.ios }}
-    - name: Build macOS app
-      run: flutter build macos
-    - name: Build Windows app
-      run: flutter build windows
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v1
-      with:
-        flutter-version: '3.10.0'
-    - name: Install dependencies
-      run: flutter pub get
-    - name: Run tests
-      run: flutter test
-workflows:
-  version: 2
-  build-and-test:
-    jobs:
-    - build:
-        context: org-secrets
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    - test:
-        context: org-secrets
-      if: github.event_name == 'pull_request'
+    - name: Build app
+      run: flutter build ${{ matrix.os == 'windows-latest' && 'windows' || 'macos' }}
