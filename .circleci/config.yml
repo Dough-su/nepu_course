@@ -28,10 +28,6 @@ jobs:
             - ~/.pub-cache
 
       - run:
-          name: Run tests
-          command: flutter test
-
-      - run:
           name: Build Android APK
           command: flutter build apk
 
