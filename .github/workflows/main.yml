@@ -1,9 +1,11 @@
 name: CI/CD
 
 on:
-  push:
-    tags:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      file_path:
+        description: 'Path of the modified file'
+        required: true
 
 jobs:
   build:
