@@ -77,6 +77,8 @@ dependencies:
   file_picker: ^5.2.5
   audio_waveforms: ^1.0.4
   image: ^3.0.2
+  url_launcher: ^6.1.14
+
 
 
 

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/page/HomePage.dart';
-import 'package:muse_nepu_course/page/ProgressPage.dart';
 import 'package:muse_nepu_course/util/EarthAnimation.dart';
 import 'package:muse_nepu_course/util/constants/colors.dart';
-import 'package:muse_nepu_course/util/extension/nav.dart';
 import 'package:muse_nepu_course/util/extension/screen_size.dart';
 import 'package:muse_nepu_course/util/global.dart';
 import 'package:muse_nepu_course/util/moving_earth.dart';

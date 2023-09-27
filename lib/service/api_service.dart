@@ -23,11 +23,12 @@ class ApiService {
         subTitle: notice,
         color: Global.home_currentcolor,
         duration: Duration(seconds: 10),
-        isCircle: true, listener: (status) {
-      if (status.toString() == 'AchievementState.closed') {
-        file.writeAsString(version);
-      }
-    })
+        isCircle: true,
+        listener: (status) {
+          if (status.toString() == 'AchievementState.closed') {
+            file.writeAsString(version);
+          }
+        })
       ..show(context);
   }
 
@@ -116,21 +117,21 @@ class ApiService {
                     },
                   );
                 } else {
-                  Clipboard.setData(ClipboardData(
-                      text:
-                          'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                  Global().GlaunchUrl(Global.download_url);
+                  Clipboard.setData(ClipboardData(text: Global.download_url));
                   AchievementView(
                       title: "复制成功",
-                      subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
+                      subTitle: '请手动去浏览器粘贴网址，请手动下载对应您的平台',
                       icon: Icon(
                         Icons.insert_emoticon,
                         color: Colors.white,
                       ),
                       color: Colors.green,
                       duration: Duration(seconds: 15),
-                      isCircle: true, listener: (status) {
-                    print(status);
-                  })
+                      isCircle: true,
+                      listener: (status) {
+                        print(status);
+                      })
                     ..show(context);
                 }
               },
@@ -197,9 +198,8 @@ class ApiService {
                       },
                     );
                   } else {
-                    Clipboard.setData(ClipboardData(
-                        text:
-                            'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                    Global().GlaunchUrl(Global.download_url);
+                    Clipboard.setData(ClipboardData(text: Global.download_url));
                     AchievementView(
                         title: "复制成功",
                         subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
@@ -209,9 +209,10 @@ class ApiService {
                         ),
                         color: Colors.green,
                         duration: Duration(seconds: 15),
-                        isCircle: true, listener: (status) {
-                      print(status);
-                    })
+                        isCircle: true,
+                        listener: (status) {
+                          print(status);
+                        })
                       ..show(context);
                   }
                 },
@@ -366,9 +367,10 @@ class ApiService {
             ),
             color: Colors.green,
             duration: Duration(seconds: 3),
-            isCircle: true, listener: (status) {
-          print(status);
-        })
+            isCircle: true,
+            listener: (status) {
+              print(status);
+            })
           ..show(context);
       }
       getApplicationDocumentsDirectory().then((value) {

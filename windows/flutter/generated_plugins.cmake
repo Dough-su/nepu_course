@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   rive_common
   screen_retriever
+  url_launcher_windows
   window_manager
 )
 

@@ -1,17 +1,13 @@
 import 'dart:io';
 
 import 'package:achievement_view/achievement_view.dart';
-import 'package:easy_app_installer/easy_app_installer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lottie/lottie.dart';
-import 'package:material_dialogs/material_dialogs.dart';
+import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/util/global.dart';
 import 'package:muse_nepu_course/util/jpushs.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 
 class about extends StatefulWidget {
   @override
@@ -108,12 +104,16 @@ class _aboutState extends State<about> {
           //多版本下载网址，可以复制到剪切板
           ListTile(
             leading: Icon(Icons.info),
-            title: Text('多版本下载网址,点击复制，密码是4huv'),
-            subtitle: Text('https://wwai.lanzouy.com/b02pwpe5e?password=4huv'),
+            title: Text('多版本下载网址,点击复制'),
+            subtitle: Text(
+                'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8'),
             onTap: () {
+              Global().GlaunchUrl(
+                  'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8');
               //http://course.musecloud.tech/
               Clipboard.setData(ClipboardData(
-                  text: 'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
+                  text:
+                      'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8'));
               AchievementView(
                   title: "复制成功",
                   subTitle: '可以去浏览器粘贴网址了',
@@ -124,29 +124,30 @@ class _aboutState extends State<about> {
                   ),
                   color: Colors.green,
                   duration: Duration(seconds: 3),
-                  isCircle: true, listener: (status) {
-                print(status);
-              })
+                  isCircle: true,
+                  listener: (status) {
+                    print(status);
+                  })
                 ..show(context);
             },
           ),
           //开启桌面悬浮窗
-          if(Platform.isWindows)
-          ListTile(
-            leading: Icon(Icons.info),
-            title: Text('开启桌面悬浮窗'),
-            subtitle: Text('开启后，可以在桌面看到课程表'),
-            trailing: Switch(
-              activeColor: Global.home_currentcolor,
-              onChanged: (value) {
-                setState(() {
-                  Global.desktop_float = value;
-                  Global.savedesktop_float();
-                });
-              },
-              value: Global.desktop_float,
+          if (Platform.isWindows)
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text('开启桌面悬浮窗'),
+              subtitle: Text('开启后，可以在桌面看到课程表'),
+              trailing: Switch(
+                activeColor: Global.home_currentcolor,
+                onChanged: (value) {
+                  setState(() {
+                    Global.desktop_float = value;
+                    Global.savedesktop_float();
+                  });
+                },
+                value: Global.desktop_float,
+              ),
             ),
-          ),
           //请开发者喝杯咖啡
           ListTile(
             leading: Icon(Icons.coffee),
@@ -242,9 +243,10 @@ class _aboutState extends State<about> {
                   ),
                   color: Colors.green,
                   duration: Duration(seconds: 3),
-                  isCircle: true, listener: (status) {
-                print(status);
-              })
+                  isCircle: true,
+                  listener: (status) {
+                    print(status);
+                  })
                 ..show(context);
             },
           ),
@@ -275,9 +277,10 @@ class _aboutState extends State<about> {
                       ),
                       color: Colors.green,
                       duration: Duration(seconds: 3),
-                      isCircle: true, listener: (status) {
-                    print(status);
-                  })
+                      isCircle: true,
+                      listener: (status) {
+                        print(status);
+                      })
                     ..show(context);
                 }
               }),
@@ -307,9 +310,10 @@ class _aboutState extends State<about> {
                       ),
                       color: Colors.green,
                       duration: Duration(seconds: 3),
-                      isCircle: true, listener: (status) {
-                    print(status);
-                  })
+                      isCircle: true,
+                      listener: (status) {
+                        print(status);
+                      })
                     ..show(context);
                 }
               }),
@@ -339,9 +343,10 @@ class _aboutState extends State<about> {
                       ),
                       color: Colors.green,
                       duration: Duration(seconds: 3),
-                      isCircle: true, listener: (status) {
-                    print(status);
-                  })
+                      isCircle: true,
+                      listener: (status) {
+                        print(status);
+                      })
                     ..show(context);
                 }
               }),
@@ -371,9 +376,10 @@ class _aboutState extends State<about> {
                       ),
                       color: Colors.green,
                       duration: Duration(seconds: 3),
-                      isCircle: true, listener: (status) {
-                    print(status);
-                  })
+                      isCircle: true,
+                      listener: (status) {
+                        print(status);
+                      })
                     ..show(context);
                 }
               }),
@@ -382,88 +388,7 @@ class _aboutState extends State<about> {
               title: Text('检测更新'),
               subtitle: Text(''),
               onTap: () {
-                getApplicationDocumentsDirectory().then((value) {
-                  File file = new File(value.path + '/version.txt');
-                  var dio = Dio();
-                  dio
-                      .get(
-                          'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update')
-                      .then((value) {
-                    //截取json中的version
-                    String version = value.data[0]['version'];
-                    Dialogs.materialDialog(
-                      color: Theme.of(context).brightness == Brightness.light
-                          ? Colors.white
-                          : Colors.black,
-                      msg: '要下载吗?',
-                      title: '有新版本啦,版本号是' +
-                          version.toString() +
-                          "\n" +
-                          value.data[0]['descrption'],
-                      lottieBuilder: Lottie.asset(
-                        'assets/rockert-new.json',
-                        fit: BoxFit.contain,
-                      ),
-                      context: context,
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            //将版本号写入
-                            file.writeAsString(version.toString());
-                            //关闭
-                            Navigator.pop(context);
-                          },
-                          icon: Icon(Icons.cancel_outlined),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            //将版本号写入
-                            file.writeAsString(version.toString());
-                            Navigator.pop(context);
-
-                            //下载
-                            ProgressDialog pd =
-                                ProgressDialog(context: context);
-                            pd.show(
-                                backgroundColor: Global.home_currentcolor,
-                                max: 100,
-                                msg: '准备下载更新...',
-                                msgMaxLines: 5,
-                                completed: Completed(
-                                  completedMsg: "下载完成!",
-                                  completedImage: AssetImage
-                                      //加载gif
-                                      ("assets/completed.gif"),
-                                  completionDelay: 2500,
-                                ));
-                            await EasyAppInstaller.instance
-                                .downloadAndInstallApk(
-                              fileUrl: value.data[0]['link'],
-                              fileDirectory: "updateApk",
-                              fileName: "newApk.apk",
-                              explainContent: "快去开启权限！！！",
-                              onDownloadingListener: (progress) {
-                                if (progress < 100) {
-                                  pd.update(
-                                      value: progress.toInt(),
-                                      msg: '安装包正在下载...');
-                                } else {
-                                  pd.update(
-                                      value: progress.toInt(),
-                                      msg: '安装包下载完成...');
-                                }
-                              },
-                              onCancelTagListener: (cancelTag) {},
-                            );
-                          },
-                          icon: Icon(Icons.check),
-                        ),
-                      ],
-                    );
-                  });
-                });
-
-                // MyDialog.snack('替换成功');
+                ApiService().updateappx(context, "");
               }),
           //捐赠人员
           ListTile(

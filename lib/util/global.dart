@@ -10,6 +10,7 @@ import 'package:muse_nepu_course/page/LoginPage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../service/api_service.dart';
 
 class LoginData {
@@ -43,7 +44,6 @@ class LoginData {
   int get hashCode => hash2(name, password);
 }
 
-
 class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
@@ -62,10 +62,9 @@ class Global {
   //教务处webvpn_username
   static String jwc_webvpn_username = '';
   //是
-   static bool progressorhome = false;
-   //倒计时
-    static int durationInSeconds = 2;
-
+  static bool progressorhome = false;
+  //倒计时
+  static int durationInSeconds = 2;
 
   //主页的currentcolor
   static Color home_currentcolor = Colors.blue;
@@ -113,6 +112,8 @@ class Global {
   //桌面悬浮窗是否开启
   static bool desktop_float = true;
   ApiService apiService = ApiService();
+  //下载网址
+  static String download_url = 'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8';
   //新手引导
   List<TargetFocus> targets = [
     TargetFocus(
@@ -237,6 +238,7 @@ class Global {
       file.writeAsStringSync(desktop_float.toString(), mode: FileMode.write);
     });
   }
+
   //读取桌面悬浮窗状态
   static void getdesktop_float() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -250,13 +252,10 @@ class Global {
       }
     });
   }
- 
+
   //文本控制器
   static TextEditingController textEditingController =
       TextEditingController(text: '');
-
-
-
 
   //保存是否显示有课的日期到文件
   static void save_show_course_day() async {
@@ -278,7 +277,6 @@ class Global {
     return false;
   }
 
-
   //qrcode刷新时间
   static DateTime qrcode_time = DateTime.now();
   //保存账号密码到文件
@@ -296,17 +294,16 @@ class Global {
       if (file.existsSync()) {
         calendar_first_day =
             DateTime.parse(file.readAsStringSync().split('\n')[1]);
-            if(DateTime.now().isAfter(DateTime.parse(file.readAsStringSync().split('\n')[0]))){
-              //如果当前日期大于最后一天，则将明天设为最后一天
-              calendar_last_day = DateTime.now().add(Duration(days: 1));
-              
-            }else
-        calendar_last_day =
-            DateTime.parse(file.readAsStringSync().split('\n')[0]);
+        if (DateTime.now()
+            .isAfter(DateTime.parse(file.readAsStringSync().split('\n')[0]))) {
+          //如果当前日期大于最后一天，则将明天设为最后一天
+          calendar_last_day = DateTime.now().add(Duration(days: 1));
+        } else
+          calendar_last_day =
+              DateTime.parse(file.readAsStringSync().split('\n')[0]);
       }
     });
   }
-
 
   //保存自动更新课程状态到文件
   static void saveauto_update_course() async {
@@ -423,7 +420,6 @@ class Global {
     });
   }
 
-
   //存储用户名和密码
   void storelogininfo(username, password) {
     Global.jwc_xuehao = username;
@@ -439,7 +435,6 @@ class Global {
       });
     });
   }
-
 
   //读取登录信息
   Future<String> getLoginInfo() async {
@@ -513,7 +508,8 @@ class Global {
       ],
     ));
   }
-    //页面跳转
+
+  //页面跳转
   void jump_page(context) {
     getApplicationDocumentsDirectory().then((value) {
       //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
@@ -589,7 +585,6 @@ class Global {
     }
   }
 
-
   //读取下载的json
   Future<String> getCourseInfo() async {
     //获取路径
@@ -600,6 +595,7 @@ class Global {
     String courseInfo = await file.readAsString();
     return courseInfo;
   }
+
   //读取有课的日期
   static void get_course_day() {
     Global.get_show_course_day().then((value) {
@@ -621,7 +617,6 @@ class Global {
       });
     });
   }
-
 
   //获取成绩页面的颜色信息
   Future<void> score_getcolor() async {
@@ -659,8 +654,6 @@ class Global {
     String scoreInfo = await file.readAsString();
     return scoreInfo;
   }
-
-
 
   void getlist() {
     scoreinfos.clear();
@@ -922,6 +915,12 @@ class Global {
     });
   }
 
+//启动url
+  Future<void> GlaunchUrl(url) async {
+    if (!await launchUrl(Uri.parse(url))) {
+      throw Exception('Could not launch $url');
+    }
+  }
 
   static Map<String, dynamic> _globalData = {};
 
