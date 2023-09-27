@@ -114,7 +114,7 @@ class _aboutState extends State<about> {
               //http://course.musecloud.tech/
               Clipboard.setData(ClipboardData(
                   text: 'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
-              AchievementView(context,
+              AchievementView(
                   title: "复制成功",
                   subTitle: '可以去浏览器粘贴网址了',
                   //onTab: _onTabAchievement,
@@ -127,7 +127,7 @@ class _aboutState extends State<about> {
                   isCircle: true, listener: (status) {
                 print(status);
               })
-                ..show();
+                ..show(context);
             },
           ),
           //开启桌面悬浮窗
@@ -232,7 +232,7 @@ class _aboutState extends State<about> {
               //http://course.musecloud.tech/
               Clipboard.setData(
                   ClipboardData(text: 'http://course.musecloud.tech/'));
-              AchievementView(context,
+              AchievementView(
                   title: "复制成功",
                   subTitle: '可以给你ios设备的朋友了',
                   //onTab: _onTabAchievement,
@@ -245,7 +245,7 @@ class _aboutState extends State<about> {
                   isCircle: true, listener: (status) {
                 print(status);
               })
-                ..show();
+                ..show(context);
             },
           ),
 
@@ -265,7 +265,7 @@ class _aboutState extends State<about> {
                   //将图片复制到应用程序的文档目录
                   File file = File(image.path);
                   file.copy(path);
-                  AchievementView(context,
+                  AchievementView(
                       title: "图片替换成功",
                       subTitle: '可以去主页查看你的logo了',
                       //onTab: _onTabAchievement,
@@ -278,7 +278,7 @@ class _aboutState extends State<about> {
                       isCircle: true, listener: (status) {
                     print(status);
                   })
-                    ..show();
+                    ..show(context);
                 }
               }),
           ListTile(
@@ -297,7 +297,7 @@ class _aboutState extends State<about> {
                   //将图片复制到应用程序的文档目录
                   File file = File(image.path);
                   file.copy(path);
-                  AchievementView(context,
+                  AchievementView(
                       title: "图片替换成功",
                       subTitle: '可以去主页右上角点击查看你的日历背景图了',
                       //onTab: _onTabAchievement,
@@ -310,7 +310,7 @@ class _aboutState extends State<about> {
                       isCircle: true, listener: (status) {
                     print(status);
                   })
-                    ..show();
+                    ..show(context);
                 }
               }),
           ListTile(
@@ -329,7 +329,7 @@ class _aboutState extends State<about> {
                   //将图片复制到应用程序的文档目录
                   File file = File(image.path);
                   file.copy(path);
-                  AchievementView(context,
+                  AchievementView(
                       title: "图片替换成功",
                       subTitle: '可以去成绩详情页面查看你的卡片图了',
                       //onTab: _onTabAchievement,
@@ -342,7 +342,7 @@ class _aboutState extends State<about> {
                       isCircle: true, listener: (status) {
                     print(status);
                   })
-                    ..show();
+                    ..show(context);
                 }
               }),
           ListTile(
@@ -361,7 +361,7 @@ class _aboutState extends State<about> {
                   //将图片复制到应用程序的文档目录
                   File file = File(image.path);
                   file.copy(path);
-                  AchievementView(context,
+                  AchievementView(
                       title: "图片替换成功",
                       subTitle: '可以去成绩详情页面查看你的头像了',
                       //onTab: _onTabAchievement,
@@ -374,7 +374,7 @@ class _aboutState extends State<about> {
                       isCircle: true, listener: (status) {
                     print(status);
                   })
-                    ..show();
+                    ..show(context);
                 }
               }),
           ListTile(

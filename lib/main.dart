@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:muse_nepu_course/page/earth.dart';
 import 'package:muse_nepu_course/util/jpushs.dart';
 import 'package:muse_nepu_course/page/ProgressPage.dart';
 import 'package:muse_nepu_course/page/SplashPage.dart';
@@ -65,24 +66,26 @@ class _SplashPageState extends State<SplashPage> {
     return MaterialApp(
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-      home: EasySplashScreen(
-        logo: Image.asset('images/logo.png'),
-        title: Text(
-          '',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundImage: image_provider().jieqi(),
-        backgroundColor: Colors.white,
-        showLoader: true,
-        loadingText: Text("正在加载...", style: TextStyle(color: Colors.white)),
-        navigator: WithBuilder(),
-        durationInSeconds: 3,
-        loaderColor: Colors.white,
-      ),
+      home: SplashScreen(),
+      //以下是原版24节气启动页
+      // EasySplashScreen(
+      //   logo: Image.asset('images/logo.png'),
+      //   title: Text(
+      //     '',
+      //     style: TextStyle(
+      //       fontSize: 18,
+      //       fontWeight: FontWeight.bold,
+      //       color: Colors.white,
+      //     ),
+      //   ),
+      //   backgroundImage: image_provider().jieqi(),
+      //   backgroundColor: Colors.white,
+      //   showLoader: true,
+      //   loadingText: Text("正在加载...", style: TextStyle(color: Colors.white)),
+      //   navigator: WithBuilder(),
+      //   durationInSeconds: 3,
+      //   loaderColor: Colors.white,
+      // ),
     );
   }
 }

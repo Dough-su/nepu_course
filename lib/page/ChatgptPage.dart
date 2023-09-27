@@ -919,7 +919,6 @@ Future<File> saveUint8ListToDesktop(Uint8List bytes) async {
 void showupdatenotice(BuildContext context, int second, String title,
     String subtitle, Icon icon, Color color) {
   AchievementView(
-    context,
     title: title,
     subTitle: subtitle,
     icon: icon,
@@ -927,7 +926,7 @@ void showupdatenotice(BuildContext context, int second, String title,
     duration: Duration(seconds: second),
     isCircle: true,
     listener: (status) {},
-  ).show();
+  ).show(context);
 }
 
   

@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
-import 'package:flip_card/flip_card.dart' as flip;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:muse_nepu_course/util/jpushs.dart';
@@ -27,7 +26,6 @@ List<Widget> dailycourse = [];
 List<Widget> dailycourse2 = [];
 GlobalKey scoredetailbtn = GlobalKey();
 GlobalKey scoredetailbtn2 = GlobalKey();
-GlobalKey<flip.FlipCardState> cardKey = GlobalKey<flip.FlipCardState>();
 
 //上滑控制器
 BottomSheetBarController bottomSheetBarController = BottomSheetBarController();
@@ -165,7 +163,7 @@ class _HomePageState extends State<HomePage> {
 
   void showAchievementView(
       BuildContext context, String version, String notice, File file) {
-    AchievementView(context,
+    AchievementView(
         title: "新通知!",
         subTitle: notice,
         color: Global.home_currentcolor,
@@ -175,7 +173,7 @@ class _HomePageState extends State<HomePage> {
         file.writeAsString(version);
       }
     })
-      ..show();
+      ..show(context);
   }
 
   void showTutorial() {
@@ -356,7 +354,7 @@ class _HomePageState extends State<HomePage> {
   //展示通知
   void showupdatenotice(BuildContext context, int second, String title,
       String subtitle, Icon icon, Color color) {
-    AchievementView(context,
+    AchievementView(
         title: title,
         subTitle: subtitle,
         icon: icon,
@@ -364,7 +362,7 @@ class _HomePageState extends State<HomePage> {
         duration: Duration(seconds: second),
         isCircle: true,
         listener: (status) {})
-      ..show();
+      ..show(context);
   }
 
   var homecontext;
@@ -732,18 +730,13 @@ class _HomePageState extends State<HomePage> {
               bottomNavigationBar: Container(
                   //圆角
                   width: MediaQuery.of(context).size.width / 2,
-                  child: flip.FlipCard(
-                    key: cardKey,
-                    flipOnTouch: false,
-
-                    fill: flip.Fill
-                        .fillBack, // Fill the back side of the card to make in the same size as the front.
-                    direction: flip.FlipDirection.HORIZONTAL, // default
-                    side: flip.CardSide.FRONT, // The side to initially display.
-                    front: flipContainer(true),
-                    back: flipContainer(false),
-                  ))))
-    ]));
+                  child: 
+                  flipContainer(true)),
+          )
+      )
+        ]
+        )
+    );
   }
 
   Widget getwindow(context) {

@@ -76,7 +76,7 @@ Future<bool> validate(LoginData loginData) {
     if (value.data.toString().contains("报错")) {
       pd.close();
 
-      AchievementView(login,
+      AchievementView(
           title: "出错啦!",
           subTitle: value.data.toString().replaceAll('报错', ''),
           icon: Icon(
@@ -88,7 +88,7 @@ Future<bool> validate(LoginData loginData) {
           isCircle: true, listener: (status) {
         print(status);
       })
-        ..show();
+        ..show(login);
       return Future.value(false);
     } else {
       pd.close();

@@ -3,6 +3,7 @@ import 'package:achievement_view/achievement_view.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:muse_nepu_course/extra_package/card_flip/src/flip_layout.dart';
 import 'package:muse_nepu_course/extra_package/diffcult_flutter_refresh/easy_refresh.dart';
 import 'package:muse_nepu_course/extra_package/diffcult_flutter_refresh/src/styles/space/easy_refresh_space.dart';
 import 'package:muse_nepu_course/util/global.dart';
@@ -10,7 +11,6 @@ import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/service/io_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:card_flip/card_flip.dart';
 
 class scorepage extends StatefulWidget {
   @override
@@ -218,26 +218,26 @@ class _scoreState extends State<scorepage> {
             file.writeAsString(value);
             Global().getlist();
           });
-          AchievementView(context,
+          AchievementView(
               title: "hi!",
               subTitle: '课程已更新，请重新进入该页面',
               color: Global.home_currentcolor,
               duration: Duration(seconds: 3),
               isCircle: true,
               listener: (status) {})
-            ..show();
+            ..show(context);
           easycontroller.finishRefresh();
         }
       } catch (e) {
         print(e);
-        AchievementView(context,
+        AchievementView(
             title: "hi!",
             subTitle: '课程已经都是最新了哦',
             color: Global.home_currentcolor,
             duration: Duration(seconds: 2),
             isCircle: true,
             listener: (status) {})
-          ..show();
+          ..show(context);
         easycontroller.finishRefresh();
 
         return;

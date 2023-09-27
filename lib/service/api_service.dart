@@ -18,7 +18,7 @@ class ApiService {
   Dio dio = Dio();
   void showAchievementView(
       BuildContext context, String version, String notice, File file) {
-    AchievementView(context,
+    AchievementView(
         title: "新通知!",
         subTitle: notice,
         color: Global.home_currentcolor,
@@ -28,7 +28,7 @@ class ApiService {
         file.writeAsString(version);
       }
     })
-      ..show();
+      ..show(context);
   }
 
   void shownotice(context) async {
@@ -119,7 +119,7 @@ class ApiService {
                   Clipboard.setData(ClipboardData(
                       text:
                           'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
-                  AchievementView(context,
+                  AchievementView(
                       title: "复制成功",
                       subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
                       icon: Icon(
@@ -131,7 +131,7 @@ class ApiService {
                       isCircle: true, listener: (status) {
                     print(status);
                   })
-                    ..show();
+                    ..show(context);
                 }
               },
               icon: Icon(Icons.check),
@@ -200,7 +200,7 @@ class ApiService {
                     Clipboard.setData(ClipboardData(
                         text:
                             'https://wwai.lanzouy.com/b02pwpe5e?password=4huv'));
-                    AchievementView(context,
+                    AchievementView(
                         title: "复制成功",
                         subTitle: '请手动去浏览器粘贴网址，密码是4huv，请手动下载对应您的平台',
                         icon: Icon(
@@ -212,7 +212,7 @@ class ApiService {
                         isCircle: true, listener: (status) {
                       print(status);
                     })
-                      ..show();
+                      ..show(context);
                   }
                 },
                 icon: Icon(Icons.check),
@@ -356,7 +356,7 @@ class ApiService {
       //如果状态码为500，则弹窗提示
       var response = await dio.get(urlqingjia);
       if (response.statusCode == 500) {
-        AchievementView(context,
+        AchievementView(
             title: "hi!出错了，请点击左上角回到主页面，并且重新进来",
             subTitle: response.data.toString(),
             //onTab: _onTabAchievement,
@@ -369,7 +369,7 @@ class ApiService {
             isCircle: true, listener: (status) {
           print(status);
         })
-          ..show();
+          ..show(context);
       }
       getApplicationDocumentsDirectory().then((value) {
         File file = new File(value.path + '/qingjia.json');
@@ -418,7 +418,7 @@ class ApiService {
       }
 
       try {
-        await AchievementView(context,
+        await AchievementView(
             title: "你可以无需验证码登录啦，验证码是",
             subTitle: Global.jwc_verifycode,
             icon: Icon(
@@ -429,7 +429,7 @@ class ApiService {
             duration: Duration(seconds: 3),
             isCircle: true,
             listener: (status) {})
-          ..show();
+          ..show(context);
       } catch (e) {
         print(e);
       }

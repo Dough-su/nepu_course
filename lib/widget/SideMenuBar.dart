@@ -229,7 +229,7 @@ class SideMenuBar{
                       ),
                       onTap: () {
                         io_service().deleteFiles();
-                        AchievementView(context,
+                        AchievementView(
                             title: "成功!",
                             subTitle: "已清除课程和成绩缓存，请退出app重新登录",
                             //onTab: _onTabAchievement,
@@ -247,7 +247,7 @@ class SideMenuBar{
                             isCircle: true, listener: (status) {
                               print(status);
                             })
-                          ..show();
+                          ..show(context);
                       },
                     ),
                     ListTile(
@@ -307,7 +307,7 @@ class SideMenuBar{
                                 builder: (context) => scorepage()),
                           );
                         } else {
-                          AchievementView(context,
+                          AchievementView(
                               title: "出错啦!",
                               subTitle: '请确认现在是否学校在抢课或其他原因导致成绩下载超时',
                               //onTab: _onTabAchievement,
@@ -320,7 +320,7 @@ class SideMenuBar{
                               isCircle: true, listener: (status) {
                                 print(status);
                               })
-                            ..show();
+                            ..show(context);
                         }
                       },
                     ),

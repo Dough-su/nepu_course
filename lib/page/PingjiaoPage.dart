@@ -167,7 +167,7 @@ class _pingjiaoState extends State<pingjiao> {
   }
 
   void showAchievementView(String message) {
-    AchievementView(context,
+    AchievementView(
         title: "hi!",
         subTitle: message,
         icon: Icon(
@@ -179,7 +179,7 @@ class _pingjiaoState extends State<pingjiao> {
         isCircle: true, listener: (status) {
       print(status);
     })
-      ..show();
+      ..show(context);
   }
 
   Widget build(BuildContext context) {

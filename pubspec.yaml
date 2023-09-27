@@ -34,7 +34,6 @@ dependencies:
     sdk: flutter
   calendar_agenda: ^0.0.2+3
   path_provider: ^2.0.0
-  card_flip: ^0.0.5
   flutter_colorpicker: ^1.0.3
   material_dialogs: ^1.1.4
   sn_progress_dialog: ^1.0.9
@@ -71,7 +70,6 @@ dependencies:
   window_manager: ^0.3.2
   flutter_markdown: ^0.6.14
   slide_countdown: ^0.5.0
-  flip_card: ^0.7.0
   pointycastle: ^3.7.3
   animated_text_kit: ^4.2.2
   bottom_bar_with_sheet: ^2.4.0

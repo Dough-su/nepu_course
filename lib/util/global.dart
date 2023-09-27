@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:card_flip/card_flip.dart';
 import 'package:flutter/material.dart';
+import 'package:muse_nepu_course/extra_package/card_flip/src/flip_layout.dart';
+import 'package:muse_nepu_course/page/ProgressPage.dart';
 import 'package:muse_nepu_course/page/ScorePage.dart';
 import 'package:muse_nepu_course/extra_package/flutterlogin/flutter_login.dart';
 import 'package:muse_nepu_course/page/HomePage.dart';
@@ -60,6 +61,12 @@ class Global {
   static String jwc_webvpn_key = '';
   //教务处webvpn_username
   static String jwc_webvpn_username = '';
+  //是
+   static bool progressorhome = false;
+   //倒计时
+    static int durationInSeconds = 2;
+
+
   //主页的currentcolor
   static Color home_currentcolor = Colors.blue;
   //主页的pickcolor
@@ -505,6 +512,21 @@ class Global {
         ),
       ],
     ));
+  }
+    //页面跳转
+  void jump_page(context) {
+    getApplicationDocumentsDirectory().then((value) {
+      //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
+      File file = new File(value.path + '/first.txt');
+      file.exists().then((value) async {
+        if (!progressorhome) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => WithBuilder()));
+        } else {
+          Global().isFirst(context);
+        }
+      });
+    });
   }
 
   //加载课程到内存

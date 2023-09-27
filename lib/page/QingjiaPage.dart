@@ -95,7 +95,7 @@ class _qingjiaState extends State<qingjia> {
                 // //获取返回值
                 var response = await dio.get(urlqingjia);
                 try {
-                  AchievementView(context,
+                  AchievementView(
                       title: "hi!",
                       subTitle: response.data.toString(),
                       //onTab: _onTabAchievement,
@@ -108,9 +108,9 @@ class _qingjiaState extends State<qingjia> {
                       isCircle: true, listener: (status) {
                     print(status);
                   })
-                    ..show();
+                    ..show(context);
                 } catch (Exception) {
-                  AchievementView(context,
+                  AchievementView(
                       title: "hi!",
                       subTitle: '状态被改变',
                       //onTab: _onTabAchievement,
@@ -123,13 +123,13 @@ class _qingjiaState extends State<qingjia> {
                       isCircle: true, listener: (status) {
                     print(status);
                   })
-                    ..show();
+                    ..show(context);
                 }
               }),
               children: [
                 SlidableAction(
                   onPressed: (BuildContext) async {
-                    AchievementView(context,
+                    AchievementView(
                         title: "点我干嘛？",
                         subTitle: '继续滑啊',
                         //onTab: _onTabAchievement,
@@ -142,7 +142,7 @@ class _qingjiaState extends State<qingjia> {
                         isCircle: true, listener: (status) {
                       print(status);
                     })
-                      ..show();
+                      ..show(context);
                   },
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
