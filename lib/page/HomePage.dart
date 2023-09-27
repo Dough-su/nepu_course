@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
-import 'package:bottom_sheet_bar/bottom_sheet_bar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +27,6 @@ GlobalKey scoredetailbtn = GlobalKey();
 GlobalKey scoredetailbtn2 = GlobalKey();
 
 //上滑控制器
-BottomSheetBarController bottomSheetBarController = BottomSheetBarController();
 //侧边栏控制器
 GlobalKey<SideMenuState> _sideMenuKey =
     GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
@@ -314,14 +312,6 @@ class _HomePageState extends State<HomePage> {
           _isStanding = false;
           _controller2 = SimpleAnimation('休息');
           _controller2.isActive = true;
-        });
-      }
-    });
-    bottomSheetBarController.addListener(() {
-      if (bottomSheetBarController.isExpanded == true) {
-      } else {
-        setState(() {
-          Global.locked = false;
         });
       }
     });

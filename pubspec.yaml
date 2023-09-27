@@ -56,20 +56,13 @@ dependencies:
   another_transformer_page_view: ^2.0.1
   card_loading: ^0.2.2
   path_drawing: ^1.0.1
-  rive: ^0.11.0
+  rive: ^0.11.17
   jpush_flutter: ^2.4.0  
   animate_do: ^2.1.0
-  bottom_sheet_bar: ^2.3.8
-  salomon_bottom_bar: ^3.3.1
-  get_it: ^7.2.0
-  flutter_bloc: ^8.1.2
-  freezed_annotation: ^2.2.0
   launch_at_startup: ^0.2.1
-  package_info_plus: ^3.0.3
   bitsdojo_window: ^0.1.5
   window_manager: ^0.3.2
   flutter_markdown: ^0.6.14
-  slide_countdown: ^0.5.0
   pointycastle: ^3.7.3
   animated_text_kit: ^4.2.2
   bottom_bar_with_sheet: ^2.4.0

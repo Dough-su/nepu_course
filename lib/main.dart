@@ -7,7 +7,6 @@ import 'package:muse_nepu_course/util/jpushs.dart';
 import 'package:muse_nepu_course/theme/color_schemes.g.dart';
 import 'package:window_manager/window_manager.dart';
 import 'util/global.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 
 Future<void> main() async {
@@ -23,9 +22,8 @@ Future<void> main() async {
       await windowManager.show();
     });
     WidgetsFlutterBinding.ensureInitialized();
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
     launchAtStartup.setup(
-      appName: packageInfo.appName,
+      appName: '东油课表',
       appPath: Platform.resolvedExecutable,
     );
     await launchAtStartup.enable();
