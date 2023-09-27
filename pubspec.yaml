@@ -112,8 +112,6 @@ flutter:
   assets:
         - assets/
         - images/
-        - assets/splash_screen/
-        - assets/splash_screen/jieqi/
         - assets/pay/
 
 
