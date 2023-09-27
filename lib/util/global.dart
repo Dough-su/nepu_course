@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:muse_nepu_course/extra_package/card_flip/src/flip_layout.dart';
 import 'package:muse_nepu_course/page/ProgressPage.dart';
@@ -103,6 +104,8 @@ class Global {
   static String password = '';
   //qrocde
   static String qrcode = '';
+  //广告存储
+  static dynamic advertisement = "";
   //有课的日期
   static List<DateTime> course_day = [];
   //是否显示有课的日期
@@ -111,6 +114,8 @@ class Global {
   static bool isfirst = true;
   //桌面悬浮窗是否开启
   static bool desktop_float = true;
+  //展示广告
+  static bool show_advertisement = true;
   ApiService apiService = ApiService();
   //下载网址
   static String download_url = 'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8';
@@ -920,6 +925,62 @@ class Global {
     if (!await launchUrl(Uri.parse(url))) {
       throw Exception('Could not launch $url');
     }
+  }
+  //弹窗广告
+   Future<void> showad(context) async {
+    await ApiService().getad().then((response) async {
+         Response response = await ApiService().getad();
+advertisement = json.decode(json.encode(response.data));   
+ //List<dynamic> [{content: baidu.com, date: 2023-07-19T01:16:12.000Z, redirect: baidu.com}]
+ //如果ad文件存在，则读取文件中的时间
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/ad.txt');
+      if (file.existsSync()) {
+        //如果读取的时间等于传入的时间，则不弹窗
+        if (file.readAsStringSync() == advertisement[0]['date']) {
+          print('已存在');
+          show_advertisement = false;
+          return;
+        }
+      }
+    });
+    
+ //保存时间到文件
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/ad.txt');
+      file.writeAsStringSync(advertisement[0]['date'], mode: FileMode.write);
+    });
+
+      }).then((value) {
+      //如果当前时间大于广告时间，则不弹窗
+      if (DateTime.now().isAfter(DateTime.parse(advertisement[0]['date']))) {
+        show_advertisement = false;
+        return;
+      }
+      if(show_advertisement)
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('公告'),
+            content: Text(advertisement[0]['content']),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('取消')),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    GlaunchUrl(advertisement[0]['redirect']);
+                  },
+                  child: Text('确定')),
+            ],
+          );
+        });
+    
+      });
   }
 
   static Map<String, dynamic> _globalData = {};

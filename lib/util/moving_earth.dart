@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:muse_nepu_course/page/ProgressPage.dart';
 import 'package:muse_nepu_course/util/EarthAnimation.dart';
 import 'package:muse_nepu_course/util/global.dart';
 import 'package:path_provider/path_provider.dart';

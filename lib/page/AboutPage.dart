@@ -47,11 +47,6 @@ class _aboutState extends State<about> {
         children: [
           ListTile(
             leading: Icon(Icons.info),
-            title: Text('关于'),
-            subtitle: Text('身在井隅，心向璀璨。'),
-          ),
-          ListTile(
-            leading: Icon(Icons.info),
             title: Text('内部版本号'),
             subtitle: Text(Global.version),
           ),
@@ -225,31 +220,6 @@ class _aboutState extends State<about> {
             },
           ),
           //
-          ListTile(
-            leading: Icon(Icons.info),
-            title: Text('ios也想用课程推送，点我复制网址'),
-            subtitle: Text(''),
-            onTap: () {
-              //http://course.musecloud.tech/
-              Clipboard.setData(
-                  ClipboardData(text: 'http://course.musecloud.tech/'));
-              AchievementView(
-                  title: "复制成功",
-                  subTitle: '可以给你ios设备的朋友了',
-                  //onTab: _onTabAchievement,
-                  icon: Icon(
-                    Icons.insert_emoticon,
-                    color: Colors.white,
-                  ),
-                  color: Colors.green,
-                  duration: Duration(seconds: 3),
-                  isCircle: true,
-                  listener: (status) {
-                    print(status);
-                  })
-                ..show(context);
-            },
-          ),
 
           ListTile(
               leading: Icon(Icons.image),
@@ -474,6 +444,11 @@ class _aboutState extends State<about> {
             leading: Icon(Icons.bug_report),
             title: Text('开源地址,想提issue?来下面哦'),
             subtitle: Text('https://github.com/Dough-su/nepu_course'),
+            onTap: () {
+              Global().GlaunchUrl(
+                  'https://github.com/Dough-su/nepu_course'
+              );
+            }
           ),
         ],
       )),

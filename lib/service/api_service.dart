@@ -561,6 +561,7 @@ class ApiService {
     }
     FormData formData = FormData.fromMap({
       'content': messages,
+      'stuid': Global.jwc_xuehao,
     });
 
     try {
@@ -618,7 +619,7 @@ class ApiService {
     }
   }
 
-  //开屏广告
+  //广告
   Future<Response> getad() async {
     try {
       Response response = await Dio().get(

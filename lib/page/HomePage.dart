@@ -300,6 +300,7 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
+    Global().showad(context);
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       Navigator.of(context).popUntil((route) => route.isFirst);
     });
