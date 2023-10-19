@@ -54,51 +54,51 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
       cardsEntries.addAll([
         DropdownMenuEntry<int>(
           value: 1,
-          label: '8:00'
+          label: '8:00:00',
         ),
         DropdownMenuEntry<int>(
             value: 2,
-            label: '9:35'
+            label: '9:35:00'
         ),
         DropdownMenuEntry<int>(
             value: 3,
-            label: '9:55'
+            label: '9:55:00'
         ),
         DropdownMenuEntry<int>(
             value: 4,
-            label: '11:30'
+            label: '11:30:00'
         ),
         DropdownMenuEntry<int>(
             value: 5,
-            label: '13:30'
+            label: '13:30:00'
         ),
         DropdownMenuEntry<int>(
             value: 6,
-            label: '15:05'
+            label: '15:05:00'
         ),
         DropdownMenuEntry<int>(
             value: 7,
-            label: '15:25'
+            label: '15:25:00'
         ),
         DropdownMenuEntry<int>(
             value: 8,
-            label: '17:00'
+            label: '17:00:00'
         ),
         DropdownMenuEntry<int>(
             value: 9,
-            label: '18:00'
+            label: '18:00:00'
         ),
         DropdownMenuEntry<int>(
             value: 10,
-            label: '19:35'
+            label: '19:35:00'
         ),
         DropdownMenuEntry<int>(
             value: 11,
-            label: '19:55'
+            label: '19:55:00'
         ),
         DropdownMenuEntry<int>(
             value: 12,
-            label: '21:30'
+            label: '21:30:00'
         ),
 
     ]

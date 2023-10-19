@@ -218,6 +218,40 @@ class SideMenuBar{
                           });
                         }),
                     ListTile(
+                      leading: const Icon(Icons.book_online,
+                          size: 20.0, color: Colors.white),
+                      title: Text(
+                        '请假管理',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => QingjiaPage()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.settings,
+                          size: 20.0, color: Colors.white),
+                      title: Text(
+                        '关于&设置',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => about()),
+                        );
+                      },
+                    ),
+                    ListTile(
                       leading: const Icon(Icons.cached,
                           size: 20.0, color: Colors.white),
                       title: Text(
@@ -245,28 +279,12 @@ class SideMenuBar{
                             //alignment: Alignment.topCenter,
                             duration: Duration(seconds: 3),
                             isCircle: true, listener: (status) {
-                              print(status);
-                            })
+                          print(status);
+                        })
                           ..show(context);
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.settings,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '关于&设置',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => about()),
-                        );
-                      },
-                    ),
+
                   ],
                 ),
               ],
