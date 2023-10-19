@@ -35,10 +35,6 @@ class jpushs {
               '\n上课时间：' +
               message['extras']['qssj'],
           title: '详细信息',
-          lottieBuilder: Lottie.asset(
-            'assets/course.json',
-            fit: BoxFit.contain,
-          ),
           context: HomePage().homecontext,
         );
       },

@@ -711,10 +711,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+
                     context: context,
                   )),
               child: Card(
@@ -774,10 +771,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+                   
                     context: context,
                   )),
               child: Card(
@@ -837,10 +831,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+
                     context: context,
                   )),
               child: Card(
@@ -900,10 +891,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+
                     context: context,
                   )),
               child: Card(
@@ -963,10 +951,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+
                     context: context,
                   )),
               child: Card(
@@ -1026,10 +1011,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+
                     context: context,
                   )),
               child: Card(
@@ -1089,10 +1071,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+
                     context: context,
                   )),
               child: Card(
@@ -1152,10 +1131,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
                     color: Colors.white,
                     msg: msg,
                     title: '详细信息',
-                    lottieBuilder: Lottie.asset(
-                      'assets/course.json',
-                      fit: BoxFit.contain,
-                    ),
+
                     context: context,
                   )),
               child: Card(

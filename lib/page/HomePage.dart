@@ -336,7 +336,7 @@ class _HomePageState extends State<HomePage> {
     } else {
       await ApiService().updateCourseFromJW(
           dio, courseFile, context, true, scoreFile, hItems);
-      if (Platform.isWindows) {
+      if (Platform.isWindows&&Global.desktop_float) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return windwosfloat();
         }));

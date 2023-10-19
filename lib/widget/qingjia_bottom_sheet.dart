@@ -4,25 +4,28 @@ import 'package:muse_nepu_course/util/global.dart';
 import 'package:muse_nepu_course/widget/qingjia_button.dart';
 
 class PaymentBottomSheet extends StatefulWidget {
-  final  detail; // 添加detail变量作为成员变量
+  final detail; // 添加detail变量作为成员变量
   final int index;
-  const PaymentBottomSheet({super.key,required this.detail,required this.index});
+
+  const PaymentBottomSheet(
+      {super.key, required this.detail, required this.index});
 
   @override
   State<PaymentBottomSheet> createState() => _PaymentBottomSheetState();
 }
 
 class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
-
   final TextEditingController qssjController = TextEditingController();
-  final TextEditingController jssjCardsController =
-  TextEditingController();
+  final TextEditingController jssjCardsController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController reasonController = TextEditingController();
+
   //联系人
   final TextEditingController contactController = TextEditingController();
+
   //联系人电话
   final TextEditingController contactPhoneController = TextEditingController();
+
   //学工处密码
   final TextEditingController xgcPasswordController = TextEditingController();
   int? selectqssjCard = 0;
@@ -30,12 +33,13 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
   int? category = 0;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     categoryController.text = '事假';
     qssjController.text = widget.detail[widget.index]['qssj'];
     jssjCardsController.text = widget.detail[widget.index]['jssj'];
   }
+
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final cardsEntries = <DropdownMenuEntry<int>>[];
@@ -50,59 +54,24 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
         value: 2,
         label: '病假',
       ),
-      ]);
-      cardsEntries.addAll([
-        DropdownMenuEntry<int>(
-          value: 1,
-          label: '8:00:00',
-        ),
-        DropdownMenuEntry<int>(
-            value: 2,
-            label: '9:35:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 3,
-            label: '9:55:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 4,
-            label: '11:30:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 5,
-            label: '13:30:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 6,
-            label: '15:05:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 7,
-            label: '15:25:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 8,
-            label: '17:00:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 9,
-            label: '18:00:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 10,
-            label: '19:35:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 11,
-            label: '19:55:00'
-        ),
-        DropdownMenuEntry<int>(
-            value: 12,
-            label: '21:30:00'
-        ),
-
-    ]
-      );
+    ]);
+    cardsEntries.addAll([
+      DropdownMenuEntry<int>(
+        value: 1,
+        label: '8:00:00',
+      ),
+      DropdownMenuEntry<int>(value: 2, label: '9:35:00'),
+      DropdownMenuEntry<int>(value: 3, label: '9:55:00'),
+      DropdownMenuEntry<int>(value: 4, label: '11:30:00'),
+      DropdownMenuEntry<int>(value: 5, label: '13:30:00'),
+      DropdownMenuEntry<int>(value: 6, label: '15:05:00'),
+      DropdownMenuEntry<int>(value: 7, label: '15:25:00'),
+      DropdownMenuEntry<int>(value: 8, label: '17:00:00'),
+      DropdownMenuEntry<int>(value: 9, label: '18:00:00'),
+      DropdownMenuEntry<int>(value: 10, label: '19:35:00'),
+      DropdownMenuEntry<int>(value: 11, label: '19:55:00'),
+      DropdownMenuEntry<int>(value: 12, label: '21:30:00'),
+    ]);
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Padding(
@@ -131,45 +100,40 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
           ),
           const SizedBox(height: 20),
 
-          Row(
-            children: [
-              Expanded(
-                child: DropdownMenu<int>(
-                  controller: qssjController,
-                  leadingIcon: const Icon(Icons.credit_card),
-                  label: const Text('请假时间'),
-                  initialSelection: selectqssjCard,
-                  dropdownMenuEntries: cardsEntries,
-                  onSelected: (int? index) {
-                    setState(() {
-                      selectqssjCard = index;
-                    });
-                  },
-                ),
-              ),
-              SizedBox(width: 20), // 添加一些间距
-              Expanded(
-                child: DropdownMenu<int>(
-                  controller: jssjCardsController,
-                  leadingIcon: const Icon(Icons.credit_card),
-                  label: const Text('结束时间'),
-                  initialSelection: selectedjssjCard,
-                  dropdownMenuEntries: cardsEntries,
-                  onSelected: (int? index) {
-                    setState(() {
-                      selectedjssjCard = index;
-                    });
-                  },
-                ),
-              ),
-            ],
+          DropdownMenu<int>(
+            controller: qssjController,
+            leadingIcon: const Icon(Icons.credit_card),
+            width: MediaQuery.of(context).size.width - 20 * 2,
+
+            label: const Text('请假时间'),
+            initialSelection: selectqssjCard,
+            dropdownMenuEntries: cardsEntries,
+            onSelected: (int? index) {
+              setState(() {
+                selectqssjCard = index;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+
+          DropdownMenu<int>(
+            controller: jssjCardsController,
+            leadingIcon: const Icon(Icons.credit_card),
+            width: MediaQuery.of(context).size.width - 20 * 2,
+
+            label: const Text('结束时间'),
+            initialSelection: selectedjssjCard,
+            dropdownMenuEntries: cardsEntries,
+            onSelected: (int? index) {
+              setState(() {
+                selectedjssjCard = index;
+              });
+            },
           ),
 
           const SizedBox(height: 20),
-           TextField(
-            decoration: InputDecoration(
-              hintText: '请假原因'
-            ),
+          TextField(
+            decoration: InputDecoration(hintText: '请假原因'),
             controller: reasonController,
           ),
           const SizedBox(height: 20),
@@ -194,7 +158,8 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
               items.addAll(options.map((e) => e.value.toString()));
             },
             networkConfig: NetworkConfig(
-              url: 'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/teacher',
+              url:
+                  'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/teacher',
               method: RequestMethod.get,
               headers: {
                 'Content-Type': 'application/json',
@@ -202,7 +167,6 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
             ),
             chipConfig: const ChipConfig(wrapType: WrapType.wrap),
             responseParser: (response) {
-
               final list = (response as List<dynamic>).map((e) {
                 final item = e as Map<String, dynamic>;
                 return ValueItem(
@@ -224,14 +188,14 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
           QingjiaButton(
             enabled: true,
             width: screenSize.width - 20 * 2,
-           qsrq: widget.detail[widget.index]['jsrq'],
+            qsrq: widget.detail[widget.index]['jsrq'],
             qssj: widget.detail[widget.index]['qssj'],
             jssj: widget.detail[widget.index]['jssj'],
             jsrq: widget.detail[widget.index]['jsrq'],
             qjsy: reasonController.text,
             chaosong: //提取抄送老师的id
-            items,
-            qjlx: categoryController.text=='事假'? '01':'02',
+                items,
+            qjlx: categoryController.text == '事假' ? '01' : '02',
           ),
 
           const SizedBox(height: 20),
@@ -241,6 +205,7 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
     );
   }
 }
+
 class FoldableFields extends StatefulWidget {
   final TextEditingController qssjController;
   final TextEditingController jssjCardsController;
@@ -304,32 +269,22 @@ class _FoldableFieldsState extends State<FoldableFields> {
               Row(
                 children: [
                   Expanded(
-
                     child: TextField(
-                        decoration: InputDecoration(
-                            hintText: '联系人'
-                        ),
-                        controller: widget.contactController
-                    ),
+                        decoration: InputDecoration(hintText: '联系人'),
+                        controller: widget.contactController),
                   ),
                   const SizedBox(width: 20),
                   Expanded(
                     child: TextField(
-                        decoration: InputDecoration(
-                            hintText: '联系人电话'
-                        ),
-                        controller: widget.contactPhoneController
-                    ),
+                        decoration: InputDecoration(hintText: '联系人电话'),
+                        controller: widget.contactPhoneController),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
               TextField(
-                  decoration: InputDecoration(
-                      hintText: '学工处密码，默认为身份证后6位'
-                  ),
-                  controller: widget.xgcPasswordController
-              ),
+                  decoration: InputDecoration(hintText: '学工处密码，默认为身份证后6位'),
+                  controller: widget.xgcPasswordController),
             ],
           ),
       ],
