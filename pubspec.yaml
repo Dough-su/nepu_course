@@ -71,6 +71,8 @@ dependencies:
   audio_waveforms: ^1.0.4
   image: ^3.0.2
   url_launcher: ^6.1.14
+  flutter_sliding_box: ^1.1.3
+  multi_dropdown: ^2.1.0
 
 
 

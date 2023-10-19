@@ -298,6 +298,8 @@ class _HomePageState extends State<HomePage> {
 
   void initState() {
     super.initState();
+    Global.get_contact();
+    Global.get_xgc_password();
     Global().showad(context);
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       Navigator.of(context).popUntil((route) => route.isFirst);

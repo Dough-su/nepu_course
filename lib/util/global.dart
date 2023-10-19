@@ -119,6 +119,48 @@ class Global {
   ApiService apiService = ApiService();
   //下载网址
   static String download_url = 'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8';
+  //紧急联系人
+  static String contact = '';
+  //紧急联系人电话
+  static String contact_phone = '';
+  //学工处密码
+  static String xgc_password = '';
+  //保存紧急联系人到文件
+  static void save_contact() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/contact.txt');
+      file.writeAsStringSync(contact + ' ' + contact_phone ,
+          mode: FileMode.write);
+    });
+  }
+  //读取紧急联系人
+  static void get_contact() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/contact.txt');
+      if (file.existsSync()) {
+        List<String> list = file.readAsStringSync().split(' ');
+        contact = list[0];
+        contact_phone = list[1];
+      }
+    });
+  }
+  //保存学工处密码到文件
+  static void save_xgc_password() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/xgc_password.txt');
+      file.writeAsStringSync(xgc_password,
+          mode: FileMode.write);
+    });
+  }
+  //读取学工处密码
+  static void get_xgc_password() async {
+    await getApplicationDocumentsDirectory().then((value) {
+      File file = File(value.path + '/xgc_password.txt');
+      if (file.existsSync()) {
+        xgc_password = file.readAsStringSync();
+      }
+    });
+  }
   //新手引导
   List<TargetFocus> targets = [
     TargetFocus(

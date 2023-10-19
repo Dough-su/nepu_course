@@ -111,6 +111,7 @@ class _EasySplashScreenState extends State<EasySplashScreen> {
 
     super.initState();
     Global().getusername();
+
     //获取主页和成绩页面的成绩信息
     Global.get_course_day();
     Global().score_getcolor();

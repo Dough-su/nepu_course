@@ -104,21 +104,21 @@ class SideMenuBar{
                                 builder: (context) => pingjiao()));
                       },
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.book_online,
-                          size: 20.0, color: Colors.white),
-                      title: Text(
-                        '请假历史',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => qingjia()));
-                      },
-                    ),
+                    // ListTile(
+                    //   leading: const Icon(Icons.book_online,
+                    //       size: 20.0, color: Colors.white),
+                    //   title: Text(
+                    //     '请假历史',
+                    //     style: TextStyle(
+                    //         color: Colors.white,
+                    //         fontSize: 20,
+                    //         fontWeight: FontWeight.bold),
+                    //   ),
+                    //   onTap: () {
+                    //     Navigator.push(context,
+                    //         MaterialPageRoute(builder: (context) => qingjiapage()));
+                    //   },
+                    // ),
                     ListTile(
                       leading: const Icon(Icons.colorize,
                           size: 20.0, color: Colors.white),

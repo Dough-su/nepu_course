@@ -2,12 +2,13 @@ import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/dialogs.dart';
+import 'package:muse_nepu_course/widget/qingjia_bottom_sheet.dart';
 import 'package:timelines/timelines.dart';
 
 import '../util/global.dart';
-class Course{
- static Widget coursedetail(String time, int index, String msg, eventcahe,
-      bool hasStartConnector, bool hasEndConnector,widthx,context) {
+class Course {
+  static Widget coursedetail(String time, int index, String msg, eventcahe,
+      bool hasStartConnector, bool hasEndConnector, widthx, context) {
     return FadeInLeft(
         child: Container(
           child: TimelineTile(
@@ -41,10 +42,33 @@ class Course{
                     : Color(0xFF1C1B1F),
                 msg: msg,
                 title: '详细信息',
-                lottieBuilder: Lottie.asset(
-                  'assets/course.json',
-                  fit: BoxFit.contain,
-                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      //关闭
+                      Navigator.of(context).pop();
+                      showModalBottomSheet<void>(
+                        context: context,
+                        backgroundColor: Theme.of(context).brightness == Brightness.light
+                            ? Colors.white
+                            : Color(0xFF1C1B1F),
+                        elevation: 0,
+                        useRootNavigator: true,
+                        isScrollControlled: true,
+                        builder: (context) => LayoutBuilder(
+                          builder: (context, constraints) => Container(
+                            child: PaymentBottomSheet(detail: eventcahe,index:index),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text('为这节课请假'),
+                  ),
+                ],
+                // lottieBuilder: Lottie.asset(
+                //   'assets/course.json',
+                //   fit: BoxFit.contain,
+                // ),
                 context: context,
               )),
               child: Card(
@@ -77,5 +101,4 @@ class Course{
           ),
         ));
   }
-
 }
