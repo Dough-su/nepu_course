@@ -62,25 +62,6 @@ class _SplashPageState extends State<SplashPage> {
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
       home: SplashScreen(),
-      //以下是原版24节气启动页
-      // EasySplashScreen(
-      //   logo: Image.asset('images/logo.png'),
-      //   title: Text(
-      //     '',
-      //     style: TextStyle(
-      //       fontSize: 18,
-      //       fontWeight: FontWeight.bold,
-      //       color: Colors.white,
-      //     ),
-      //   ),
-      //   backgroundImage: image_provider().jieqi(),
-      //   backgroundColor: Colors.white,
-      //   showLoader: true,
-      //   loadingText: Text("正在加载...", style: TextStyle(color: Colors.white)),
-      //   navigator: WithBuilder(),
-      //   durationInSeconds: 3,
-      //   loaderColor: Colors.white,
-      // ),
     );
   }
 }

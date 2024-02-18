@@ -264,7 +264,6 @@ class _ChatPageState extends State<ChatPage>
           timer = Timer.periodic(Duration(milliseconds: 100), (timer) {
             if (isTimeout) {
               timer.cancel();
-              print('取消定时器');
               Global.messages_pure += "  " + xdata.toString() + ";";
               setState(() {});
               xdata = '';

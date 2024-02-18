@@ -332,8 +332,6 @@ class _scoreState extends State<scorepage> {
             controller: _controller,
             header: const SpaceHeader(),
             onRefresh: () async {
-              print('onfresh被调用了');
-
               ApiService.noPerceptionLogin().then((value) async {
                 print(Global().getLoginInfo());
                 saveString(_controller);
