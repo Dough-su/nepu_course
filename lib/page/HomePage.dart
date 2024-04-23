@@ -22,9 +22,7 @@ import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 import 'package:achievement_view/achievement_view.dart';
 
 List<Widget> dailycourse = [];
-List<Widget> dailycourse2 = [];
 GlobalKey scoredetailbtn = GlobalKey();
-GlobalKey scoredetailbtn2 = GlobalKey();
 
 //上滑控制器
 //侧边栏控制器
@@ -63,8 +61,7 @@ class _HomePageState extends State<HomePage> {
   String _apkFilePath = "";
   String _currentDownloadStateCH = "当前下载状态：还未开始";
   var _currentIndex = 0;
-  Widget home_body(isfront) {
-    if (isfront)
+  Widget home_body() {
       return dailycourse.length == 0
           ? Container(
               child: GestureDetector(
@@ -89,34 +86,6 @@ class _HomePageState extends State<HomePage> {
               child: Scaffold(
                 body: ListView(
                   children: dailycourse,
-                ),
-              ),
-            );
-    else
-      return dailycourse2.length == 0
-          ? Container(
-              child: GestureDetector(
-                onTap: _onTap,
-                child: RiveAnimation.asset(
-                  'assets/tomadoro_v3.riv',
-                  animations: const [
-                    '惊吓',
-                    '休息',
-                    '站立转休息',
-                    '惊吓转站立',
-                    '站立',
-                    '开始站立',
-                    '什么都不做'
-                  ],
-                  controllers: [_controller2],
-                ),
-              ),
-            )
-          : Container(
-              //padding靠左
-              child: Scaffold(
-                body: ListView(
-                  children: dailycourse2,
                 ),
               ),
             );
@@ -232,8 +201,6 @@ class _HomePageState extends State<HomePage> {
 
   DateTime _selectedIndex = DateTime.now();
   CalendarAgendaController _calendarAgendaControllerAppBar =
-      CalendarAgendaController();
-  CalendarAgendaController _calendarAgendaControllerAppBar2 =
       CalendarAgendaController();
   Future<void> getcolor() async {
     getApplicationDocumentsDirectory().then((value) {
@@ -566,7 +533,6 @@ class _HomePageState extends State<HomePage> {
     ];
     if (eventcahe.length == 0) {
       dailycourse = [];
-      print('dailycourse为空');
     }
     for (var i = 0; i < eventcahe.length; i++) {
       var qssj = eventcahe[i]['qssj'].toString().split(' ')[0];
@@ -641,10 +607,7 @@ class _HomePageState extends State<HomePage> {
   Widget flipContainer(bool isfront) {
     return Scaffold(
         appBar: CalendarAgenda(
-          controller: isfront
-              ? _calendarAgendaControllerAppBar
-              : _calendarAgendaControllerAppBar2,
-          initialDate: DateTime.now(),
+          controller: _calendarAgendaControllerAppBar,initialDate: DateTime.now(),
           appbar: true,
           calendarLogo: getcalanderlogopngx(),
           selectedDayLogo:
@@ -693,7 +656,6 @@ class _HomePageState extends State<HomePage> {
               _dragStartPos = Offset.zero;
             },
             child: SideMenuBar.side(
-                isfront,
                 context,
                 _sideMenuKey,
                 _sideMenuKey2,
@@ -703,7 +665,6 @@ class _HomePageState extends State<HomePage> {
                 toggleMenu,
                 isOpened,
                 scoredetailbtn,
-                scoredetailbtn2,
                 hItems,
                 _controller,
                 _calendarAgendaControllerAppBar,

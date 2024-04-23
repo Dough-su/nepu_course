@@ -101,14 +101,14 @@ class _aboutState extends State<about> {
             leading: Icon(Icons.info),
             title: Text('多版本下载网址,点击复制'),
             subtitle: Text(
-                'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8'),
+                'https://www.123pan.com/s/88krVv-F8Avd.html'),
             onTap: () {
               Global().GlaunchUrl(
-                  'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8');
+                  'https://www.123pan.com/s/88krVv-F8Avd.html');
               //http://course.musecloud.tech/
               Clipboard.setData(ClipboardData(
                   text:
-                      'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8'));
+                      'https://www.123pan.com/s/88krVv-F8Avd.html'));
               AchievementView(
                   title: "复制成功",
                   subTitle: '可以去浏览器粘贴网址了',
@@ -143,26 +143,6 @@ class _aboutState extends State<about> {
                 value: Global.desktop_float,
               ),
             ),
-          //请开发者喝杯咖啡
-          ListTile(
-            leading: Icon(Icons.coffee),
-            title: Text('请开发者喝杯咖啡'),
-            subtitle: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('请开发者喝杯咖啡'),
-                      content: Text('如果你觉得这个软件还不错，可以请开发者喝杯咖啡。'),
-                      actions: [
-                        //展示图片
-                        Image.asset('assets/pay/weixin.png'),
-                      ],
-                    );
-                  });
-            },
-          ),
           ListTile(
               //你的推送id是
               leading: Icon(Icons.info),

@@ -20,10 +20,10 @@ import '../page/QingjiaPage.dart';
 import '../service/io_service.dart';
 class SideMenuBar{
   //侧边
- static Widget side(bool isfront,context, _sideMenuKey, _sideMenuKey2,changeColor,shijian,setState,toggleMenu,isOpened,scoredetailbtn,scoredetailbtn2,hItems,_controller,_calendarAgendaControllerAppBar,home_body,title,isdownload) {
+ static Widget side(context, _sideMenuKey, _sideMenuKey2,changeColor,shijian,setState,toggleMenu,isOpened,scoredetailbtn,hItems,_controller,_calendarAgendaControllerAppBar,home_body,title,isdownload) {
     return SideMenu(
         background: Global.home_currentcolor,
-        key: isfront ? _sideMenuKey : _sideMenuKey2,
+        key:  _sideMenuKey ,
         menu: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 50.0),
             child: Stack(
@@ -305,17 +305,15 @@ class SideMenuBar{
                   backgroundColor: Global.home_currentcolor,
                   title: Text(title),
                   centerTitle: true,
-                  leading: isfront
-                      ? IconButton(
+                  leading: IconButton(
                     icon: const Icon(Icons.menu),
                     onPressed: () {
                       toggleMenu();
                     },
-                  )
-                      : Container(),
+                  ),
                   actions: [
                     IconButton(
-                      key: isfront ? scoredetailbtn : scoredetailbtn2,
+                      key: scoredetailbtn,
                       icon: Icon(Icons.score),
                       onPressed: () {
                         if (isdownload) {
@@ -343,7 +341,7 @@ class SideMenuBar{
                       },
                     ),
                   ]),
-              body: home_body(isfront),
+              body: home_body(),
               floatingActionButton: Stack(children: [
                 MaterialButton(
                   onPressed: () {
