@@ -340,29 +340,15 @@ class _aboutState extends State<about> {
               onTap: () {
                 ApiService().updateappx(context, "");
               }),
-          //捐赠人员
-          ListTile(
-            leading: Icon(Icons.favorite),
-            title: Text('捐赠人员'),
-            subtitle: Text(''),
-          ),
           //显示头像
-          ListTile(
-            leading: CircleAvatar(
-              //网络图片
-              backgroundImage: NetworkImage(
-                'https://q1.qlogo.cn/g?b=qq&nk=1617352787&s=100',
-              ),
-            ),
-            title: Text('k'),
-            subtitle: Text('捐赠5元'),
-          ),
+
           //项目离不开以下人员的支持
           ListTile(
             leading: Icon(Icons.groups),
             title: Text('项目离不开以下人员的支持(排名不分先后)'),
             subtitle: Text(''),
           ),
+
 
           ListTile(
             leading: CircleAvatar(
@@ -394,7 +380,18 @@ class _aboutState extends State<about> {
             title: Text('24号'),
             subtitle: Text('Tester'),
           ),
-          ListTile(
+    ListTile(
+    leading: CircleAvatar(
+    //网络图片
+    backgroundImage: NetworkImage(
+    'https://q1.qlogo.cn/g?b=qq&nk=1617352787&s=100',
+    ),
+    ),
+    title: Text('k'),
+    subtitle: Text('Tester'),
+    ),
+
+    ListTile(
             leading: CircleAvatar(
               //网络图片
               backgroundImage: NetworkImage(
@@ -430,6 +427,7 @@ class _aboutState extends State<about> {
               );
             }
           ),
+
         ],
       )),
     );

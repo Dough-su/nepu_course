@@ -141,7 +141,7 @@ class _windwosfloatState extends State<windwosfloat> with WindowListener {
               width: widthx,
               padding: EdgeInsets.all(8.0),
               child: Text(
-                '5,6节\n13;30 - 15:05',
+                '5,6节\n13:30 - 15:05',
                 style:
                     TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),

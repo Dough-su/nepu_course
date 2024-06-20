@@ -9,10 +9,10 @@ import 'package:path_provider/path_provider.dart';
 class MovingEarth extends StatefulWidget {
   const MovingEarth(
       {super.key,
-      required this.child,
-      required this.animatePosition,
-      required this.durationInMs,
-      required this.delayInMs});
+        required this.child,
+        required this.animatePosition,
+        required this.durationInMs,
+        required this.delayInMs});
   final Widget child;
   final EarthAnimation animatePosition;
   final int durationInMs, delayInMs;
@@ -23,27 +23,22 @@ class MovingEarth extends StatefulWidget {
 
 class _MovingEarthState extends State<MovingEarth> {
   bool? animate;
-
-
-
-
+  Timer? _timer;
 
   //倒计时
   void durationInSecondsr() {
     const oneSec = const Duration(seconds: 1);
-    var callback = (timer) => {
-          setState(() {
-            if (Global.durationInSeconds < 1) {
-              timer.cancel();
-              setState(() {});
-            } else {
-              print(Global.durationInSeconds);
-              Global.durationInSeconds = Global.durationInSeconds - 1;
-              setState(() {});
-            }
-          })
-        };
-    Timer.periodic(oneSec, callback);
+    _timer = Timer.periodic(oneSec, (timer) {
+      if (!mounted) return;
+      setState(() {
+        if (Global.durationInSeconds < 1) {
+          timer.cancel();
+        } else {
+          print(Global.durationInSeconds);
+          Global.durationInSeconds = Global.durationInSeconds - 1;
+        }
+      });
+    });
   }
 
   @override
@@ -62,33 +57,40 @@ class _MovingEarthState extends State<MovingEarth> {
     getApplicationDocumentsDirectory().then((value) {
       File file = new File(value.path + '/course.json');
       file.exists().then((value) {
-        Global.isfirst = !value;
+        if (!mounted) return;
+        setState(() {
+          Global.isfirst = !value;
+        });
       });
     });
     getApplicationDocumentsDirectory().then((value) {
       //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
       File file = new File(value.path + '/first.txt');
       file.exists().then((value) async {
+        if (!mounted) return;
         if (value) {
-          Global.progressorhome = true;
+          setState(() {
+            Global.progressorhome = true;
+          });
         }
       });
     });
 
     Timer(Duration(seconds: Global.durationInSeconds), () {
+      if (!mounted) return;
       Global().jump_page(context);
     });
 
-    super.initState();
     changeAnimation();
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     super.dispose();
-    
   }
 
+  @override
   Widget build(BuildContext context) {
     return AnimatedPositioned(
       duration: Duration(milliseconds: widget.durationInMs),

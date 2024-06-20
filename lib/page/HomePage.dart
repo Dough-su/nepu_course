@@ -525,7 +525,7 @@ class _HomePageState extends State<HomePage> {
       _buildCourseTile('1,2节\n08:00 - 09:35', false, true),
       _buildCourseTile('3,4节\n09:55 - 11:30', true, false),
       _buildTimeContainer('下午'),
-      _buildCourseTile('5,6节\n13;30 - 15:05', false, true),
+      _buildCourseTile('5,6节\n13:30 - 15:05', false, true),
       _buildCourseTile('7,8节\n15:25 - 17:00', true, false),
       _buildTimeContainer('晚课'),
       _buildCourseTile('9,10节\n18:00 - 19:35', false, true),
