@@ -2,12 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:muse_nepu_course/controller/LoginController.dart';
 import 'package:muse_nepu_course/extra_package/card_flip/src/flip_layout.dart';
 import 'package:muse_nepu_course/page/ProgressPage.dart';
 import 'package:muse_nepu_course/page/ScorePage.dart';
 import 'package:muse_nepu_course/extra_package/flutterlogin/flutter_login.dart';
 import 'package:muse_nepu_course/page/HomePage.dart';
-import 'package:muse_nepu_course/page/LoginPage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quiver/core.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
@@ -49,24 +50,15 @@ class Global {
   static TextEditingController jwc_verifycodeController =
       TextEditingController(text: '');
   //版本号(每次正式发布都要改，改成和数据库一样)
-  static String version = "142";
+  static String version = "143";
   //教务处学号
   static String jwc_xuehao = '';
   //教务处密码
   static String jwc_password = '';
-  //教务处JSESSIONID
-  static String jwc_jsessionid = '';
   //教务处验证码
   static String jwc_verifycode = '';
-  //教务处webvpn_key
-  static String jwc_webvpn_key = '';
-  //教务处webvpn_username
-  static String jwc_webvpn_username = '';
   //是
   static bool progressorhome = false;
-  //倒计时
-  static int durationInSeconds = 2;
-
   //主页的currentcolor
   static Color home_currentcolor = Colors.blue;
   //主页的pickcolor
@@ -82,8 +74,6 @@ class Global {
   static DateTime calendar_current_day = DateTime.now();
   //透明验证码
   static bool _pureyzm = false;
-  //评教进入模式是否为无感知登录(默认用无感知登录)
-  static bool pingjiao_login_mode = true;
   //判断是否已经从本地读取json
   static bool isfirstread = true;
   //课表日历最后一天
@@ -96,8 +86,6 @@ class Global {
   static bool auto_update_course = true;
   //String类型的消息列表
   static String messages_pure = '';
-  //注入消息
-  static String pre_message = '';
   //账号
   static String account = '';
   //密码
@@ -113,12 +101,13 @@ class Global {
   //是否是首次登录
   static bool isfirst = true;
   //桌面悬浮窗是否开启
-  static bool desktop_float = true;
+  static bool desktop_float = false;
   //展示广告
   static bool show_advertisement = true;
   ApiService apiService = ApiService();
   //下载网址
-  static String download_url = 'https://www.musec.tech/%E4%B8%9C%E6%B2%B9%E8%AF%BE%E8%A1%A8';
+  static String download_url =
+      'https://www.123pan.com/s/88krVv-F8Avd.html';
   //紧急联系人
   static String contact = '';
   //紧急联系人电话
@@ -129,10 +118,11 @@ class Global {
   static void save_contact() async {
     await getApplicationDocumentsDirectory().then((value) {
       File file = File(value.path + '/contact.txt');
-      file.writeAsStringSync(contact + ' ' + contact_phone ,
+      file.writeAsStringSync(contact + ' ' + contact_phone,
           mode: FileMode.write);
     });
   }
+
   //读取紧急联系人
   static void get_contact() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -144,14 +134,15 @@ class Global {
       }
     });
   }
+
   //保存学工处密码到文件
   static void save_xgc_password() async {
     await getApplicationDocumentsDirectory().then((value) {
       File file = File(value.path + '/xgc_password.txt');
-      file.writeAsStringSync(xgc_password,
-          mode: FileMode.write);
+      file.writeAsStringSync(xgc_password, mode: FileMode.write);
     });
   }
+
   //读取学工处密码
   static void get_xgc_password() async {
     await getApplicationDocumentsDirectory().then((value) {
@@ -161,6 +152,7 @@ class Global {
       }
     });
   }
+
   //新手引导
   List<TargetFocus> targets = [
     TargetFocus(
@@ -300,9 +292,6 @@ class Global {
     });
   }
 
-  //文本控制器
-  static TextEditingController textEditingController =
-      TextEditingController(text: '');
 
   //保存是否显示有课的日期到文件
   static void save_show_course_day() async {
@@ -375,15 +364,10 @@ class Global {
     });
   }
 
-  //上滑锁定
-  static bool locked = false;
-
   //成绩组件列表
   static List<Widget> scorelist = [];
   //成绩信息
   static var scoreinfos = [];
-  //用户2成绩信息
-  static var scoreinfos2 = [];
   //底栏高度
   static double bottombarheight = 60;
   //桌面平台的高度
@@ -454,15 +438,16 @@ class Global {
   }
 
   //将用户名和密码导入到global.dart中
-  void getusername() async {
+  Future<void> getusername() async {
     await getApplicationDocumentsDirectory().then((value) {
       File file = File(value.path + '/logininfo.txt');
       if (file.existsSync()) {
         //根据,分割
         print('读取到的学号' + file.readAsStringSync().split(',')[0]);
         List<String> list = file.readAsStringSync().split(',');
-        Global().jwc_xuehaosetter(list[0]);
-        Global().jwc_passwordsetter(list[1]);
+
+        jwc_xuehaosetter(list[0]);
+        jwc_passwordsetter(list[1]);
       }
     });
   }
@@ -483,33 +468,16 @@ class Global {
     });
   }
 
-  //读取登录信息
-  Future<String> getLoginInfo() async {
-    return '?JSESSIONID=' +
-        jwc_jsessionid +
-        '&_webvpn_key=' +
-        jwc_webvpn_key +
-        '&webvpn_username=' +
-        jwc_webvpn_username;
-  }
 
   //判断是不是首次登录
   void isFirst(context) {
-    //getApplicationDocumentsDirectory()方法获取应用程序的文档目录
-    if (!isfirst) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
-    }
+    isfirst ? Get.offNamed('/login') : Get.offNamed('/home');
   }
 
   //登录页面
   Widget loginreq(
       String login_title, _authUser, context, setState, contextbuilder) {
+    final LoginController loginController = Get.put(LoginController());
     return Center(
         child: FlutterLogin(
       title: login_title,
@@ -533,24 +501,28 @@ class Global {
         //添加验证码图片
         //修改验证码图片大小
         Container(
-          //点击刷新
+          // 点击刷新
           child: GestureDetector(
-            child: Container(
+            onTap: () {
+              loginController.getVerifyCode(context, setState);
+            },
+            child:  Container(     // 这里使用了 Obx 包裹整个 Container 其实不需要
+              // 确保只包裹更新的部分
+              width: 100,
+              height: 30,
+              margin: EdgeInsets.only(top: 220),
               child: FutureBuilder(
-                future: apiService.getVerifyCode(context, setState),
+                future: loginController.getVerifyCode(context, setState),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return snapshot.data as Widget;
+                    return snapshot.data!;
                   } else {
                     return CircularProgressIndicator();
                   }
                 },
               ),
-            ),
-          ),
-          width: 100,
-          height: 30,
-          margin: EdgeInsets.only(top: 220),
+            )),
+
         ),
       ],
     ));
@@ -968,61 +940,59 @@ class Global {
       throw Exception('Could not launch $url');
     }
   }
-  //弹窗广告
-   Future<void> showad(context) async {
-    await ApiService().getad().then((response) async {
-         Response response = await ApiService().getad();
-advertisement = json.decode(json.encode(response.data));   
- //List<dynamic> [{content: baidu.com, date: 2023-07-19T01:16:12.000Z, redirect: baidu.com}]
- //如果ad文件存在，则读取文件中的时间
-    await getApplicationDocumentsDirectory().then((value) {
-      File file = File(value.path + '/ad.txt');
-      if (file.existsSync()) {
-        //如果读取的时间等于传入的时间，则不弹窗
-        if (file.readAsStringSync() == advertisement[0]['date']) {
-          print('已存在');
-          show_advertisement = false;
-          return;
-        }
-      }
-    });
-    
- //保存时间到文件
-    await getApplicationDocumentsDirectory().then((value) {
-      File file = File(value.path + '/ad.txt');
-      file.writeAsStringSync(advertisement[0]['date'], mode: FileMode.write);
-    });
 
-      }).then((value) {
+  //弹窗广告
+  Future<void> showad(context) async {
+    await ApiService().getad().then((response) async {
+      Response response = await ApiService().getad();
+      advertisement = json.decode(json.encode(response.data));
+      //如果ad文件存在，则读取文件中的时间
+      await getApplicationDocumentsDirectory().then((value) {
+        File file = File(value.path + '/ad.txt');
+        if (file.existsSync()) {
+          //如果读取的时间等于传入的时间，则不弹窗
+          if (file.readAsStringSync() == advertisement[0]['date']) {
+            print('已存在');
+            show_advertisement = false;
+            return;
+          }
+        }
+      });
+
+      //保存时间到文件
+      await getApplicationDocumentsDirectory().then((value) {
+        File file = File(value.path + '/ad.txt');
+        file.writeAsStringSync(advertisement[0]['date'], mode: FileMode.write);
+      });
+    }).then((value) {
       //如果当前时间大于广告时间，则不弹窗
       if (DateTime.now().isAfter(DateTime.parse(advertisement[0]['date']))) {
         show_advertisement = false;
         return;
       }
-      if(show_advertisement)
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('公告'),
-            content: Text(advertisement[0]['content']),
-            actions: [
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('取消')),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    GlaunchUrl(advertisement[0]['redirect']);
-                  },
-                  child: Text('确定')),
-            ],
-          );
-        });
-    
-      });
+      if (show_advertisement)
+        showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Text('公告'),
+                content: Text(advertisement[0]['content']),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('取消')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        GlaunchUrl(advertisement[0]['redirect']);
+                      },
+                      child: Text('确定')),
+                ],
+              );
+            });
+    });
   }
 
   static Map<String, dynamic> _globalData = {};

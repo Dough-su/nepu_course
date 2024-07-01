@@ -6,13 +6,18 @@ import 'package:muse_nepu_course/util/EarthAnimation.dart';
 import 'package:muse_nepu_course/util/global.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../controller/LoginController.dart';
+import 'package:get/get.dart';
+
 class MovingEarth extends StatefulWidget {
-  const MovingEarth(
-      {super.key,
-        required this.child,
-        required this.animatePosition,
-        required this.durationInMs,
-        required this.delayInMs});
+  const MovingEarth({
+    super.key,
+    required this.child,
+    required this.animatePosition,
+    required this.durationInMs,
+    required this.delayInMs,
+  });
+
   final Widget child;
   final EarthAnimation animatePosition;
   final int durationInMs, delayInMs;
@@ -22,40 +27,55 @@ class MovingEarth extends StatefulWidget {
 }
 
 class _MovingEarthState extends State<MovingEarth> {
+  final LoginController loginController = Get.put(LoginController());
   bool? animate;
   Timer? _timer;
 
-  //倒计时
-  void durationInSecondsr() {
-    const oneSec = const Duration(seconds: 1);
-    _timer = Timer.periodic(oneSec, (timer) {
-      if (!mounted) return;
-      setState(() {
-        if (Global.durationInSeconds < 1) {
-          timer.cancel();
-        } else {
-          print(Global.durationInSeconds);
-          Global.durationInSeconds = Global.durationInSeconds - 1;
-        }
-      });
-    });
-  }
-
   @override
   void initState() {
-    durationInSecondsr();
-
     super.initState();
-    Global().getusername();
-    //获取主页和成绩页面的成绩信息
+
+    // 启动登录过程
+    Future.delayed(Duration.zero, () async {
+      await Global().getusername();
+
+      await loginAttempt();
+    });
+
+    // 获取主页和成绩页面的成绩信息
     Global.get_course_day();
     Global().score_getcolor();
     Global.getcalendar();
     Global().home_getcolor();
     Global().getlist();
     Global.getdesktop_float();
+
+    // 加载文件信息
+    _loadFileData();
+
+    // 启动定时器，定时检查登录状态
+    _startLoginCheckTimer();
+
+    changeAnimation();
+  }
+
+  Future<void> loginAttempt() async {
+    try {
+      await loginController.noPerceptionLogin();
+    } catch (e) {
+      print("登录失败: $e");
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _loadFileData() {
     getApplicationDocumentsDirectory().then((value) {
-      File file = new File(value.path + '/course.json');
+      File file = File(value.path + '/course.json');
       file.exists().then((value) {
         if (!mounted) return;
         setState(() {
@@ -63,9 +83,10 @@ class _MovingEarthState extends State<MovingEarth> {
         });
       });
     });
+
     getApplicationDocumentsDirectory().then((value) {
-      //判断是否有fist.txt文件,没有则创建，有则调用isfirst方法
-      File file = new File(value.path + '/first.txt');
+      // 判断是否有fist.txt文件, 没有则创建，有则调用isfirst方法
+      File file = File(value.path + '/first.txt');
       file.exists().then((value) async {
         if (!mounted) return;
         if (value) {
@@ -75,19 +96,24 @@ class _MovingEarthState extends State<MovingEarth> {
         }
       });
     });
-
-    Timer(Duration(seconds: Global.durationInSeconds), () {
-      if (!mounted) return;
-      Global().jump_page(context);
-    });
-
-    changeAnimation();
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  void _startLoginCheckTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+
+      if (loginController.jwc_jsessionid.value.isNotEmpty &&
+          loginController.jwc_webvpn_key.value.isNotEmpty &&
+          loginController.jwc_webvpn_username.value.isNotEmpty) {
+        timer.cancel(); // 获取到数据后，停止定时器
+        Global().jump_page(context); // 进行跳转
+      }
+      //或者登录失败也直接跳转
+      if (!loginController.login_status.value) {
+        timer.cancel(); // 获取到数据后，停止定时器
+        Global().jump_page(context); // 进行跳转
+      }
+    });
   }
 
   @override

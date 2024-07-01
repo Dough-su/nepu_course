@@ -4,6 +4,7 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:muse_nepu_course/util/jpushs.dart';
 import 'package:muse_nepu_course/util/global.dart';
 import 'package:muse_nepu_course/service/api_service.dart';
@@ -21,14 +22,14 @@ import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:sn_progress_dialog/sn_progress_dialog.dart';
 import 'package:achievement_view/achievement_view.dart';
 
+import '../controller/LoginController.dart';
+
 List<Widget> dailycourse = [];
 GlobalKey scoredetailbtn = GlobalKey();
 
 //上滑控制器
 //侧边栏控制器
 GlobalKey<SideMenuState> _sideMenuKey =
-    GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
-GlobalKey<SideMenuState> _sideMenuKey2 =
     GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
 GlobalKey<SideMenuState> _endSideMenuKey =
     GlobalKey<SideMenuState>(debugLabel: UniqueKey().toString());
@@ -53,6 +54,8 @@ class _HomePageState extends State<HomePage> {
   RiveAnimationController _controller = SimpleAnimation('行走');
   late RiveAnimationController _controller2;
   RiveAnimationController _controller3 = SimpleAnimation('行走');
+  final LoginController loginController = Get.put(LoginController());
+
   bool _isPlaying = false;
   bool _isStanding = true;
   int _standingTime = 0;
@@ -143,42 +146,7 @@ class _HomePageState extends State<HomePage> {
       ..show(context);
   }
 
-  void showTutorial() {
-    TutorialCoachMark(
-        targets: Global().targets, // List<TargetFocus>
-        colorShadow: Colors.red, // DEFAULT Colors.black
-        onFinish: () {
-          getApplicationDocumentsDirectory().then((value) {
-            File file = new File(value.path + '/yindao.txt');
-            file.exists().then((value) {
-              if (value) {
-              } else {
-                file.create();
-              }
-            });
-          });
-        },
-        onClickTargetWithTapPosition: (target, tapDetails) {
-          print("target: $target");
-          print(
-              "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
-        },
-        onClickTarget: (target) {
-          print(target);
-        },
-        onSkip: () {
-          getApplicationDocumentsDirectory().then((value) {
-            File file = new File(value.path + '/yindao.txt');
-            file.exists().then((value) {
-              if (value) {
-              } else {
-                file.create();
-              }
-            });
-          });
-        })
-      ..show(context: context);
-  }
+
 
   String shijian() {
     //判断上午下午晚上
@@ -217,16 +185,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  void xinshouyindao() {
-    getApplicationDocumentsDirectory().then((value) {
-      File file = new File(value.path + '/yindao.txt');
-      file.exists().then((value) {
-        if (!value) {
-          showTutorial();
-        }
-      });
-    });
-  }
 
   void _onTap() {
     if (_isPlaying) {
@@ -273,7 +231,6 @@ class _HomePageState extends State<HomePage> {
     });
 
     Global.pureyzmset(false);
-    // Global().getxuehao();
     _controller2 = SimpleAnimation('站立');
     Future.delayed(Duration(seconds: 4), () {
       if (!_isPlaying) {
@@ -288,8 +245,7 @@ class _HomePageState extends State<HomePage> {
 
     getcolor();
     initAll();
-    ApiService().updateappx(context, _cancelTag);
-    xinshouyindao();
+    ApiService().updateApp(context, _cancelTag);
     ApiService().shownotice(context);
   }
 
@@ -299,10 +255,10 @@ class _HomePageState extends State<HomePage> {
     final courseFile = File('${dir.path}/course.json');
     final scoreFile = File('${dir.path}/score.json');
     if (!courseFile.existsSync()) {
-      firstdownload(await Global().getLoginInfo(), 'course.json', 'score.json');
+      firstdownload(await loginController.getCookies(), 'course.json', 'score.json');
     } else {
       await ApiService().updateCourseFromJW(
-          dio, courseFile, context, true, scoreFile, hItems);
+          dio, courseFile, context, scoreFile, hItems);
       if (Platform.isWindows&&Global.desktop_float) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return windwosfloat();
@@ -311,19 +267,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //展示通知
-  void showupdatenotice(BuildContext context, int second, String title,
-      String subtitle, Icon icon, Color color) {
-    AchievementView(
-        title: title,
-        subTitle: subtitle,
-        icon: icon,
-        color: color,
-        duration: Duration(seconds: second),
-        isCircle: true,
-        listener: (status) {})
-      ..show(context);
-  }
 
   var homecontext;
 
@@ -382,19 +325,16 @@ class _HomePageState extends State<HomePage> {
                 //下载完成
                 isdownload = true;
                 hItems(DateTime.now());
-                xinshouyindao();
               });
             });
           } else {
             if (fileName == 'course.json') {
-              ApiService.noPerceptionLogin().then((value) =>
-                  firstdownload(loginInfo, fileName, courseFileName));
+                  firstdownload(loginInfo, fileName, courseFileName);
             }
           }
         }
       } catch (e) {
-        ApiService.noPerceptionLogin().then(
-            (value) => firstdownload(loginInfo, fileName, courseFileName));
+            (value) => firstdownload(loginInfo, fileName, courseFileName);
         print(e);
         pd.close();
         return;
@@ -603,8 +543,8 @@ class _HomePageState extends State<HomePage> {
     print('执行时间：${stopwatch.elapsedMilliseconds}毫秒');
   }
 
-//可切换的主页组件
-  Widget flipContainer(bool isfront) {
+//主页组件
+  Widget flipContainer() {
     return Scaffold(
         appBar: CalendarAgenda(
           controller: _calendarAgendaControllerAppBar,initialDate: DateTime.now(),
@@ -658,7 +598,6 @@ class _HomePageState extends State<HomePage> {
             child: SideMenuBar.side(
                 context,
                 _sideMenuKey,
-                _sideMenuKey2,
                 changeColor,
                 shijian,
                 setState,
@@ -685,7 +624,7 @@ class _HomePageState extends State<HomePage> {
                   //圆角
                   width: MediaQuery.of(context).size.width / 2,
                   child: 
-                  flipContainer(true)),
+                  flipContainer()),
           )
       )
         ]
@@ -761,7 +700,6 @@ calanderlogo() async {
   await getApplicationDocumentsDirectory().then((value) {
     File file = File(value.path + '/calendar.png');
     if (file.existsSync()) {
-      print(file.path);
       calendarlogo = Image.file(File(file.path)).image;
     }
   });

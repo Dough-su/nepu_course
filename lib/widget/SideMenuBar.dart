@@ -1,15 +1,13 @@
 import 'dart:io';
-
 import 'package:achievement_view/achievement_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:get/get.dart';
 import 'package:muse_nepu_course/page/ChaoxingPage.dart';
+import 'package:muse_nepu_course/page/LoginPage.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rive/rive.dart';
-
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
-
-import '../page/ChaoxingPage.dart';
 import '../page/ChatgptPage.dart';
 import '../page/AboutPage.dart';
 import '../page/ScorePage.dart';
@@ -18,9 +16,10 @@ import '../page/ChaoxingLoginPage.dart';
 import '../page/PingjiaoPage.dart';
 import '../page/QingjiaPage.dart';
 import '../service/io_service.dart';
+
 class SideMenuBar{
   //侧边
- static Widget side(context, _sideMenuKey, _sideMenuKey2,changeColor,shijian,setState,toggleMenu,isOpened,scoredetailbtn,hItems,_controller,_calendarAgendaControllerAppBar,home_body,title,isdownload) {
+ static Widget side(context, _sideMenuKey,changeColor,shijian,setState,toggleMenu,isOpened,scoredetailbtn,hItems,_controller,_calendarAgendaControllerAppBar,home_body,title,isdownload) {
     return SideMenu(
         background: Global.home_currentcolor,
         key:  _sideMenuKey ,
@@ -101,24 +100,9 @@ class SideMenuBar{
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => pingjiao()));
+                                builder: (context) => Pingjiao()));
                       },
                     ),
-                    // ListTile(
-                    //   leading: const Icon(Icons.book_online,
-                    //       size: 20.0, color: Colors.white),
-                    //   title: Text(
-                    //     '请假历史',
-                    //     style: TextStyle(
-                    //         color: Colors.white,
-                    //         fontSize: 20,
-                    //         fontWeight: FontWeight.bold),
-                    //   ),
-                    //   onTap: () {
-                    //     Navigator.push(context,
-                    //         MaterialPageRoute(builder: (context) => qingjiapage()));
-                    //   },
-                    // ),
                     ListTile(
                       leading: const Icon(Icons.colorize,
                           size: 20.0, color: Colors.white),
@@ -143,7 +127,6 @@ class SideMenuBar{
                                     pickerAreaHeightPercent: 0.7,
                                     enableAlpha: false,
                                     displayThumbColor: true,
-                                    showLabel: true,
                                     paletteType: PaletteType.hsv,
                                     pickerAreaBorderRadius:
                                     const BorderRadius.only(
@@ -262,26 +245,8 @@ class SideMenuBar{
                             fontWeight: FontWeight.bold),
                       ),
                       onTap: () {
-                        io_service().deleteFiles();
-                        AchievementView(
-                            title: "成功!",
-                            subTitle: "已清除课程和成绩缓存，请退出app重新登录",
-                            //onTab: _onTabAchievement,
-                            icon: Icon(
-                              Icons.insert_emoticon,
-                              color: Colors.white,
-                            ),
-                            //typeAnimationContent: AnimationTypeAchievement.fadeSlideToUp,
-                            //borderRadius: 5.0,
-                            color: Colors.green,
-                            //textStyleTitle: TextStyle(),
-                            //textStyleSubTitle: TextStyle(),
-                            //alignment: Alignment.topCenter,
-                            duration: Duration(seconds: 3),
-                            isCircle: true, listener: (status) {
-                          print(status);
-                        })
-                          ..show(context);
+                        io_service().deleteFiles().then((value) => Get.offAll(() => LoginPage()));
+                        //使用getx跳转到登录页面
                       },
                     ),
 
@@ -355,7 +320,6 @@ class SideMenuBar{
                     });
                     hItems(DateTime.now(), false);
                     setState(() {
-                      print('回到今天');
                       _calendarAgendaControllerAppBar.goToDay(DateTime.now());
                     });
                   },
@@ -368,14 +332,6 @@ class SideMenuBar{
                 ),
                 GestureDetector(
                   onTap: () {
-                    _controller = SimpleAnimation('起飞');
-                    Future.delayed(Duration(seconds: 2), () {
-                      _controller = SimpleAnimation('保持飞翔');
-                      _controller = SimpleAnimation('降落');
-                      Future.delayed(Duration(seconds: 2), () {
-                        _controller = SimpleAnimation('行走');
-                      });
-                    });
                     setState(() {
                       print('回到今天');
                       _calendarAgendaControllerAppBar.goToDay(DateTime.now());
@@ -394,5 +350,4 @@ class SideMenuBar{
               ]),
             )));
   }
-
 }

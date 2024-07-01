@@ -100,15 +100,12 @@ class _aboutState extends State<about> {
           ListTile(
             leading: Icon(Icons.info),
             title: Text('多版本下载网址,点击复制'),
-            subtitle: Text(
-                'https://www.123pan.com/s/88krVv-F8Avd.html'),
+            subtitle: Text('https://www.123pan.com/s/88krVv-F8Avd.html'),
             onTap: () {
-              Global().GlaunchUrl(
-                  'https://www.123pan.com/s/88krVv-F8Avd.html');
+              Global().GlaunchUrl('https://www.123pan.com/s/88krVv-F8Avd.html');
               //http://course.musecloud.tech/
               Clipboard.setData(ClipboardData(
-                  text:
-                      'https://www.123pan.com/s/88krVv-F8Avd.html'));
+                  text: 'https://www.123pan.com/s/88krVv-F8Avd.html'));
               AchievementView(
                   title: "复制成功",
                   subTitle: '可以去浏览器粘贴网址了',
@@ -338,7 +335,7 @@ class _aboutState extends State<about> {
               title: Text('检测更新'),
               subtitle: Text(''),
               onTap: () {
-                ApiService().updateappx(context, "");
+                ApiService().updateApp(context, "");
               }),
           //显示头像
 
@@ -348,7 +345,6 @@ class _aboutState extends State<about> {
             title: Text('项目离不开以下人员的支持(排名不分先后)'),
             subtitle: Text(''),
           ),
-
 
           ListTile(
             leading: CircleAvatar(
@@ -380,18 +376,8 @@ class _aboutState extends State<about> {
             title: Text('24号'),
             subtitle: Text('Tester'),
           ),
-    ListTile(
-    leading: CircleAvatar(
-    //网络图片
-    backgroundImage: NetworkImage(
-    'https://q1.qlogo.cn/g?b=qq&nk=1617352787&s=100',
-    ),
-    ),
-    title: Text('k'),
-    subtitle: Text('Tester'),
-    ),
 
-    ListTile(
+          ListTile(
             leading: CircleAvatar(
               //网络图片
               backgroundImage: NetworkImage(
@@ -418,16 +404,12 @@ class _aboutState extends State<about> {
           ),
           //开源地址
           ListTile(
-            leading: Icon(Icons.bug_report),
-            title: Text('开源地址,想提issue?来下面哦'),
-            subtitle: Text('https://github.com/Dough-su/nepu_course'),
-            onTap: () {
-              Global().GlaunchUrl(
-                  'https://github.com/Dough-su/nepu_course'
-              );
-            }
-          ),
-
+              leading: Icon(Icons.bug_report),
+              title: Text('开源地址'),
+              subtitle: Text('https://github.com/Dough-su/nepu_course'),
+              onTap: () {
+                Global().GlaunchUrl('https://github.com/Dough-su/nepu_course');
+              }),
         ],
       )),
     );

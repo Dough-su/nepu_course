@@ -85,7 +85,7 @@ class io_service {
   }
 
   //清除文件
-  void deleteFiles() async {
+  Future<void> deleteFiles() async {
     final documentsDirectory = await getApplicationDocumentsDirectory();
     final filesToDelete = [
       'course.json',

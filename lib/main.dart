@@ -1,11 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:muse_nepu_course/page/HomePage.dart';
+import 'package:muse_nepu_course/page/LoginPage.dart';
 import 'package:muse_nepu_course/page/earth.dart';
 import 'package:muse_nepu_course/util/jpushs.dart';
 import 'package:muse_nepu_course/theme/color_schemes.g.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
+import 'controller/LoginController.dart';
 import 'util/global.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 
@@ -31,6 +36,12 @@ Future<void> main() async {
   }
   Global.getauto_update_course();
   WidgetsFlutterBinding.ensureInitialized();
+  getApplicationDocumentsDirectory().then((value) {
+    File file = new File(value.path + '/course.json');
+    file.exists().then((value) {
+      Global.isfirst = !value;
+    });
+  });
   runApp(SplashPage());
   doWhenWindowReady(() {
     const initialSize = Size(600, 700);
@@ -48,6 +59,7 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+
   void initState() {
     super.initState();
     Global().loadItems(DateTime.now());
@@ -58,10 +70,18 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      //路由
+      getPages: [
+        GetPage(name: '/', page: () => SplashScreen()),
+        GetPage(name: '/home', page: () => HomePage()),
+        GetPage(name: '/login', page: () => LoginPage()),
+      ],
+      initialRoute: '/',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
       darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
-      home: SplashScreen(),
+      // home: SplashScreen(),
     );
   }
 }

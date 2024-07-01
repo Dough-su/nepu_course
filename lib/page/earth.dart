@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:muse_nepu_course/controller/LoginController.dart';
 import 'package:muse_nepu_course/util/EarthAnimation.dart';
 import 'package:muse_nepu_course/util/constants/colors.dart';
 import 'package:muse_nepu_course/util/extension/screen_size.dart';
@@ -15,6 +17,12 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState()  {
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
               durationInMs: 2500,
               child: GestureDetector(
                   onTap: () {
-                    Global().jump_page(context);
+                    // Global().jump_page(context);
                   },
                   child: Image.asset("assets/earth_home.jpg")),
             ),

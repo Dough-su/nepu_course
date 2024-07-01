@@ -1,132 +1,91 @@
 import 'dart:convert';
-
 import 'package:achievement_view/achievement_view.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:muse_nepu_course/util/global.dart';
-import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:card_loading/card_loading.dart';
 
-class pingjiao extends StatefulWidget {
+import '../controller/LoginController.dart';
+
+class Pingjiao extends StatefulWidget {
   @override
-  _pingjiaoState createState() => _pingjiaoState();
+  _PingjiaoState createState() => _PingjiaoState();
 }
 
-int isfirst = 1;
-double pingjiaohighmark = 95;
-double pingjiaolowmark = 20;
-List<dynamic> pingjiaoinfo = [];
+int isFirst = 1;
+double pingjiaoHighMark = 95;
+double pingjiaoLowMark = 20;
+List<dynamic> pingjiaoInfo = [];
 
-class _pingjiaoState extends State<pingjiao> {
-  List<Widget> pingjiaowidget = [
-    CardLoading(
+class _PingjiaoState extends State<Pingjiao> {
+  List<Widget> pingjiaoWidget = List.generate(
+    5,
+        (index) => CardLoading(
       height: 40,
       borderRadius: BorderRadius.all(Radius.circular(10)),
       margin: EdgeInsets.only(bottom: 10),
     ),
-    CardLoading(
-      height: 40,
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      margin: EdgeInsets.only(bottom: 10),
-    ),
-    CardLoading(
-      height: 40,
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      margin: EdgeInsets.only(bottom: 10),
-    ),
-    CardLoading(
-      height: 40,
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      margin: EdgeInsets.only(bottom: 10),
-    ),
-    CardLoading(
-      height: 40,
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      margin: EdgeInsets.only(bottom: 10),
-    ),
-  ];
-  //定义一个highmarkcontroller,来获取输入框的内容
-  TextEditingController highmarkcontroller =
-      TextEditingController(text: pingjiaohighmark.toString() //获取输入框的内容
+  );
 
-          );
-  TextEditingController lowmarkcontroller =
-      TextEditingController(text: pingjiaolowmark.toString() //获取输入框的内容
+  TextEditingController highMarkController =
+  TextEditingController(text: pingjiaoHighMark.toString());
+  TextEditingController lowMarkController =
+  TextEditingController(text: pingjiaoLowMark.toString());
+  final LoginController loginController = Get.put(LoginController());
 
-          );
-  Widget returnpingjiaowidget() {
-    return ListView(children: pingjiaowidget);
+  @override
+  void initState() {
+    super.initState();
+    Global.bottombarheight = 60;
+    downApkFunction();
   }
 
-  void downApkFunction() async {
+  Future<void> downApkFunction() async {
     var dio = Dio();
-
-    //下载评教
-    var urlpingjiao =
+    var urlPingjiao =
         'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getpingjiao' +
-            await Global().getLoginInfo();
-    print(urlpingjiao);
+            await loginController.getCookies();
+    print(urlPingjiao);
     try {
-      Response response = await dio.get(urlpingjiao);
-      pingjiaoinfo = json.decode(response.data);
-      loadpingjiao();
+      Response response = await dio.get(urlPingjiao);
+      pingjiaoInfo = json.decode(response.data);
+      loadPingjiao();
     } catch (e) {
       print(e);
     }
   }
 
-  void initState() {
-    super.initState();
-    Global.pureyzmset(false);
-    Global.bottombarheight = 60;
-
-    ApiService.noPerceptionLogin().then((value) async {
-      downApkFunction();
-    });
-  }
-
-  void loadpingjiao() async {
-    pingjiaowidget.clear();
-    for (int i = 0; i < pingjiaoinfo.length; i++) {
-      var urlpingjiao =
+  Future<void> loadPingjiao() async {
+    pingjiaoWidget.clear();
+    for (int i = 0; i < pingjiaoInfo.length; i++) {
+      var urlPingjiao =
           'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/savepingjiao' +
-              await Global().getLoginInfo() +
-              "&xnxqdm=" +
-              pingjiaoinfo[i]['xnxqdm'] +
-              "&pjlxdm=" +
-              pingjiaoinfo[i]['pjlxdm'] +
-              "&teadm=" +
-              pingjiaoinfo[i]['teadm'] +
-              "&teabh=" +
-              pingjiaoinfo[i]['teabh'] +
-              "&teaxm=" +
-              pingjiaoinfo[i]['teaxm'] +
-              "&wjdm=" +
-              pingjiaoinfo[i]['wjdm'] +
-              "&kcrwdm=" +
-              pingjiaoinfo[i]['kcrwdm'] +
-              "&kcptdm=" +
-              pingjiaoinfo[i]['kcptdm'] +
-              "&kcdm=" +
-              pingjiaoinfo[i]['kcdm'] +
-              "&dgksdm=" +
-              pingjiaoinfo[i]['dgksdm'] +
-              "&jxhjdm=" +
-              pingjiaoinfo[i]['jxhjdm'] +
-              "&xnxqdm=" +
-              pingjiaoinfo[i]['xnxqdm'];
+              await loginController.getCookies() +
+              "&xnxqdm=${pingjiaoInfo[i]['xnxqdm']}" +
+              "&pjlxdm=${pingjiaoInfo[i]['pjlxdm']}" +
+              "&teadm=${pingjiaoInfo[i]['teadm']}" +
+              "&teabh=${pingjiaoInfo[i]['teabh']}" +
+              "&teaxm=${pingjiaoInfo[i]['teaxm']}" +
+              "&wjdm=${pingjiaoInfo[i]['wjdm']}" +
+              "&kcrwdm=${pingjiaoInfo[i]['kcrwdm']}" +
+              "&kcptdm=${pingjiaoInfo[i]['kcptdm']}" +
+              "&kcdm=${pingjiaoInfo[i]['kcdm']}" +
+              "&dgksdm=${pingjiaoInfo[i]['dgksdm']}" +
+              "&jxhjdm=${pingjiaoInfo[i]['jxhjdm']}" +
+              "&xnxqdm=${pingjiaoInfo[i]['xnxqdm']}";
 
-      pingjiaowidget.add(Slidable(
+      pingjiaoWidget.add(Slidable(
         key: UniqueKey(),
         startActionPane: ActionPane(
           motion: const ScrollMotion(),
           dismissible: DismissiblePane(onDismissed: () async {
             var response = await Dio()
-                .get(urlpingjiao + "&wtpf=" + pingjiaohighmark.toString());
+                .get(urlPingjiao + "&wtpf=" + pingjiaoHighMark.toString());
             var message = response.data['message'].toString();
             showAchievementView(message);
-            setState(() => pingjiaoinfo.removeAt(i));
+            setState(() => pingjiaoInfo.removeAt(i));
           }),
           children: [
             SlidableAction(
@@ -142,10 +101,10 @@ class _pingjiaoState extends State<pingjiao> {
           motion: const ScrollMotion(),
           dismissible: DismissiblePane(onDismissed: () async {
             var response = await Dio()
-                .get(urlpingjiao + "&wtpf=" + pingjiaolowmark.toString());
+                .get(urlPingjiao + "&wtpf=" + pingjiaoLowMark.toString());
             var message = response.data['message'].toString();
             showAchievementView(message);
-            setState(() => pingjiaoinfo.removeAt(i));
+            setState(() => pingjiaoInfo.removeAt(i));
           }),
           children: [
             SlidableAction(
@@ -158,8 +117,7 @@ class _pingjiaoState extends State<pingjiao> {
           ],
         ),
         child: ListTile(
-          title:
-              Text(pingjiaoinfo[i]['teaxm'] + '---' + pingjiaoinfo[i]['kcmc']),
+          title: Text('${pingjiaoInfo[i]['teaxm']}---${pingjiaoInfo[i]['kcmc']}'),
         ),
       ));
     }
@@ -168,20 +126,22 @@ class _pingjiaoState extends State<pingjiao> {
 
   void showAchievementView(String message) {
     AchievementView(
-        title: "hi!",
-        subTitle: message,
-        icon: Icon(
-          Icons.emoji_emotions,
-          color: Colors.white,
-        ),
-        color: Colors.green,
-        duration: Duration(seconds: 3),
-        isCircle: true, listener: (status) {
-      print(status);
-    })
-      ..show(context);
+      title: "hi!",
+      subTitle: message,
+      icon: Icon(
+        Icons.emoji_emotions,
+        color: Colors.white,
+      ),
+      color: Colors.green,
+      duration: Duration(seconds: 3),
+      isCircle: true,
+      listener: (status) {
+        print(status);
+      },
+    )..show(context);
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -197,14 +157,14 @@ class _pingjiaoState extends State<pingjiao> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextField(
-                        controller: highmarkcontroller,
+                        controller: highMarkController,
                         decoration:
-                            InputDecoration(labelText: '高分，必须至少得有小数点后一位'),
+                        InputDecoration(labelText: '高分，必须至少得有小数点后一位'),
                       ),
                       TextField(
-                        controller: lowmarkcontroller,
+                        controller: lowMarkController,
                         decoration:
-                            InputDecoration(labelText: '低分,必须至少得有小数点后一位'),
+                        InputDecoration(labelText: '低分,必须至少得有小数点后一位'),
                       ),
                     ],
                   ),
@@ -216,9 +176,9 @@ class _pingjiaoState extends State<pingjiao> {
                     TextButton(
                       child: Text('确定'),
                       onPressed: () {
-                        pingjiaohighmark =
-                            double.parse(highmarkcontroller.text);
-                        pingjiaolowmark = double.parse(lowmarkcontroller.text);
+                        pingjiaoHighMark =
+                            double.parse(highMarkController.text);
+                        pingjiaoLowMark = double.parse(lowMarkController.text);
                         setState(() {});
                         Navigator.of(context).pop();
                       },
@@ -232,7 +192,7 @@ class _pingjiaoState extends State<pingjiao> {
         leading: IconButton(
           icon: Icon(Icons.home),
           onPressed: () {
-            pingjiaoinfo.clear();
+            pingjiaoInfo.clear();
             Navigator.pop(context);
           },
         ),
@@ -242,7 +202,7 @@ class _pingjiaoState extends State<pingjiao> {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(18.0),
-            child: Column(children: pingjiaowidget),
+            child: Column(children: pingjiaoWidget),
           ),
         ),
       ),

@@ -3,6 +3,7 @@ import 'package:achievement_view/achievement_view.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:muse_nepu_course/extra_package/card_flip/src/flip_layout.dart';
 import 'package:muse_nepu_course/extra_package/diffcult_flutter_refresh/easy_refresh.dart';
 import 'package:muse_nepu_course/extra_package/diffcult_flutter_refresh/src/styles/space/easy_refresh_space.dart';
@@ -11,6 +12,8 @@ import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/service/io_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
+
+import '../controller/LoginController.dart';
 
 class scorepage extends StatefulWidget {
   @override
@@ -194,14 +197,15 @@ class _scoreState extends State<scorepage> {
 
   //存储获取到的新成绩信息
   Future saveString(easycontroller) async {
+    final LoginController loginController = Get.put(LoginController());
+
     Dio dio = Dio();
 
     var urlscore =
         'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
-            await Global().getLoginInfo() +
+            await loginController.getCookies() +
             '&index=' +
             Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm'].toString();
-    print(urlscore);
     getApplicationDocumentsDirectory().then((value) async {
       try {
         Response response = await dio.get(urlscore);
@@ -229,7 +233,7 @@ class _scoreState extends State<scorepage> {
           easycontroller.finishRefresh();
         }
       } catch (e) {
-        print(e);
+        // print(e);
         AchievementView(
             title: "hi!",
             subTitle: '课程已经都是最新了哦',
@@ -333,11 +337,7 @@ class _scoreState extends State<scorepage> {
             header: const SpaceHeader(),
             onRefresh: () async {
               print('onfresh被调用了');
-
-              ApiService.noPerceptionLogin().then((value) async {
-                print(Global().getLoginInfo());
                 saveString(_controller);
-              });
               await Future.delayed(Duration(seconds: 100));
 
               if (!mounted) {
@@ -370,10 +370,6 @@ class _scoreState extends State<scorepage> {
                   );
                 })
 
-            // SingleChildScrollView(
-            //   child: Center(
-
-            //
             ));
   }
 }

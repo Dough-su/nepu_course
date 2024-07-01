@@ -7,10 +7,11 @@ import 'package:muse_nepu_course/extra_package/card_flip/src/flip_layout.dart';
 import 'package:muse_nepu_course/extra_package/diffcult_flutter_refresh/easy_refresh.dart';
 import 'package:muse_nepu_course/extra_package/diffcult_flutter_refresh/src/styles/space/easy_refresh_space.dart';
 import 'package:muse_nepu_course/util/global.dart';
-import 'package:muse_nepu_course/service/api_service.dart';
 import 'package:muse_nepu_course/service/io_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
+import '../controller/LoginController.dart';
+import 'package:get/get.dart' hide Response;
 
 class scorepage extends StatefulWidget {
   @override
@@ -185,7 +186,7 @@ class _scoreState extends State<scorepage> {
       });
     }
   }
-
+  final LoginController loginController = Get.put(LoginController());
   List<Widget> list = [];
 
   String chengjidaima = '';
@@ -198,7 +199,7 @@ class _scoreState extends State<scorepage> {
 
     var urlscore =
         'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
-            await Global().getLoginInfo() +
+            await loginController.getCookies() +
             '&index=' +
             Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm'].toString();
     print(urlscore);
@@ -332,10 +333,9 @@ class _scoreState extends State<scorepage> {
             controller: _controller,
             header: const SpaceHeader(),
             onRefresh: () async {
-              ApiService.noPerceptionLogin().then((value) async {
-                print(Global().getLoginInfo());
-                saveString(_controller);
-              });
+              final LoginController loginController = Get.put(LoginController());
+              saveString(_controller);
+
               await Future.delayed(Duration(seconds: 100));
 
               if (!mounted) {
