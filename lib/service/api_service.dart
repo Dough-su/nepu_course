@@ -17,8 +17,8 @@ import '../page/ScorePage.dart';
 import '../util/jpushs.dart';
 
 class ApiService {
-  final LoginController loginController = Get.put(LoginController());
   Dio dio = Dio();
+  final LoginController loginController = Get.put(LoginController());
   void showAchievementView(
       BuildContext context, String version, String notice, File file) {
     AchievementView(
