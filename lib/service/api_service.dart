@@ -64,7 +64,9 @@ class ApiService {
     String localVersion = await _getLocalVersion(file);
     var updateInfo = await _fetchUpdateInfo();
 
-    if (updateInfo != null && updateInfo['version'] != Global.version && updateInfo['version'] != localVersion) {
+    if (updateInfo != null &&
+        updateInfo['version'] != Global.version &&
+        updateInfo['version'] != localVersion) {
       await _showUpdateDialog(context, file, updateInfo, _cancelTag);
     }
   }
@@ -80,16 +82,21 @@ class ApiService {
 
   Future<Map<String, dynamic>> _fetchUpdateInfo() async {
     var dio = Dio();
-    var response = await dio.get('https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
+    var response = await dio.get(
+        'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
     return response.data[0];
   }
 
-  Future<void> _showUpdateDialog(BuildContext context, File file, Map<String, dynamic> updateInfo, _cancelTag) async {
+  Future<void> _showUpdateDialog(BuildContext context, File file,
+      Map<String, dynamic> updateInfo, _cancelTag) async {
     await Dialogs.materialDialog(
-      color: Theme.of(context).brightness == Brightness.light ? Colors.white : Colors.black,
+      color: Theme.of(context).brightness == Brightness.light
+          ? Colors.white
+          : Colors.black,
       msg: '要下载吗?',
       title: '有新版本啦,版本号是${updateInfo['version']}\n${updateInfo['descrption']}',
-      lottieBuilder: Lottie.asset('assets/rockert-new.json', fit: BoxFit.contain),
+      lottieBuilder:
+          Lottie.asset('assets/rockert-new.json', fit: BoxFit.contain),
       context: context,
       actions: [
         IconButton(
@@ -111,7 +118,8 @@ class ApiService {
     );
   }
 
-  Future<void> _handleUpdate(BuildContext context, Map<String, dynamic> updateInfo, _cancelTag) async {
+  Future<void> _handleUpdate(
+      BuildContext context, Map<String, dynamic> updateInfo, _cancelTag) async {
     if (Platform.isAndroid) {
       ProgressDialog pd = ProgressDialog(context: context);
       pd.show(
@@ -157,59 +165,59 @@ class ApiService {
       )..show(context);
     }
   }
+
   //更新课程
-  Future<void> updateCourseFromJW(Dio dio, File file, BuildContext context,
-       File scoreFile, hItems) async {
+  Future<void> updateCourseFromJW(
+      Dio dio, File file, BuildContext context, File scoreFile, hItems) async {
     hItems(DateTime.now());
     if (Global.auto_update_course && !Global.isrefreshcourse) {
-
       Global.isrefreshcourse = true;
-          late String logininfo;
-          var url;
-          logininfo = await loginController.getCookies();
-          url =
-              'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
-                  logininfo;
-          getApplicationDocumentsDirectory().then((value) async {
-            //判断响应状态
-            Response response = await dio.get(url);
-            if (response.statusCode == 500) {
-              showupdatenotice(
-                  context,
-                  3,
-                  '与教务同步课程失败!',
-                  '请检查你的密码或者教务系统是否正常',
-                  Icon(
-                    Icons.error,
-                    color: Colors.white,
-                  ),
-                  Colors.red);
-              return;
-            } else if (response.statusCode == 200) {
-              if (!response.data.toString().contains('fail')) {
-                file.writeAsString(response.data);
-                Global.isfirstread = true;
-                jpushs().uploadpushid();
+      late String logininfo;
+      var url;
+      logininfo = await loginController.getCookies();
+      url =
+          'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/course' +
+              logininfo;
+      getApplicationDocumentsDirectory().then((value) async {
+        //判断响应状态
+        Response response = await dio.get(url);
+        if (response.statusCode == 500) {
+          showupdatenotice(
+              context,
+              3,
+              '与教务同步课程失败!',
+              '请检查你的密码或者教务系统是否正常',
+              Icon(
+                Icons.error,
+                color: Colors.white,
+              ),
+              Colors.red);
+          return;
+        } else if (response.statusCode == 200) {
+          if (!response.data.toString().contains('fail')) {
+            file.writeAsString(response.data);
+            Global.isfirstread = true;
+            jpushs().uploadpushid();
 
-                updateScores(logininfo, scoreFile, context);
-                showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
-                    Icon(Icons.check), Global.home_currentcolor);
-              } else {
-                showupdatenotice(
-                    context,
-                    3,
-                    '与教务同步课程失败!',
-                    '请检查你的密码或者教务系统是否正常',
-                    Icon(
-                      Icons.error,
-                      color: Colors.white,
-                    ),
-                    Colors.red);
+            updateScores(logininfo, scoreFile, context);
+            showupdatenotice(context, 3, '与教务同步课程成功!', '你的课程已经同步至最新',
+                Icon(Icons.check), Global.home_currentcolor);
+          } else {
+            showupdatenotice(
+                context,
+                3,
+                '与教务同步课程失败!',
+                '请检查你的密码或者教务系统是否正常',
+                Icon(
+                  Icons.error,
+                  color: Colors.white,
+                ),
+                Colors.red);
 
-                return;
-              }
-            }
-          });
+            return;
+          }
+        }
+      });
     }
   }
 
@@ -220,8 +228,7 @@ class ApiService {
         'https://nepu-backend-nepu-restart-sffsxhkzaj.cn-beijing.fcapp.run/getnewscore' +
             loginInfo +
             '&index=' +
-             Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm']
-                    .toString();
+            Global.scoreinfos[Global.scoreinfos.length - 1]['cjdm'].toString();
     getApplicationDocumentsDirectory().then((value) async {
       try {
         Response response = await dio.get(urlscore);
@@ -308,11 +315,6 @@ class ApiService {
       });
     });
   }
-
-
-
-
-
 
   //提前激活chatgpt接口
   void active_chatgpt() {
@@ -443,5 +445,4 @@ class ApiService {
         'https://update-nepucouseupdate-bmgwsddxxl.cn-hongkong.fcapp.run/update');
     return value.data[0];
   }
-
 }

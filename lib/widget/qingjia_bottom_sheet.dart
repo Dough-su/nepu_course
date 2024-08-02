@@ -104,7 +104,6 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
             controller: qssjController,
             leadingIcon: const Icon(Icons.credit_card),
             width: MediaQuery.of(context).size.width - 20 * 2,
-
             label: const Text('请假时间'),
             initialSelection: selectqssjCard,
             dropdownMenuEntries: cardsEntries,
@@ -120,7 +119,6 @@ class _PaymentBottomSheetState extends State<PaymentBottomSheet> {
             controller: jssjCardsController,
             leadingIcon: const Icon(Icons.credit_card),
             width: MediaQuery.of(context).size.width - 20 * 2,
-
             label: const Text('结束时间'),
             initialSelection: selectedjssjCard,
             dropdownMenuEntries: cardsEntries,
