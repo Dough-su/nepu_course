@@ -64,8 +64,8 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     Global().loadItems(DateTime.now());
     //只有安卓才会初始化极光推送
-    if(Platform.isAndroid)
-    jpushs().addlistenerandinit();
+    //if(Platform.isAndroid)
+    //jpushs().addlistenerandinit();
   }
 
   @override
