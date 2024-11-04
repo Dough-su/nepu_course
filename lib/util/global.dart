@@ -184,6 +184,7 @@ class Global {
                 ),
               ))
         ]),
+    
     TargetFocus(identify: "成绩菜单", keyTarget: scoredetailbtn, contents: [
       TargetContent(
           align: ContentAlign.bottom,
