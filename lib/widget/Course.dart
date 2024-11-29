@@ -65,10 +65,6 @@ class Course {
                     child: Text('为这节课请假'),
                   ),
                 ],
-                // lottieBuilder: Lottie.asset(
-                //   'assets/course.json',
-                //   fit: BoxFit.contain,
-                // ),
                 context: context,
               )),
               child: Card(
