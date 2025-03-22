@@ -67,7 +67,6 @@ class _SplashPageState extends State<SplashPage> {
     //if(Platform.isAndroid)
     //jpushs().addlistenerandinit();
   }
-
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
