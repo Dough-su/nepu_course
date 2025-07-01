@@ -7,7 +7,6 @@ import 'package:muse_nepu_course/page/WindowsfloatPage.dart';
 
 class windows {
   Widget getwindow(context) {
-    //判断是否是windows
     if (Platform.isWindows)
       return Container(
         color: Global.home_currentcolor,
